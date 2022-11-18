@@ -1,0 +1,68 @@
+package com.ranseo.yatchgame.data.source
+
+import android.util.Log
+import com.google.firebase.auth.FirebaseAuth
+import com.ranseo.yatchgame.data.Result
+import com.ranseo.yatchgame.data.model.LoggedInUser
+import java.io.IOException
+import javax.inject.Inject
+
+/**
+ * Class that handles authentication w/ login credentials and retrieves user information.
+ */
+class LoginDataSource @Inject constructor(private val auth : FirebaseAuth){
+
+    fun login(username: String, callback:(uid:String?, name:String?)->Unit): Result<LoggedInUser> {
+        return try {
+            // TODO: handle loggedInUser authentication
+            createAccount(username, "123456789", callback)
+            val user = LoggedInUser(auth.currentUser?.uid.toString(), username.substringBefore('@'))
+
+            Result.Success(user)
+        } catch (e: Throwable) {
+            Result.Error(IOException("Error logging in", e))
+        }
+    }
+
+    fun logout() {
+        // TODO: revoke authentication
+    }
+
+    private fun createAccount(email:String, password: String, callback:(uid:String?, name:String?)->Unit) {
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener() { task ->
+                if (task.isSuccessful) {
+                    // Sign in success, update UI with the signed-in user's information
+                    Log.d(TAG, "createUserWithEmail:success")
+                    loginWithEmail(email, password, callback)
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Log.w(TAG, "createUserWithEmail:failure", task.exception)
+                    throw IllegalStateException("Firebase Auth Create Error : ${task.exception}")
+
+                }
+            }
+    }
+
+    private fun loginWithEmail(email:String, password: String, callback:(uid:String?, name:String?)->Unit) {
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener() { task ->
+                if (task.isSuccessful) {
+                    // Sign in success, update UI with the signed-in user's information
+                    Log.d(TAG, "signInWithEmail:success")
+                    val uid = auth.currentUser?.uid
+                    val email = auth.currentUser?.email
+                    callback(uid,email)
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Log.w(TAG, "signInWithEmail:failure", task.exception)
+                    callback(null, null)
+                    throw IllegalStateException("Firebase Auth SignIn Error : ${task.exception}")
+                }
+            }
+    }
+
+    companion object {
+        private const val TAG = "LoginDataSource"
+    }
+}

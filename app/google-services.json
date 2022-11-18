@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "18941378065",
+    "project_id": "yatchgame-ad28a",
+    "storage_bucket": "yatchgame-ad28a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:18941378065:android:2571e758f481027a53bbb0",
+        "android_client_info": {
+          "package_name": "com.ranseo.yatchgame"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "18941378065-vq0u3leufbp6vfbfj5d1rae61ubvq1qq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ranseo.yatchgame",
+            "certificate_hash": "e3ead9c79c76be6a26052cf2635e04059a015ca2"
+          }
+        },
+        {
+          "client_id": "18941378065-n9f2ogds98hojrtstuh4las1q8c4r5kk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClCj54DxqTeP9oBI38OoUbwBcXAAAbZB0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "18941378065-n9f2ogds98hojrtstuh4las1q8c4r5kk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

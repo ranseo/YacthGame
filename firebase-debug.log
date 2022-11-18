@@ -1,0 +1,71 @@
+[debug] [2022-11-18T06:50:36.945Z] ----------------------------------------------------------------------
+[debug] [2022-11-18T06:50:36.947Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\aa\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js emulators:start
+[debug] [2022-11-18T06:50:36.947Z] CLI Version:   10.9.2
+[debug] [2022-11-18T06:50:36.947Z] Platform:      win32
+[debug] [2022-11-18T06:50:36.948Z] Node Version:  v16.16.0
+[debug] [2022-11-18T06:50:36.949Z] Time:          Fri Nov 18 2022 15:50:36 GMT+0900 (대한민국 표준시)
+[debug] [2022-11-18T06:50:36.949Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2022-11-18T06:50:37.014Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2022-11-18T06:50:37.014Z] > authorizing via signed-in user (slcksseo@gmail.com)
+[debug] [2022-11-18T06:50:37.188Z] java version "11.0.15.1" 2022-04-22 LTS
+[debug] [2022-11-18T06:50:37.189Z] 
+Java(TM) SE Runtime Environment 18.9 (build 11.0.15.1+2-LTS-10)
+Java HotSpot(TM) 64-Bit Server VM 18.9 (build 11.0.15.1+2-LTS-10, mixed mode)
+
+[debug] [2022-11-18T06:50:37.215Z] Parsed Java major version: 11
+[info] i  emulators: Starting emulators: auth, database {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: auth, database"}}
+[debug] [2022-11-18T06:50:37.241Z] [hub] writing locator at C:\Users\aa\AppData\Local\Temp\hub-yatchgame-ad28a.json
+[debug] [2022-11-18T06:50:37.250Z] > refreshing access token with scopes: []
+[debug] [2022-11-18T06:50:37.251Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2022-11-18T06:50:37.484Z] <<< HTTP RESPONSE 200 {"pragma":"no-cache","cache-control":"no-cache, no-store, max-age=0, must-revalidate","expires":"Mon, 01 Jan 1990 00:00:00 GMT","date":"Fri, 18 Nov 2022 06:50:37 GMT","content-type":"application/json; charset=utf-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","server":"scaffolding on HTTPServer2","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2022-11-18T06:50:37.495Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/yatchgame-ad28a [none]
+[debug] [2022-11-18T06:50:38.094Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/yatchgame-ad28a 200
+[debug] [2022-11-18T06:50:38.094Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/yatchgame-ad28a {"projectId":"yatchgame-ad28a","projectNumber":"18941378065","displayName":"YatchGame","name":"projects/yatchgame-ad28a","resources":{"hostingSite":"yatchgame-ad28a","realtimeDatabaseInstance":"yatchgame-ad28a-default-rtdb"},"state":"ACTIVE","etag":"1_58c0e354-f00e-409b-a4d6-d07d556cd008"}
+[debug] [2022-11-18T06:50:38.095Z] database rules config:  [{"instance":"yatchgame-ad28a-default-rtdb","rules":"C:\\Users\\aa\\Downloads\\YatchGame-master\\database.rules.json"}]
+[debug] [2022-11-18T06:50:38.099Z] Ignoring unsupported arg: projectId {"metadata":{"emulator":{"name":"database"},"message":"Ignoring unsupported arg: projectId"}}
+[debug] [2022-11-18T06:50:38.099Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"database"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2022-11-18T06:50:38.099Z] Ignoring unsupported arg: rules {"metadata":{"emulator":{"name":"database"},"message":"Ignoring unsupported arg: rules"}}
+[debug] [2022-11-18T06:50:38.100Z] Starting Database Emulator with command {"binary":"java","args":["-Duser.language=en","-jar","C:\\Users\\aa\\.cache\\firebase\\emulators\\firebase-database-emulator-v4.7.3.jar","--host","localhost","--port",9000],"optionalArgs":["port","host","functions_emulator_port","functions_emulator_host"],"joinArgs":false} {"metadata":{"emulator":{"name":"database"},"message":"Starting Database Emulator with command {\"binary\":\"java\",\"args\":[\"-Duser.language=en\",\"-jar\",\"C:\\\\Users\\\\aa\\\\.cache\\\\firebase\\\\emulators\\\\firebase-database-emulator-v4.7.3.jar\",\"--host\",\"localhost\",\"--port\",9000],\"optionalArgs\":[\"port\",\"host\",\"functions_emulator_port\",\"functions_emulator_host\"],\"joinArgs\":false}"}}
+[info] i  database: Database Emulator logging to database-debug.log {"metadata":{"emulator":{"name":"database"},"message":"Database Emulator logging to \u001b[1mdatabase-debug.log\u001b[22m"}}
+[debug] [2022-11-18T06:50:46.850Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"ui"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2022-11-18T06:50:46.850Z] Ignoring unsupported arg: port {"metadata":{"emulator":{"name":"ui"},"message":"Ignoring unsupported arg: port"}}
+[debug] [2022-11-18T06:50:46.850Z] Starting Emulator UI with command {"binary":"node","args":["C:\\Users\\aa\\.cache\\firebase\\emulators\\ui-v1.7.0\\server.bundle.js"],"optionalArgs":[],"joinArgs":false} {"metadata":{"emulator":{"name":"ui"},"message":"Starting Emulator UI with command {\"binary\":\"node\",\"args\":[\"C:\\\\Users\\\\aa\\\\.cache\\\\firebase\\\\emulators\\\\ui-v1.7.0\\\\server.bundle.js\"],\"optionalArgs\":[],\"joinArgs\":false}"}}
+[info] i  ui: Emulator UI logging to ui-debug.log {"metadata":{"emulator":{"name":"ui"},"message":"Emulator UI logging to \u001b[1mui-debug.log\u001b[22m"}}
+[debug] [2022-11-18T06:50:46.997Z] Web / API server started at localhost:4000
+ {"metadata":{"emulator":{"name":"ui"},"message":"Web / API server started at localhost:4000\n"}}
+[debug] [2022-11-18T06:50:47.121Z] >>> HTTP REQUEST PUT http://localhost:9000/.settings/rules.json?ns=yatchgame-ad28a-default-rtdb  
+ {
+  /* Visit https://firebase.google.com/docs/database/security to learn more about security rules. */
+  "rules": {
+    ".read": false,
+    ".write": false
+  }
+}
+[debug] [2022-11-18T06:50:47.499Z] <<< HTTP RESPONSE 200 {"content-length":"15","content-type":"application/json; charset=utf-8","access-control-allow-origin":"*","cache-control":"no-cache","x-firebase-project-id":"yatchgame-ad28a-default-rtdb","x-firebase-project-number":"123456789","x-firebase-uuid":"09be8d32-92c7-4999-9528-5b42fc4f9c62"}
+[info] 
+┌─────────────────────────────────────────────────────────────┐
+│ ✔  All emulators ready! It is now safe to connect your app. │
+│ i  View Emulator UI at http://localhost:4000                │
+└─────────────────────────────────────────────────────────────┘
+
+┌────────────────┬────────────────┬────────────────────────────────┐
+│ Emulator       │ Host:Port      │ View in Emulator UI            │
+├────────────────┼────────────────┼────────────────────────────────┤
+│ Authentication │ localhost:9099 │ http://localhost:4000/auth     │
+├────────────────┼────────────────┼────────────────────────────────┤
+│ Database       │ localhost:9000 │ http://localhost:4000/database │
+└────────────────┴────────────────┴────────────────────────────────┘
+  Emulator Hub running at localhost:4400
+  Other reserved ports: 4500
+
+Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
+ 
+[warn] !  database: Fatal error occurred: 
+   Database Emulator has exited with code: 3221225786, 
+   stopping all running emulators {"metadata":{"emulator":{"name":"database"},"message":"Fatal error occurred: \n   Database Emulator has exited with code: 3221225786, \n   stopping all running emulators"}}
+[info] i  ui: Stopping Emulator UI {"metadata":{"emulator":{"name":"ui"},"message":"Stopping Emulator UI"}}
+[warn] !  Emulator UI has exited upon receiving signal: SIGINT 
+[info] i  database: Stopping Database Emulator {"metadata":{"emulator":{"name":"database"},"message":"Stopping Database Emulator"}}
+[debug] [2022-11-18T09:32:06.955Z] Received signal SIGHUP 1
