@@ -12,15 +12,15 @@ import javax.inject.Inject
  */
 class LoginDataSource @Inject constructor(private val auth : FirebaseAuth){
 
-    fun login(username: String, callback:(uid:String?, name:String?)->Unit): Result<LoggedInUser> {
-        return try {
+    fun login(username: String, callback:(uid:String?, name:String?,Result<LoggedInUser>)->Unit) {
+        try {
             // TODO: handle loggedInUser authentication
             createAccount(username, "123456789", callback)
             val user = LoggedInUser(auth.currentUser?.uid.toString(), username.substringBefore('@'))
 
             Result.Success(user)
         } catch (e: Throwable) {
-            Result.Error(IOException("Error logging in", e))
+            callback(null, null, Result.Error(IOException("Error logging in", e)))
         }
     }
 
@@ -28,7 +28,7 @@ class LoginDataSource @Inject constructor(private val auth : FirebaseAuth){
         // TODO: revoke authentication
     }
 
-    private fun createAccount(email:String, password: String, callback:(uid:String?, name:String?)->Unit) {
+    private fun createAccount(email:String, password: String, callback:(uid:String?, name:String?, Result<LoggedInUser>)->Unit) {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener() { task ->
                 if (task.isSuccessful) {
@@ -44,7 +44,7 @@ class LoginDataSource @Inject constructor(private val auth : FirebaseAuth){
             }
     }
 
-    private fun loginWithEmail(email:String, password: String, callback:(uid:String?, name:String?)->Unit) {
+    private fun loginWithEmail(email:String, password: String, callback:(uid:String?, name:String?, Result<LoggedInUser>)->Unit) {
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener() { task ->
                 if (task.isSuccessful) {
@@ -52,11 +52,11 @@ class LoginDataSource @Inject constructor(private val auth : FirebaseAuth){
                     Log.d(TAG, "signInWithEmail:success")
                     val uid = auth.currentUser?.uid
                     val email = auth.currentUser?.email
-                    callback(uid,email)
+                    callback(uid,email, Result.Success(LoggedInUser(uid.toString(),email.toString().substringBefore('@'))))
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "signInWithEmail:failure", task.exception)
-                    callback(null, null)
+                    callback(null, null, Result.Error(IOException("Error logging in", task.exception)))
                     throw IllegalStateException("Firebase Auth SignIn Error : ${task.exception}")
                 }
             }

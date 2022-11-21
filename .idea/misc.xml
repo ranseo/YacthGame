@@ -3,13 +3,21 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/drawable/dialog_edit_text_border_line.xml" value="0.2095" />
+        <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/drawable/room_list_border_line.xml" value="0.2475" />
+        <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/drawable/room_list_item_border_line.xml" value="0.2485" />
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout-w1240dp/activity_login.xml" value="0.156640625" />
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout-w936dp/activity_login.xml" value="0.2714285714285714" />
-        <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/activity_lobby.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/activity_lobby.xml" value="0.25" />
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/activity_login.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/activity_login2.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/activity_main.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/activity_splash.xml" value="0.22" />
+        <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/dialog_edit_text.xml" value="0.13333333333333333" />
+        <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/fragment_lobby.xml" value="0.21" />
+        <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/list_item_room_robby.xml" value="0.33" />
+        <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/menu/lobby_drawer_navigation_view_menu.xml" value="0.23981481481481481" />
+        <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/xml/network_security_config.xml" value="0.11927083333333334" />
       </map>
     </option>
   </component>

@@ -4,11 +4,14 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.google.firebase.auth.FirebaseAuth
-import com.ranseo.yatchgame.R
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
+import com.ranseo.yatchgame.BuildConfig
 import com.ranseo.yatchgame.databinding.ActivitySplashBinding
+import com.ranseo.yatchgame.ui.lobby.LobbyActivity
 import com.ranseo.yatchgame.ui.login.LoginActivity
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -25,6 +28,11 @@ class SplashActivity : AppCompatActivity() {
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.diceAnimation.playAnimation()
+
+        if(BuildConfig.DEBUG) {
+            Firebase.auth.useEmulator("10.0.2.2", 9099)
+            Firebase.database.useEmulator("10.0.2.2", 9000)
+        }
 
     }
 

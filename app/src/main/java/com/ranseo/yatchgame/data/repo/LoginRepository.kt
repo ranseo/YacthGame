@@ -30,15 +30,8 @@ class LoginRepository @Inject constructor(private val loginDataSource: LoginData
         loginDataSource.logout()
     }
 
-    fun login(username: String, callback:(uid:String?, name:String?)->Unit): Result<LoggedInUser> {
-        // handle login
-        val result = loginDataSource.login(username,callback)
-
-        if (result is Result.Success) {
-            setLoggedInUser(result.data)
-        }
-
-        return result
+    fun login(username: String, callback:(uid:String?, name:String?, result:Result<LoggedInUser>)->Unit){
+        loginDataSource.login(username,callback)
     }
 
     private fun setLoggedInUser(loggedInUser: LoggedInUser) {
@@ -47,6 +40,7 @@ class LoginRepository @Inject constructor(private val loginDataSource: LoginData
 
     suspend fun insertPlayer(player: Player) {
         playerDataSource.insert(player)
+        playerDataSource.write(player)
     }
 
 }

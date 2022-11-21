@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.ranseo.yatchgame">
+    package="com.ranseo.yatchgame"
+    android:installLocation="preferExternal">
 
     <application
         android:name=".YachtApplication"
@@ -13,13 +14,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.YatchGame"
-        tools:targetApi="31">
+        tools:targetApi="31"
+        android:networkSecurityConfig="@xml/network_security_config">
         <activity
             android:name=".ui.login.LoginActivity"
             android:exported="false"
             android:label="@string/title_activity_login" />
         <activity
-            android:name=".ui.LobbyActivity"
+            android:name=".ui.lobby.LobbyActivity"
             android:exported="false" />
         <activity
             android:name=".ui.SplashActivity"

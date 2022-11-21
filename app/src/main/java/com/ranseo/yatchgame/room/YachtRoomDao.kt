@@ -16,7 +16,12 @@ interface YachtRoomDao {
     suspend fun updatePlayer(player: Player)
 
     @Query("DELETE FROM player_table WHERE playerId = :playerId")
-    fun deletePlayer(playerId:Int)
+    suspend fun deletePlayer(playerId:Int)
+
+    @Query("SELECT * FROM player_table WHERE playerId = :playerId")
+    suspend fun getPlayer(playerId:String) : Player
+
+    //
 
     @Insert
     suspend fun insertGameInfo(gameInfo: GameInfo)

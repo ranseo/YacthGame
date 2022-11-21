@@ -9,6 +9,14 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
+    <!--lobby_fragment.xml-->
+    <string name="yacth_dice_room_list">야추 다이스 방 목록</string>
+
+    <!--dialog_edit_text-->
+    <string name="make_room">방 만들기</string>
+    <string name="set_room_name">방제를 입력하세요</string>
+
+
 
 
 </resources>
