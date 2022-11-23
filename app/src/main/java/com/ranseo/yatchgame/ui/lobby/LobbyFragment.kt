@@ -8,10 +8,13 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.ranseo.yatchgame.Event
+import com.ranseo.yatchgame.LogTag
 import com.ranseo.yatchgame.R
 import com.ranseo.yatchgame.data.model.LobbyRoom
 import com.ranseo.yatchgame.databinding.FragmentLobbyBinding
+import com.ranseo.yatchgame.log
 import com.ranseo.yatchgame.ui.dialog.EditTextDialog
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -19,6 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class LobbyFragment : Fragment() {
 
+    private val TAG = "LobbyFragment"
     private lateinit var binding : FragmentLobbyBinding
 
     private val viewModel : LobbyViewModel by viewModels()
@@ -37,15 +41,16 @@ class LobbyFragment : Fragment() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
-        val lobbyRoomAdapter =  LobbyRoomAdapter(LobbyRoomClickListener { room ->
-
+        val lobbyRoomAdapter =  LobbyRoomAdapter(LobbyRoomClickListener { lobbyRoom ->
+            viewModel.accessWaitingFragment(lobbyRoom.roomId)
         })
 
         binding.lobbyRoomRec.adapter = lobbyRoomAdapter
 
         viewModel.lobbyRooms.observe(viewLifecycleOwner, lobbyRoomsObserver(lobbyRoomAdapter))
         viewModel.makingRoom.observe(viewLifecycleOwner, makingRoomObserver())
-
+        viewModel.makeWaitRoom.observe(viewLifecycleOwner, makeWaitRoomObserver())
+        viewModel.accessWaitRoom.observe(viewLifecycleOwner, accessWaitRoomObserver())
         return binding.root
     }
 
@@ -57,6 +62,7 @@ class LobbyFragment : Fragment() {
     private fun lobbyRoomsObserver(adapter:LobbyRoomAdapter) =
         Observer<List<LobbyRoom>> { list ->
             list?.let{
+                log(TAG, "lobbyRoomsObserver : ${list}", LogTag.I)
                 adapter.submitList(list)
             }
         }
@@ -68,8 +74,34 @@ class LobbyFragment : Fragment() {
      * */
     private fun makingRoomObserver() =
         Observer<Event<Any?>> {
-            it?.let{
+            it.getContentIfNotHandled()?.let{
                 showRoomSetDialog()
+            }
+        }
+
+    /**
+     * WaitingFragment 으로 이동 (호스트로서 대기실 생성)
+     * */
+    private fun makeWaitRoomObserver() =
+        Observer<Event<Any?>> {
+            log(TAG, "makeWaitRoomObserver : null}", LogTag.I)
+            it.getContentIfNotHandled()?.let {
+                log(TAG, "makeWaitRoomObserver : ${requireContext().getString(R.string.make_wait_room)}", LogTag.I)
+                findNavController().navigate(
+                    LobbyFragmentDirections.actionLobbyToWaiting(requireContext().getString(R.string.make_wait_room))
+                )
+            }
+        }
+
+    /**
+     * WaitingFragment 으로 이동 (게스트로서 대기실 입장)
+     * */
+    private fun accessWaitRoomObserver() =
+        Observer<Event<String>> {
+            it.getContentIfNotHandled()?.let{ roomId->
+                findNavController().navigate(
+                    LobbyFragmentDirections.actionLobbyToWaiting(roomId)
+                )
             }
         }
 
@@ -81,6 +113,7 @@ class LobbyFragment : Fragment() {
         dialog.setOnClickListener(
             object  : EditTextDialog.OnEditTextClickListener {
                 override fun onPositiveBtn(text: String) {
+                    log(TAG,"onPositiveBtn : ${text}", LogTag.I)
                     viewModel.makeRoom(text)
                 }
             }

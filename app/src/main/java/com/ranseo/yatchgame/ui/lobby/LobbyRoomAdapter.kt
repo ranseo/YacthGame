@@ -14,8 +14,9 @@ class LobbyRoomAdapter(val clickListener: LobbyRoomClickListener) : ListAdapter<
 
     class LobbyRoomViewHolder(private val binding:ListItemRoomRobbyBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item:LobbyRoom) {
+        fun bind(item:LobbyRoom, clickListener: LobbyRoomClickListener) {
             binding.room = item
+            binding.clickListener = clickListener
         }
 
         companion object {
@@ -35,7 +36,7 @@ class LobbyRoomAdapter(val clickListener: LobbyRoomClickListener) : ListAdapter<
 
     override fun onBindViewHolder(holder: LobbyRoomViewHolder, position: Int) {
         val item = getItem(position)
-        holder.bind(item)
+        holder.bind(item, clickListener)
     }
 }
 

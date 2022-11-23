@@ -28,17 +28,25 @@ class LobbyViewModel @Inject constructor(private val lobbyRepositery: LobbyRepos
     val makingRoom : LiveData<Event<Any?>>
         get() = _makingRoom
 
+    private val _makeWaitRoom = MutableLiveData<Event<Any?>>()
+    val makeWaitRoom : LiveData<Event<Any?>>
+        get() = _makeWaitRoom
+
+    private val _accessWaitRoom = MutableLiveData<Event<String>>()
+    val accessWaitRoom : LiveData<Event<String>>
+        get() = _accessWaitRoom
 
     init {
         refreshHostPlayer()
         refreshLobbyRooms()
     }
 
+    /**
+     * 사용자(=Host)의 Player객체 정보를 set
+     * */
     private fun refreshHostPlayer() {
         viewModelScope.launch {
-            log(TAG, "refreshHostPlayer before Host", LogTag.I)
             host = lobbyRepositery.refreshHostPlayer()
-            log(TAG, "refreshHostPlayer after Host", LogTag.I)
         }
     }
 
@@ -50,7 +58,7 @@ class LobbyViewModel @Inject constructor(private val lobbyRepositery: LobbyRepos
     private fun refreshLobbyRooms() {
         viewModelScope.launch {
             lobbyRepositery.getLobbyRooms { list ->
-                _lobbyRooms.value = list
+                _lobbyRooms.postValue(list)
             }
         }
     }
@@ -69,9 +77,19 @@ class LobbyViewModel @Inject constructor(private val lobbyRepositery: LobbyRepos
      * */
     fun writeLobbyRoom(lobbyRoom: LobbyRoom) {
         viewModelScope.launch {
-            lobbyRepositery.writeLobbyRoom(lobbyRoom)
+            launch {
+                lobbyRepositery.writeLobbyRoom(lobbyRoom)
+            }.join()
+
+            launch {
+                log(TAG,"writeLobbyRoom -> makeWaitingFragment", LogTag.I)
+                makeWaitingFragment()
+            }
+
+
         }
     }
+
 
     /**
      * lobby_fragment.xml에서 R.id.btn_make_room 을 클릭할 때
@@ -88,13 +106,30 @@ class LobbyViewModel @Inject constructor(private val lobbyRepositery: LobbyRepos
      * lobbyRoom객체를 생성하고 writeLobbyRoom()을 호출하는 함수
      * */
     fun makeRoom(name:String) {
-        val roomName = name.takeIf { it.isEmpty() } ?: "${host.name}과 야추 한판!"
+        val roomName = name.takeIf { it.isNotEmpty() } ?: "${host.name.substringBefore('@')}(이)랑 야추 한판!"
         val new = LobbyRoom(
+            host.playerId,
             roomName,
-            host,
+            mutableMapOf("host" to host),
             null,
             false
         )
+
         writeLobbyRoom(new)
+    }
+
+
+    /**
+     * navigate 'WaitingFragment' making waitRoom by Host
+     * */
+    fun makeWaitingFragment() {
+        _makeWaitRoom.value = Event(Unit)
+    }
+
+    /**
+     * navigate 'WaitingFragment' accessing waitRoom by guest
+     * */
+    fun accessWaitingFragment(roomId:String) {
+        _accessWaitRoom.value = Event(roomId)
     }
 }

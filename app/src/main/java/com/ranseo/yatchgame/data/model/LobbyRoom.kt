@@ -6,15 +6,17 @@ import androidx.room.PrimaryKey
 import com.google.android.gms.common.util.DataUtils
 
 data class LobbyRoom(
+    val roomId:String, //host의 uid
     val roomName : String,
-    val host: Player?,
-    val guest: Player?,
+    val host: MutableMap<String, Player>,
+    val guest: MutableMap<String, Player>?,
     val condition:Boolean
 ) {
-    constructor(hashMap:HashMap<*,*>) : this(
+    constructor(hashMap:HashMap<*,*>) : this (
+        hashMap["roomId"] as String,
         hashMap["roomName"]!! as String,
-        hashMap["host"] as Player?,
-        hashMap["guest"] as Player?,
+        hashMap["host"] as MutableMap<String,Player>,
+        hashMap["guest"] as MutableMap<String,Player>?,
         hashMap["condition"] as Boolean
     )
 

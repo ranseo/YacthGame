@@ -49,21 +49,16 @@ class LoginViewModel @Inject constructor(private val loginRepository: LoginRepos
 
 
                         launch {
-                            _loginResult.postValue(LoginResult(LoggedInUserView())
-                        }
+                            if(result is Result.Success) {
+                                _loginResult.postValue(LoginResult(LoggedInUserView(result.data.displayName)))
+                            } else {
+                                _loginResult.value = LoginResult(error = R.string.login_failed)
+                            }
+                        }.join()
 
 
                     }
                 }
-            }
-
-
-
-            if (result is Result.Success) {
-                _loginResult.value =
-                    LoginResult(success = LoggedInUserView(displayName = result.data.displayName))
-            } else {
-                _loginResult.value = LoginResult(error = R.string.login_failed)
             }
         }
     }

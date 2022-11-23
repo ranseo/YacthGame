@@ -44,6 +44,7 @@ class EditTextDialog(
 
         okBtn.setOnClickListener {
             onClickListener.onPositiveBtn(editText.text.toString())
+            dialog.dismiss()
         }
 
         cancelBtn.setOnClickListener {

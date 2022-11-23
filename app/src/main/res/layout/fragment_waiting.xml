@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.ranseo.yatchgame.ui.lobby.WaitingViewModel" />
+
+        <import type="android.view.View"/>
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.lobby.WaitingFragment">
+
+
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:layout_width="250dp"
+            android:layout_height="350dp"
+            android:layout_gravity="center"
+            android:background="@drawable/room_list_border_line">
+
+            <TextView
+                android:text="대기 중"
+                android:visibility="@{viewModel.waiting ? View.GONE : View.VISIBLE}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="42sp"
+                android:textAlignment="center"
+                android:layout_gravity="center"
+                android:layout_marginBottom="64dp" />
+
+            <TextView
+                android:text="준비완료"
+                tools:visibility="gone"
+                android:visibility="@{viewModel.waiting ? View.VISIBLE : View.GONE}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="42sp"
+                android:textAlignment="center"
+                android:layout_gravity="center"
+                android:layout_marginBottom="64dp" />
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="80dp"
+                android:layout_gravity="center"
+                android:scaleType="centerCrop"
+                app:lottie_loop="true"
+                app:lottie_autoPlay="true"
+                app:lottie_rawRes="@raw/splash_dice_animation" />
+
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
+    </FrameLayout>
+</layout>

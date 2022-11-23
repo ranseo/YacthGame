@@ -4,6 +4,8 @@
     package="com.ranseo.yatchgame"
     android:installLocation="preferExternal">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:name=".YachtApplication"
         android:allowBackup="true"

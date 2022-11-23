@@ -30,7 +30,7 @@ class LobbyRoomDataSource @Inject constructor(private val firebaseDatabase: Fire
     }
 
 
-    suspend fun getLobbyRooms(callback: (list: List<LobbyRoom>) -> Unit) {
+    suspend fun getLobbyRooms(callback: (list: List<LobbyRoom>) -> Unit) = withContext(Dispatchers.IO){
         lobbyRoomValueEventListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val lobbyRooms = snapshot.children.map { list ->

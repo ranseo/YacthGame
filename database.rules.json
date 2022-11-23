@@ -10,6 +10,13 @@
     "lobby" : {
       ".read" : "auth != null && root.child('player').child(auth.uid).exists()",
       ".write" : "auth != null && root.child('player').child(auth.uid).exists()"
+    },
+
+    "waiting" : {
+      "roomId" : {
+        ".read" : "auth != null",
+        ".write" : "auth != null"
+      }
     }
   }
 }

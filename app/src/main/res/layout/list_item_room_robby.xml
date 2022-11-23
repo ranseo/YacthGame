@@ -8,16 +8,22 @@
             name="room"
             type="com.ranseo.yatchgame.data.model.LobbyRoom" />
 
+        <variable
+            name="clickListener"
+            type="com.ranseo.yatchgame.ui.lobby.LobbyRoomClickListener" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:padding="6dp"
+        android:onClick="@{()->clickListener.onClick(room)}"
         android:background="@drawable/room_list_item_border_line">
 
         <TextView
             android:id="@+id/tv_room_name"
+            android:text="@{room.roomName}"
             tools:text="야추 하실 분 구합니다"
             android:textSize="14sp"
             android:layout_width="wrap_content"

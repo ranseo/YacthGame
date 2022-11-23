@@ -9,6 +9,22 @@
         android:label="야추 로비"
         android:id="@+id/lobby_fragment"
         android:name="com.ranseo.yatchgame.ui.lobby.LobbyFragment"
-        tools:layout="@layout/fragment_lobby"/>
+        tools:layout="@layout/fragment_lobby">
 
+        <action
+            android:id="@+id/action_lobby_to_waiting"
+            app:destination="@+id/waiting_fragment"/>
+
+    </fragment>
+
+    <fragment
+        android:label="대기실"
+        android:id="@+id/waiting_fragment"
+        android:name="com.ranseo.yatchgame.ui.lobby.WaitingFragment"
+        tools:layout="@layout/fragment_waiting">
+
+        <argument
+            android:name="roomId"
+            app:argType="string"/>
+    </fragment>
 </navigation>

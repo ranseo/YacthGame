@@ -16,6 +16,9 @@
     <string name="make_room">방 만들기</string>
     <string name="set_room_name">방제를 입력하세요</string>
 
+    <!--Lobby_Fragment-->
+    <string name="make_wait_room">대기실 생성</string>
+
 
 
 
