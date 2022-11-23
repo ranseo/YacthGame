@@ -7,10 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import com.ranseo.yatchgame.LogTag
 import com.ranseo.yatchgame.R
+import com.ranseo.yatchgame.data.model.WaitingRoom
 import com.ranseo.yatchgame.databinding.FragmentWaitingBinding
 import com.ranseo.yatchgame.log
 import dagger.hilt.android.AndroidEntryPoint
@@ -43,8 +45,17 @@ class WaitingFragment : Fragment() {
         binding.viewModel = waitingViewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
-        log(TAG,"onViewCreated", LogTag.I)
+        waitingViewModel.waitingRoom.observe(viewLifecycleOwner, waitingRoomObserver())
 
         return binding.root
     }
+
+    private fun waitingRoomObserver() =
+        Observer<WaitingRoom>{
+            it?.let { waitingRoom ->
+                if(navArgs.roomId != requireContext().getString(R.string.make_wait_room)) {
+                    waitingViewModel.updateWaitingRoom(waitingRoom)
+                }
+            }
+        }
 }

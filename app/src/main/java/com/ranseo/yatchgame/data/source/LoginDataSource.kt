@@ -38,8 +38,6 @@ class LoginDataSource @Inject constructor(private val auth : FirebaseAuth){
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "createUserWithEmail:failure", task.exception)
-                    throw IllegalStateException("Firebase Auth Create Error : ${task.exception}")
-
                 }
             }
     }

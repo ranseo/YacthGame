@@ -2,6 +2,7 @@ package com.ranseo.yatchgame.ui.lobby
 
 import android.app.Application
 import androidx.lifecycle.*
+import com.ranseo.yatchgame.Event
 import com.ranseo.yatchgame.LogTag
 import com.ranseo.yatchgame.R
 import com.ranseo.yatchgame.data.model.Player
@@ -23,6 +24,7 @@ class WaitingViewModel @AssistedInject constructor(
     application: Application
 ) : AndroidViewModel(application) {
     private val TAG = "WaitingViewModel"
+    private var updateFlag: Boolean = true
 
     private lateinit var player: Player
 
@@ -37,13 +39,13 @@ class WaitingViewModel @AssistedInject constructor(
     init {
         log(TAG, "init()", LogTag.I)
         viewModelScope.launch {
-            //roomId가 R.string.make_wait_room과 같다면 Host가 방을 생성한다.
-            if (roomId == getApplication<Application?>().getString(R.string.make_wait_room)) {
-                launch {
-                    player = waitingRepositery.refreshHostPlayer()
-                }.join()
+
+            launch {
+                player = waitingRepositery.refreshHostPlayer()
+            }.join()
 
 
+            if (roomId == getApplication<Application?>().getString(R.string.make_wait_room)) {//roomId가 R.string.make_wait_room과 같다면 Host가 방을 생성한다.
                 launch {
                     val new = WaitingRoom(
                         player.playerId,
@@ -64,16 +66,7 @@ class WaitingViewModel @AssistedInject constructor(
                 }.join()
 
                 launch {
-                    try {
-                        val new = WaitingRoom(
-                            waitingRoom.value!!,
-                            mutableMapOf("guest" to player)
-                        )
 
-                        updateWaitingRoom(new)
-                    } catch (error:Exception) {
-                        log(TAG,"updateWaitingRoom Error : ${error.message}", LogTag.D)
-                    }
                 }
             }
         }
@@ -111,8 +104,23 @@ class WaitingViewModel @AssistedInject constructor(
     /**
      * Guest인 경우 WaitingRoom Update
      * */
-    private suspend fun updateWaitingRoom(waitingRoom: WaitingRoom) {
-        waitingRepositery.updateWaitingRoom(waitingRoom)
+    fun updateWaitingRoom(waitingRoom: WaitingRoom) {
+        viewModelScope.launch {
+            if (!updateFlag) return@launch
+            try {
+                val new = WaitingRoom(
+                    waitingRoom,
+                    mutableMapOf("guest" to player)
+                )
+
+                waitingRepositery.updateWaitingRoom(new)
+                updateFlag = false
+                log(TAG, "updateWaitingRoom : ${waitingRoom}", LogTag.I)
+            } catch (error: Exception) {
+                log(TAG, "updateWaitingRoom Error : ${error.message}", LogTag.D)
+            }
+        }
+
     }
 
     @dagger.assisted.AssistedFactory
