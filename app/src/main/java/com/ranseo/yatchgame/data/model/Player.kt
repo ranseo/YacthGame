@@ -10,10 +10,23 @@ import com.squareup.moshi.JsonClass
 data class Player(
     @field:Json(name = "playerId")
     @PrimaryKey(autoGenerate = false)
-    val playerId:String,
+    val playerId: String,
     @field:Json(name = "name")
-    val name : String
+    val name: String
     //val statics: List<Static>
-)
+) {
+    constructor(hashMap: HashMap<*, *>) : this(
+        hashMap["playerId"] as String,
+        hashMap["name"] as String
+    )
+
+
+    companion object {
+        fun getEmptyPlayer(): Player {
+            return Player("null", "null")
+        }
+    }
+}
+
 
 

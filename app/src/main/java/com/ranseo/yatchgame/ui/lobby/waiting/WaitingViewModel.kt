@@ -1,6 +1,8 @@
 package com.ranseo.yatchgame.ui.lobby.waiting
 
 import android.app.Application
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
 import com.ranseo.yatchgame.Event
 import com.ranseo.yatchgame.LogTag
@@ -13,6 +15,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.launch
 import java.lang.Exception
+import kotlin.reflect.typeOf
 
 
 class WaitingViewModel @AssistedInject constructor(
@@ -29,12 +32,15 @@ class WaitingViewModel @AssistedInject constructor(
     val waitingRoom: LiveData<WaitingRoom>
         get() = _waitingRoom
 
+
+    @RequiresApi(Build.VERSION_CODES.N)
     val waiting = Transformations.map(waitingRoom) {
-        it.guest != null
+        val guest = it.guest["guest"]!!
+        guest.playerId != Player.getEmptyPlayer().playerId
     }
 
     private val _gameInfo = MutableLiveData<Event<Boolean>>()
-    val gameInfo : LiveData<Event<Boolean>>
+    val gameInfo: LiveData<Event<Boolean>>
         get() = _gameInfo
 
     init {
@@ -48,7 +54,7 @@ class WaitingViewModel @AssistedInject constructor(
                     val new = WaitingRoom(
                         player.playerId,
                         mutableMapOf("host" to player),
-                        null
+                        mutableMapOf("guest" to Player.getEmptyPlayer())
                     )
 
                     writeWaitingRoom(new)
@@ -57,7 +63,23 @@ class WaitingViewModel @AssistedInject constructor(
                 refreshWaitingRoom(player.playerId)
 
             } else {
-                refreshWaitingRoom(roomId)
+                launch {
+                    refreshWaitingRoom(roomId)
+                }.join()
+
+//                launch {
+//                    try {
+//                        val new = WaitingRoom(
+//                            roomId,
+//                            mutableMapOf("host" to player),
+//                            mutableMapOf("guest" to player)
+//                        )
+//
+//                        waitingRepositery.updateWaitingRoom(new)
+//                    } catch (error: Exception) {
+//                        log(TAG, "updateWaitingRoom Error : ${error.message}", LogTag.D)
+//                    }
+//                }
             }
         }
     }
@@ -69,6 +91,7 @@ class WaitingViewModel @AssistedInject constructor(
 
         waitingRepositery.getWaitingRoom(roomId) { waitingRoom ->
             viewModelScope.launch {
+                log(TAG, "refreshWaitingRoom : ${waitingRoom} , ${waitingRoom.roomId}, ${waitingRoom.host}, ${waitingRoom.guest}, ${waitingRoom.guest["guest"]}", LogTag.I)
                 _waitingRoom.postValue(waitingRoom)
             }
         }
@@ -87,18 +110,16 @@ class WaitingViewModel @AssistedInject constructor(
      * */
     fun updateWaitingRoom(waitingRoom: WaitingRoom) {
         viewModelScope.launch {
-            log(TAG, "before updateWaitingRoom : ${waitingRoom}", LogTag.I)
             if (!updateFlag) return@launch
             try {
                 updateFlag = false
-                log(TAG, "try updateWaitingRoom : ${waitingRoom}", LogTag.I)
+
                 val new = WaitingRoom(
                     waitingRoom,
                     mutableMapOf("guest" to player)
                 )
-                log(TAG, "try updateWaitingRoom : ${new}", LogTag.I)
-                waitingRepositery.updateWaitingRoom(new)
 
+                waitingRepositery.updateWaitingRoom(new)
                 log(TAG, "updateWaitingRoom : ${new}", LogTag.I)
             } catch (error: Exception) {
                 updateFlag = true
@@ -138,12 +159,13 @@ class WaitingViewModel @AssistedInject constructor(
      * 만약 Firebase Database에 GameInfoFirebaseModel을 Write하는데 성공했다면
      * callback : (gameInfo: GameInfoFirebaseModel) -> Unit 을 이용하여 viewModel의 '_gaemInfo' value에 할당
      * */
+    @RequiresApi(Build.VERSION_CODES.N)
     fun writeGameInfo() {
         viewModelScope.launch {
             val wr = waitingRoom.value
-            if (wr?.getGuestPlayer() == null || wr.getHostPlayer() == null) return@launch
+            if (wr?.guest?.getOrDefault("guest", null) == null || wr.host.getOrDefault("host", null) == null) return@launch
 
-            val newGameInfo = GameInfo(wr,DateTime.getNowDate(), listOf(Board(), Board()))
+            val newGameInfo = GameInfo(wr, DateTime.getNowDate(), listOf(Board(), Board()))
             waitingRepositery.writeGameInfoAtFirst(newGameInfo) { flag ->
                 viewModelScope.launch {
                     _gameInfo.postValue(Event(flag))

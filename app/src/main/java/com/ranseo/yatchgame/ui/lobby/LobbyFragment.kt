@@ -99,7 +99,7 @@ class LobbyFragment : Fragment() {
     private fun accessWaitRoomObserver() =
         Observer<Event<LobbyRoom>> {
             it.getContentIfNotHandled()?.let{ lobbyRoom->
-                //viewModel.removeLobbyRoomValue(lobbyRoom.roomKey)
+                viewModel.removeLobbyRoomValue(lobbyRoom.roomKey)
 
                 findNavController().navigate(
                     LobbyFragmentDirections.actionLobbyToWaiting(lobbyRoom.roomId)

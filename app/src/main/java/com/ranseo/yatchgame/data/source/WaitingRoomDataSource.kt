@@ -5,6 +5,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.ranseo.yatchgame.LogTag
+import com.ranseo.yatchgame.data.model.Player
 import com.ranseo.yatchgame.data.model.WaitingRoom
 import com.ranseo.yatchgame.log
 import kotlinx.coroutines.Dispatchers
@@ -17,6 +18,7 @@ class WaitingRoomDataSource @Inject constructor(private val firebaseDatabase: Fi
 
 
     suspend fun writeWaitingRoom(waitingRoom: WaitingRoom) = withContext(Dispatchers.IO){
+        log(TAG, "writeWaitingRoom : ${waitingRoom}", LogTag.I)
         val ref = firebaseDatabase.reference.child("waiting").child(waitingRoom.roomId)
         ref.setValue(waitingRoom).addOnCompleteListener {
             if(it.isSuccessful) {
@@ -27,10 +29,8 @@ class WaitingRoomDataSource @Inject constructor(private val firebaseDatabase: Fi
         }
     }
 
-    suspend fun updateWaitingRoom(waitingRoom: WaitingRoom) = withContext(Dispatchers.IO) {
-        log(TAG, "updateWaitingRoom : ${waitingRoom}", LogTag.I)
+    suspend fun updateWaitingRoom(waitingRoom: WaitingRoom) {
         val ref = firebaseDatabase.reference.child("waiting").child(waitingRoom.roomId)
-        log(TAG, "updateWaitingRoom ref after: ${waitingRoom}", LogTag.I)
         ref.setValue(waitingRoom).addOnCompleteListener {
             if (it.isSuccessful) {
                 log(TAG, "updateWaitingRoom Success : ${waitingRoom}", LogTag.I)
@@ -54,9 +54,40 @@ class WaitingRoomDataSource @Inject constructor(private val firebaseDatabase: Fi
     suspend fun getWaitingRoom(roomId:String, callback: (waitingRoom: WaitingRoom)->Unit) = withContext(Dispatchers.IO) {
         waitingRoomValueEventListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val waitingRoom = WaitingRoom((snapshot.value as HashMap<*, *>))
+                if(snapshot.value == null) return
+                val hashMap =snapshot.value as HashMap<*,*>
+
+                val roomId = hashMap["roomId"] as String
+                val host = hashMap["host"] as MutableMap<String, HashMap<*,*>>
+                val guest = hashMap["guest"] as MutableMap<String, HashMap<*,*>>
+
+                val hostPlayerHashMap = host["host"] as HashMap<*,*>
+                val guestPlayerHashMap = guest["guest"] as HashMap<*,*>
+
+                val hostPlayer = Player(
+                    playerId = hostPlayerHashMap["playerId"] as String,
+                    name = hostPlayerHashMap["name"] as String
+                )
+
+                val guestPlayer = Player(
+                    playerId = guestPlayerHashMap["playerId"] as String,
+                    name = guestPlayerHashMap["name"] as String
+                )
+
+//                val waitingRoom = WaitingRoom(
+//                    roomId= hashMap["roomId"] as String,
+//                    host = hashMap["host"] as MutableMap<String, Player>,
+//                    guest = hashMap["guest"] as MutableMap<String, Player>
+//                )
+
+                val waitingRoom = WaitingRoom(
+                    roomId = roomId,
+                    host = mutableMapOf("host" to hostPlayer),
+                    guest = mutableMapOf("guest" to guestPlayer)
+                )
+
                 callback(waitingRoom)
-                log(TAG, "onDataChange : $waitingRoom", LogTag.I)
+                log(TAG, "onDataChange : $waitingRoom, ${waitingRoom.roomId}", LogTag.I)
             }
 
             override fun onCancelled(error: DatabaseError) {
