@@ -41,8 +41,12 @@ class WaitingRepositery @Inject constructor(
         waitingRoomDataSource.removeWaitingRoom(roomId)
     }
 
-    suspend fun writeGameInfoAtFirst(gameInfo: GameInfo, callback: (flag:Boolean)->Unit) = withContext(Dispatchers.IO){
-        gameInfoDataSource.writeGameInfoAtFirst(gameInfo, callback)
+    suspend fun writeGameInfoAtFirst(waitingRoom: WaitingRoom, callback: (flag:Boolean, gameInfo:GameInfo)->Unit) = withContext(Dispatchers.IO){
+        gameInfoDataSource.writeGameInfoAtFirst(waitingRoom, callback)
+    }
+
+    suspend fun insertGameInfoAtFirst(gameInfo: GameInfo) {
+        gameInfoDataSource.insertGameInfo(gameInfo)
     }
 
 }

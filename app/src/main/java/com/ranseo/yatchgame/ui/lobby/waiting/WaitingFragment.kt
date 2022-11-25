@@ -1,11 +1,13 @@
 package com.ranseo.yatchgame.ui.lobby.waiting
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -39,6 +41,7 @@ class WaitingFragment : Fragment() {
         log(TAG,"onViewCreated", LogTag.I)
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -86,6 +89,7 @@ class WaitingFragment : Fragment() {
      * 2.Firebase Database와 Room Database에 GameInfos 데이터를 생성.
      * 3.GameActivity로 이동.
      * */
+    @RequiresApi(Build.VERSION_CODES.N)
     private fun waitingObserver() =
         Observer<Boolean>{
             if(it) {

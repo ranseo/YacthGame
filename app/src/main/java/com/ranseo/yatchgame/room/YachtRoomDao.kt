@@ -32,4 +32,6 @@ interface YachtRoomDao {
     @Query("SELECT gameId FROM game_info_table ORDER BY game_start_time DESC LIMIT 1")
     suspend fun getGameInfoGameId() : String
 
+
+
 }

@@ -11,7 +11,7 @@ import com.squareup.moshi.JsonClass
 data class GameInfo(
     @PrimaryKey(autoGenerate = false)
     @field:Json(name="gameId")
-    val gameId:String,
+    val gameId:String ="",
     @field:Json(name = "gameScore")
     var gameScore : String="",
     @ColumnInfo(name="game_start_time")
@@ -29,12 +29,14 @@ data class GameInfo(
     var boards:List<Board>
 ) {
     constructor(waitingRoom: WaitingRoom, gameStartTime: String, boards: List<Board>) : this(
-        gameId = waitingRoom.roomId,
+        gameId = waitingRoom.waitingKey,
         gameStartTime = gameStartTime,
         first = waitingRoom.host["host"]!!,
-        second = waitingRoom.guest?.get("guest")!!,
+        second = waitingRoom.guest["guest"]!!,
         boards = boards
     )
+
+
 
 }
 
@@ -66,3 +68,7 @@ data class GameInfoFirebaseModel(
 fun GameInfo.asFirebaseModel() : GameInfoFirebaseModel {
     return GameInfoFirebaseModel(this)
 }
+
+//fun GameInfoFirebaseModel.asDomainModel() : GameInfo {
+//    return
+//}

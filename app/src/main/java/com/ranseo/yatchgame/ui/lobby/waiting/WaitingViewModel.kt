@@ -54,7 +54,8 @@ class WaitingViewModel @AssistedInject constructor(
                     val new = WaitingRoom(
                         player.playerId,
                         mutableMapOf("host" to player),
-                        mutableMapOf("guest" to Player.getEmptyPlayer())
+                        mutableMapOf("guest" to Player.getEmptyPlayer()),
+
                     )
 
                     writeWaitingRoom(new)
@@ -164,10 +165,9 @@ class WaitingViewModel @AssistedInject constructor(
         viewModelScope.launch {
             val wr = waitingRoom.value
             if (wr?.guest?.getOrDefault("guest", null) == null || wr.host.getOrDefault("host", null) == null) return@launch
-
-            val newGameInfo = GameInfo(wr, DateTime.getNowDate(), listOf(Board(), Board()))
-            waitingRepositery.writeGameInfoAtFirst(newGameInfo) { flag ->
+            waitingRepositery.writeGameInfoAtFirst(wr) { flag, gameInfo ->
                 viewModelScope.launch {
+                    if(flag) waitingRepositery.insertGameInfoAtFirst(gameInfo)
                     _gameInfo.postValue(Event(flag))
                 }
             }

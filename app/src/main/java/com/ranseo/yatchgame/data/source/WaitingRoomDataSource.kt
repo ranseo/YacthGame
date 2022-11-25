@@ -20,6 +20,7 @@ class WaitingRoomDataSource @Inject constructor(private val firebaseDatabase: Fi
     suspend fun writeWaitingRoom(waitingRoom: WaitingRoom) = withContext(Dispatchers.IO){
         log(TAG, "writeWaitingRoom : ${waitingRoom}", LogTag.I)
         val ref = firebaseDatabase.reference.child("waiting").child(waitingRoom.roomId)
+
         ref.setValue(waitingRoom).addOnCompleteListener {
             if(it.isSuccessful) {
                 log(TAG, "writeWaitingRoom Success : ${waitingRoom}", LogTag.I)

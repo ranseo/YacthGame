@@ -17,6 +17,13 @@
         ".read" : "auth != null",
         ".write" : "auth != null"
       }
+    },
+
+    "gameInfo" : {
+      "$gameId" : {
+        ".read" : "auth != null",
+        ".write" : "auth != null"
+      }
     }
   }
 }

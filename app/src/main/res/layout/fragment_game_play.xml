@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <variable
+            name="viewModel"
+            type="com.ranseo.yatchgame.ui.game.GamePlayViewModel" />
 
     </data>
 
@@ -11,7 +14,6 @@
         android:layout_height="match_parent"
         tools:context=".ui.game.GamePlayFragment">
 
-        <!-- TODO: Update blank fragment layout -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
