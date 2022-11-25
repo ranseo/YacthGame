@@ -13,7 +13,7 @@
     },
 
     "waiting" : {
-      "roomId" : {
+      "$roomId" : {
         ".read" : "auth != null",
         ".write" : "auth != null"
       }

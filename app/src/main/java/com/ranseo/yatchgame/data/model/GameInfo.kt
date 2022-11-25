@@ -1,5 +1,6 @@
 package com.ranseo.yatchgame.data.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.squareup.moshi.Json
@@ -12,15 +13,56 @@ data class GameInfo(
     @field:Json(name="gameId")
     val gameId:String,
     @field:Json(name = "gameScore")
-    var gameScore : String,
+    var gameScore : String="",
+    @ColumnInfo(name="game_start_time")
+    @field:Json(name ="gameStartTime")
+    var gameStartTime: String,
+    @field:Json(name="gameFinishTime")
+    var gameFinishTime:String = "",
     @field:Json(name="first")
     var first:Player,
     @field:Json(name="second")
     var second:Player,
     @field:Json(name = "result")
-    var result: String,
+    var result: String="",
     @field:Json(name="board")
-    var board:Board
-)
+    var boards:List<Board>
+) {
+    constructor(waitingRoom: WaitingRoom, gameStartTime: String, boards: List<Board>) : this(
+        gameId = waitingRoom.roomId,
+        gameStartTime = gameStartTime,
+        first = waitingRoom.host["host"]!!,
+        second = waitingRoom.guest?.get("guest")!!,
+        boards = boards
+    )
+
+}
+
+//Firebase Database read/write 용
+data class GameInfoFirebaseModel(
+    val gameId:String,
+    var gameScore : String,
+    var gameStartTime: String,
+    var gameFinishTime:String = "",
+    var first:MutableMap<String,Player>,
+    var second:MutableMap<String,Player>,
+    var result: String,
+    var boards:MutableMap<String,List<Board>>
+) {
+    constructor(gameInfo: GameInfo) : this(
+        gameInfo.gameId,
+        gameInfo.gameScore,
+        gameInfo.gameStartTime,
+        gameInfo.gameFinishTime,
+        mutableMapOf("first" to gameInfo.first),
+        mutableMapOf("first" to gameInfo.second),
+        gameInfo.result,
+        mutableMapOf("boards" to gameInfo.boards)
+    )
 
 
+}
+
+fun GameInfo.asFirebaseModel() : GameInfoFirebaseModel {
+    return GameInfoFirebaseModel(this)
+}

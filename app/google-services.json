@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "18941378065",
+    "firebase_url": "https://yatchgame-ad28a-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "yatchgame-ad28a",
     "storage_bucket": "yatchgame-ad28a.appspot.com"
   },
@@ -13,6 +14,22 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "18941378065-3im949ns4vvj6kphjk4kjh8vuu2mfr4u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ranseo.yatchgame",
+            "certificate_hash": "f0ca34129ad51b3d15e85689a51c3b7098a5f2bd"
+          }
+        },
+        {
+          "client_id": "18941378065-ofgrmtrs0upb1652thkm0p42s3c6e863.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ranseo.yatchgame",
+            "certificate_hash": "f38d5a1f20567a93fe8c91d9e8f109615f464bb3"
+          }
+        },
         {
           "client_id": "18941378065-vq0u3leufbp6vfbfj5d1rae61ubvq1qq.apps.googleusercontent.com",
           "client_type": 1,
