@@ -1,5 +1,6 @@
 package com.ranseo.yatchgame.data.source
 
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.ranseo.yatchgame.LogTag
 import com.ranseo.yatchgame.data.model.Player
@@ -12,8 +13,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class PlayerDataSource @Inject constructor(private val yachtRoomDao: YachtRoomDao, private val firebaseDatabase: FirebaseDatabase) {
+class PlayerDataSource @Inject constructor(private val yachtRoomDao: YachtRoomDao, private val firebaseDatabase: FirebaseDatabase, private val firebaseAuth: FirebaseAuth) {
     private val TAG = "PlayerDataSource"
+
 
     suspend fun getPlayer(playerId:String) : Player {
         log(TAG,"getPlayer : ${playerId}", LogTag.I)
@@ -21,6 +23,8 @@ class PlayerDataSource @Inject constructor(private val yachtRoomDao: YachtRoomDa
         log(TAG,"getPlayer : ${player}", LogTag.I)
         return player
     }
+
+    suspend fun getHostPlayer() = getPlayer(firebaseAuth.currentUser!!.uid)
 
     suspend fun insert(player: Player) = withContext(Dispatchers.IO){
 

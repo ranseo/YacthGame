@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.ranseo.yatchgame.ui.lobby.WaitingViewModel" />
+            type="com.ranseo.yatchgame.ui.lobby.waiting.WaitingViewModel" />
 
         <import type="android.view.View"/>
     </data>
@@ -14,7 +14,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.lobby.WaitingFragment">
+        tools:context=".ui.lobby.waiting.WaitingFragment">
 
 
         <androidx.coordinatorlayout.widget.CoordinatorLayout

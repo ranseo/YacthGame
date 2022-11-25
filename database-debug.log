@@ -3,9 +3,8 @@ WARNING: Illegal reflective access by io.netty.util.internal.ReflectionUtil (fil
 WARNING: Please consider reporting this to the maintainers of io.netty.util.internal.ReflectionUtil
 WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
 WARNING: All illegal access operations will be denied in a future release
-22:59:37.748 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
-22:59:37.981 [main] INFO com.firebase.server.forge.App$ - Listening at localhost:9000
-22:59:45.221 [NamespaceSystem-akka.actor.default-dispatcher-6] INFO com.firebase.core.namespace.NamespaceActor - yatchgame-ad28a-default-rtdb successfully activated FBKV (SurveyIdle(0)) wait: 200ms, init: 0ms
-22:59:45.325 [NamespaceSystem-blocking-namespace-operation-dispatcher-7:yatchgame-ad28a-default-rtdb$1277855896:] INFO com.firebase.core.namespace.StateManager - Namespace yatchgame-ad28a-default-rtdb status Active to Active
-23:02:18.141 [NamespaceSystem-akka.actor.default-dispatcher-11] INFO com.firebase.core.namespace.NamespaceActor - yatchgame-ad28a successfully activated FBKV (SurveyIdle(0)) wait: 3ms, init: 0ms
-00:41:46.184 [NamespaceSystem-blocking-namespace-operation-dispatcher-89:yatchgame-ad28a-default-rtdb$734091747:] INFO com.firebase.core.namespace.StateManager - Namespace yatchgame-ad28a-default-rtdb status Active to Active
+15:40:56.522 [NamespaceSystem-akka.actor.default-dispatcher-6] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+15:40:56.810 [main] INFO com.firebase.server.forge.App$ - Listening at localhost:9000
+15:41:05.450 [NamespaceSystem-akka.actor.default-dispatcher-8] INFO com.firebase.core.namespace.NamespaceActor - yatchgame-ad28a-default-rtdb successfully activated FBKV (SurveyIdle(0)) wait: 210ms, init: 0ms
+15:41:05.578 [NamespaceSystem-blocking-namespace-operation-dispatcher-9:yatchgame-ad28a-default-rtdb$574583767:] INFO com.firebase.core.namespace.StateManager - Namespace yatchgame-ad28a-default-rtdb status Active to Active
+15:43:03.630 [NamespaceSystem-akka.actor.default-dispatcher-7] INFO com.firebase.core.namespace.NamespaceActor - yatchgame-ad28a successfully activated FBKV (SurveyIdle(0)) wait: 2ms, init: 0ms

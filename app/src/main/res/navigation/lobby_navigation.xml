@@ -20,7 +20,7 @@
     <fragment
         android:label="대기실"
         android:id="@+id/waiting_fragment"
-        android:name="com.ranseo.yatchgame.ui.lobby.WaitingFragment"
+        android:name="com.ranseo.yatchgame.ui.lobby.waiting.WaitingFragment"
         tools:layout="@layout/fragment_waiting">
 
         <argument

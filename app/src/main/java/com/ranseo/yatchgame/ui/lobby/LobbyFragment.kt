@@ -42,7 +42,7 @@ class LobbyFragment : Fragment() {
         binding.lifecycleOwner = viewLifecycleOwner
 
         val lobbyRoomAdapter =  LobbyRoomAdapter(LobbyRoomClickListener { lobbyRoom ->
-            viewModel.accessWaitingFragment(lobbyRoom.roomId)
+            viewModel.accessWaitingFragment(lobbyRoom)
         })
 
         binding.lobbyRoomRec.adapter = lobbyRoomAdapter
@@ -97,10 +97,12 @@ class LobbyFragment : Fragment() {
      * WaitingFragment 으로 이동 (게스트로서 대기실 입장)
      * */
     private fun accessWaitRoomObserver() =
-        Observer<Event<String>> {
-            it.getContentIfNotHandled()?.let{ roomId->
+        Observer<Event<LobbyRoom>> {
+            it.getContentIfNotHandled()?.let{ lobbyRoom->
+                //viewModel.removeLobbyRoomValue(lobbyRoom.roomKey)
+
                 findNavController().navigate(
-                    LobbyFragmentDirections.actionLobbyToWaiting(roomId)
+                    LobbyFragmentDirections.actionLobbyToWaiting(lobbyRoom.roomId)
                 )
             }
         }

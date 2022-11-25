@@ -1,21 +1,18 @@
-package com.ranseo.yatchgame.ui.lobby
+package com.ranseo.yatchgame.ui.lobby.waiting
 
 import android.app.Application
 import androidx.lifecycle.*
 import com.ranseo.yatchgame.Event
 import com.ranseo.yatchgame.LogTag
 import com.ranseo.yatchgame.R
-import com.ranseo.yatchgame.data.model.Player
-import com.ranseo.yatchgame.data.model.WaitingRoom
+import com.ranseo.yatchgame.data.model.*
 import com.ranseo.yatchgame.data.repo.WaitingRepositery
 import com.ranseo.yatchgame.log
+import com.ranseo.yatchgame.util.DateTime
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import java.lang.Exception
-import javax.inject.Inject
 
 
 class WaitingViewModel @AssistedInject constructor(
@@ -36,14 +33,15 @@ class WaitingViewModel @AssistedInject constructor(
         it.guest != null
     }
 
-    init {
-        log(TAG, "init()", LogTag.I)
-        viewModelScope.launch {
+    private val _gameInfo = MutableLiveData<Event<Boolean>>()
+    val gameInfo : LiveData<Event<Boolean>>
+        get() = _gameInfo
 
+    init {
+        viewModelScope.launch {
             launch {
                 player = waitingRepositery.refreshHostPlayer()
             }.join()
-
 
             if (roomId == getApplication<Application?>().getString(R.string.make_wait_room)) {//roomId가 R.string.make_wait_room과 같다면 Host가 방을 생성한다.
                 launch {
@@ -56,28 +54,11 @@ class WaitingViewModel @AssistedInject constructor(
                     writeWaitingRoom(new)
                 }.join()
 
-                launch {
-                    refreshWaitingRoom(player.playerId)
-                }.join()
+                refreshWaitingRoom(player.playerId)
 
-            } else { //그렇지 않다면, Guest로서 방에 접속해 WaitingRoom 정보를 업데이트한다.
-                launch {
-                    refreshWaitingRoom(roomId)
-                }.join()
-
-                launch {
-
-                }
+            } else {
+                refreshWaitingRoom(roomId)
             }
-        }
-    }
-
-    /**
-     * 사용자의 Player객체 정보를 set
-     * */
-    private suspend fun refreshHostPlayer() {
-        viewModelScope.launch {
-
         }
     }
 
@@ -106,22 +87,71 @@ class WaitingViewModel @AssistedInject constructor(
      * */
     fun updateWaitingRoom(waitingRoom: WaitingRoom) {
         viewModelScope.launch {
+            log(TAG, "before updateWaitingRoom : ${waitingRoom}", LogTag.I)
             if (!updateFlag) return@launch
             try {
+                updateFlag = false
+                log(TAG, "try updateWaitingRoom : ${waitingRoom}", LogTag.I)
                 val new = WaitingRoom(
                     waitingRoom,
                     mutableMapOf("guest" to player)
                 )
-
+                log(TAG, "try updateWaitingRoom : ${new}", LogTag.I)
                 waitingRepositery.updateWaitingRoom(new)
-                updateFlag = false
-                log(TAG, "updateWaitingRoom : ${waitingRoom}", LogTag.I)
+
+                log(TAG, "updateWaitingRoom : ${new}", LogTag.I)
             } catch (error: Exception) {
+                updateFlag = true
                 log(TAG, "updateWaitingRoom Error : ${error.message}", LogTag.D)
             }
         }
-
     }
+
+    /**
+     * 호스트와 게스트 플레이어가 모두 대기실에 접속하여, 게임룸으로 이동할 때,
+     * 해당 WaitingRoom을 Firebase Database에 삭제.
+     * */
+    fun removeWaitingRoomValue() {
+        viewModelScope.launch {
+            val roomId = waitingRoom.value?.roomId ?: return@launch
+            waitingRepositery.removeWaitingRoomValue(roomId)
+        }
+    }
+
+    /**
+     * ViewModel 제거될 때
+     *
+     * Database에 연결된 WaitingRoom ValueEventListener 제거
+     * */
+    fun removeListener() {
+        viewModelScope.launch {
+            val roomId: String = waitingRoom.value?.roomId ?: return@launch
+            waitingRepositery.removeWaitingRoomValueEventListener(roomId)
+        }
+    }
+
+
+    /**
+     * Host와 Guest플레이어가 모두 대기실에 입장한 뒤,
+     * 게임을 실행하기 위해 GameInfo 객체를 생성하여 RoomDatabase와 Firebase Database에 Insert or Write.
+     *
+     * 만약 Firebase Database에 GameInfoFirebaseModel을 Write하는데 성공했다면
+     * callback : (gameInfo: GameInfoFirebaseModel) -> Unit 을 이용하여 viewModel의 '_gaemInfo' value에 할당
+     * */
+    fun writeGameInfo() {
+        viewModelScope.launch {
+            val wr = waitingRoom.value
+            if (wr?.getGuestPlayer() == null || wr.getHostPlayer() == null) return@launch
+
+            val newGameInfo = GameInfo(wr,DateTime.getNowDate(), listOf(Board(), Board()))
+            waitingRepositery.writeGameInfoAtFirst(newGameInfo) { flag ->
+                viewModelScope.launch {
+                    _gameInfo.postValue(Event(flag))
+                }
+            }
+        }
+    }
+
 
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {

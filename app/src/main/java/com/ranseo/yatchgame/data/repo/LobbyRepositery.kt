@@ -20,12 +20,7 @@ class LobbyRepositery @Inject constructor(
 ) {
     private val TAG = "LobbyRepositery"
 
-    suspend fun refreshHostPlayer() = getPlayer(firebaseAuth.currentUser!!.uid)
-
-
-    suspend fun getPlayer(playerId: String): Player {
-        return playerDataSource.getPlayer(playerId)
-    }
+    suspend fun refreshHostPlayer() = withContext(Dispatchers.IO) {playerDataSource.getHostPlayer()}
 
     suspend fun getLobbyRooms(callback: (list: List<LobbyRoom>) -> Unit) =
         withContext(Dispatchers.IO) {
@@ -38,5 +33,9 @@ class LobbyRepositery @Inject constructor(
 
     suspend fun writeLobbyRoom(lobbyRoom: LobbyRoom) = withContext(Dispatchers.IO) {
         lobbyRoomDataSource.writeLobbyRoom(lobbyRoom)
+    }
+
+    suspend fun removeLobbyRoomValue(roomKey:String) = withContext(Dispatchers.IO) {
+        lobbyRoomDataSource.removeLobbyRoom(roomKey)
     }
 }

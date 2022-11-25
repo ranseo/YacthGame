@@ -9,17 +9,19 @@ data class LobbyRoom(
     val roomId:String, //host의 uid
     val roomName : String,
     val host: MutableMap<String, Player>,
-    val guest: MutableMap<String, Player>?,
-    val condition:Boolean
+    var roomKey : String
 ) {
     constructor(hashMap:HashMap<*,*>) : this (
         hashMap["roomId"] as String,
         hashMap["roomName"]!! as String,
         hashMap["host"] as MutableMap<String,Player>,
-        hashMap["guest"] as MutableMap<String,Player>?,
-        hashMap["condition"] as Boolean
+        hashMap["roomKey"] as String
     )
 
+    fun setRoomKey(key:String) : LobbyRoom {
+        this.roomKey = key
+        return this
+    }
     companion object {
 
         private val itemCallback = object : DiffUtil.ItemCallback<LobbyRoom>() {

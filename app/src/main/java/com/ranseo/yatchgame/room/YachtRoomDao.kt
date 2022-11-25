@@ -1,15 +1,12 @@
 package com.ranseo.yatchgame.room
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Update
+import androidx.room.*
 import com.ranseo.yatchgame.data.model.GameInfo
 import com.ranseo.yatchgame.data.model.Player
 
 @Dao
 interface YachtRoomDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPlayer(player: Player)
 
     @Update
@@ -23,7 +20,7 @@ interface YachtRoomDao {
 
     //
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertGameInfo(gameInfo: GameInfo)
 
     @Update
@@ -31,4 +28,8 @@ interface YachtRoomDao {
 
     @Query("DELETE FROM game_info_table WHERE gameId = :gameInfoId")
     suspend fun deletGameInfo(gameInfoId: Int)
+
+    @Query("SELECT gameId FROM game_info_table ORDER BY game_start_time DESC LIMIT 1")
+    suspend fun getGameInfoGameId() : String
+
 }

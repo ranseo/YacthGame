@@ -32,8 +32,8 @@ class LobbyViewModel @Inject constructor(private val lobbyRepositery: LobbyRepos
     val makeWaitRoom : LiveData<Event<Any?>>
         get() = _makeWaitRoom
 
-    private val _accessWaitRoom = MutableLiveData<Event<String>>()
-    val accessWaitRoom : LiveData<Event<String>>
+    private val _accessWaitRoom = MutableLiveData<Event<LobbyRoom>>()
+    val accessWaitRoom : LiveData<Event<LobbyRoom>>
         get() = _accessWaitRoom
 
     init {
@@ -75,7 +75,7 @@ class LobbyViewModel @Inject constructor(private val lobbyRepositery: LobbyRepos
     /**
      * Firebase Database에 생성된 LobbyRoom 객체를  Write
      * */
-    fun writeLobbyRoom(lobbyRoom: LobbyRoom) {
+    private fun writeLobbyRoom(lobbyRoom: LobbyRoom) {
         viewModelScope.launch {
             launch {
                 lobbyRepositery.writeLobbyRoom(lobbyRoom)
@@ -87,6 +87,15 @@ class LobbyViewModel @Inject constructor(private val lobbyRepositery: LobbyRepos
             }
 
 
+        }
+    }
+
+    /**
+     * Guest가 생성된 대기실에 들어갈 때(accessWaitingRoom), 해당 LobbyRoom 객체를 Firebase Database에서 제거.
+     * */
+    fun removeLobbyRoomValue(roomKey:String) {
+        viewModelScope.launch {
+            lobbyRepositery.removeLobbyRoomValue(roomKey)
         }
     }
 
@@ -111,8 +120,7 @@ class LobbyViewModel @Inject constructor(private val lobbyRepositery: LobbyRepos
             host.playerId,
             roomName,
             mutableMapOf("host" to host),
-            null,
-            false
+            ""
         )
 
         writeLobbyRoom(new)
@@ -129,7 +137,7 @@ class LobbyViewModel @Inject constructor(private val lobbyRepositery: LobbyRepos
     /**
      * navigate 'WaitingFragment' accessing waitRoom by guest
      * */
-    fun accessWaitingFragment(roomId:String) {
-        _accessWaitRoom.value = Event(roomId)
+    fun accessWaitingFragment(lobbyRoom: LobbyRoom) {
+        _accessWaitRoom.value = Event(lobbyRoom)
     }
 }

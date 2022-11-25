@@ -20,7 +20,7 @@ object RoomDatabaseModule {
     fun provideRoomDatabase(
         @ApplicationContext context: Context,
         playerConverter: PlayerConverter,
-        boardConverter: BoardConverter
+        boardListConverter: BoardListConverter
         ) : YachtRoomDatabase {
         return Room.databaseBuilder(
             context,
@@ -29,7 +29,7 @@ object RoomDatabaseModule {
         )
             .fallbackToDestructiveMigration()
             .addTypeConverter(playerConverter)
-            .addTypeConverter(boardConverter)
+            .addTypeConverter(boardListConverter)
             .build()
     }
 
@@ -44,8 +44,12 @@ object RoomDatabaseModule {
     @Singleton
     fun providePlayerConverter(moshi: Moshi) = PlayerConverter(moshi)
 
+//    @Provides
+//    @Singleton
+//    fun provideBoardConverter(moshi: Moshi) = BoardConverter(moshi)
+
     @Provides
     @Singleton
-    fun provideBoardConverter(moshi: Moshi) = BoardConverter(moshi)
+    fun provideBoardListConverter(moshi: Moshi) = BoardListConverter(moshi)
 
 }

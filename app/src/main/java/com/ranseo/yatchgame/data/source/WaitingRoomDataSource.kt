@@ -28,12 +28,25 @@ class WaitingRoomDataSource @Inject constructor(private val firebaseDatabase: Fi
     }
 
     suspend fun updateWaitingRoom(waitingRoom: WaitingRoom) = withContext(Dispatchers.IO) {
+        log(TAG, "updateWaitingRoom : ${waitingRoom}", LogTag.I)
         val ref = firebaseDatabase.reference.child("waiting").child(waitingRoom.roomId)
+        log(TAG, "updateWaitingRoom ref after: ${waitingRoom}", LogTag.I)
         ref.setValue(waitingRoom).addOnCompleteListener {
             if (it.isSuccessful) {
                 log(TAG, "updateWaitingRoom Success : ${waitingRoom}", LogTag.I)
             } else {
                 log(TAG, "updateWaitingRoom Failure : ${it.exception?.message}", LogTag.D)
+            }
+        }
+    }
+
+    suspend fun removeWaitingRoom(roomId:String) = withContext(Dispatchers.IO) {
+        val ref = firebaseDatabase.reference.child("waiting").child(roomId)
+        ref.removeValue().addOnCompleteListener {
+            if (it.isSuccessful) {
+                log(TAG, "removeWaitingRoom Success", LogTag.I)
+            } else {
+                log(TAG, "removeWaitingRoom Failure", LogTag.D)
             }
         }
     }
@@ -54,7 +67,7 @@ class WaitingRoomDataSource @Inject constructor(private val firebaseDatabase: Fi
         ref.addValueEventListener(waitingRoomValueEventListener!!)
     }
 
-    suspend fun removeWaitingRoomValueEventListener(roomId:String) {
+    suspend fun removeWaitingRoomValueEventListener(roomId:String) = withContext(Dispatchers.IO) {
         val ref = firebaseDatabase.reference.child("waiting").child(roomId)
         waitingRoomValueEventListener?.let{
             ref.removeEventListener(it)

@@ -17,10 +17,11 @@ class LobbyRoomDataSource @Inject constructor(private val firebaseDatabase: Fire
 
     private var lobbyRoomValueEventListener: ValueEventListener? = null
 
-
     suspend fun writeLobbyRoom(lobbyRoom: LobbyRoom) = withContext(Dispatchers.IO) {
         val ref = firebaseDatabase.reference.child("lobby").push()
-        ref.setValue(lobbyRoom).addOnCompleteListener {
+        val key = ref.key ?: return@withContext
+
+        ref.setValue(lobbyRoom.setRoomKey(key)).addOnCompleteListener {
             if (it.isSuccessful) {
                 log(TAG, "lobby에 쓰기 성공", LogTag.I)
             } else {
@@ -28,7 +29,6 @@ class LobbyRoomDataSource @Inject constructor(private val firebaseDatabase: Fire
             }
         }
     }
-
 
     suspend fun getLobbyRooms(callback: (list: List<LobbyRoom>) -> Unit) = withContext(Dispatchers.IO){
         lobbyRoomValueEventListener = object : ValueEventListener {
@@ -52,12 +52,25 @@ class LobbyRoomDataSource @Inject constructor(private val firebaseDatabase: Fire
         ref.addValueEventListener(lobbyRoomValueEventListener!!)
     }
 
-    suspend fun removeLobbyRoomsValueEventListener() {
+
+    suspend fun removeLobbyRoom(roomKey:String) = withContext(Dispatchers.IO){
+        val ref = firebaseDatabase.reference.child("lobby").child(roomKey)
+        ref.removeValue().addOnCompleteListener {
+            if (it.isSuccessful) {
+                log(TAG, "removeLobbyRoom Success", LogTag.I)
+            } else {
+                log(TAG, "removeLobbyRoom Failure", LogTag.D)
+            }
+        }
+    }
+
+    suspend fun removeLobbyRoomsValueEventListener() = withContext(Dispatchers.IO){
         val ref = firebaseDatabase.reference.child("lobby")
         lobbyRoomValueEventListener?.let{
             ref.removeEventListener(it)
         }
     }
+
 
 
 }

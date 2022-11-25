@@ -6,36 +6,34 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter=true)
 data class Board(
-    @field:Json(name="boardId")
-    val boardId: Int,
     @field:Json(name="ones")
-    var ones:Int,
+    var ones:Int=0,
     @field:Json(name="twos")
-    var twos:Int,
+    var twos:Int=0,
     @field:Json(name="threes")
-    var threes:Int,
+    var threes:Int=0,
     @field:Json(name="fours")
-    var fours:Int,
+    var fours:Int=0,
     @field:Json(name="fives")
-    var fives:Int,
+    var fives:Int=0,
     @field:Json(name="sixs")
-    var sixs:Int,
+    var sixs:Int=0,
     @field:Json(name="sum")
-    var sum:Int,
+    var sum:Int=0,
     @field:Json(name="bonus")
-    var bonus:Int,
+    var bonus:Int=0,
     @field:Json(name="choice")
-    var choice:Int,
+    var choice:Int=0,
     @field:Json(name="fourCard")
-    var fourCard:Int,
+    var fourCard:Int=0,
     @field:Json(name="fullHouse")
-    var fullHouse:Int,
+    var fullHouse:Int=0,
     @field:Json(name="smallStraight")
-    var smallStraight:Int,
+    var smallStraight:Int=0,
     @field:Json(name="largeStraight")
-    var largeStraight:Int,
+    var largeStraight:Int=0,
     @field:Json(name="yacht")
-    var yacht:Int,
+    var yacht:Int=0,
     @field:Json(name="total")
-    var total:Int
+    var total:Int=0
 )

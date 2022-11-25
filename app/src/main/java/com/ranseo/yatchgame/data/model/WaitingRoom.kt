@@ -17,4 +17,12 @@ data class WaitingRoom(
         guest
     )
 
+    fun getHostPlayer() : Player? {
+        return this.host.getOrDefault("host", null)
+    }
+
+    fun getGuestPlayer() : Player? {
+        return if(this.guest==null) null else this.guest.getOrDefault("guest", null)
+    }
+
 }

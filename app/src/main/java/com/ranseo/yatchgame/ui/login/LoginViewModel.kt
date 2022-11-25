@@ -33,7 +33,7 @@ class LoginViewModel @Inject constructor(private val loginRepository: LoginRepos
         // can be launched in a separate asynchronous job
 
         viewModelScope.launch(Dispatchers.Main) {
-            loginRepository.login(username + "@abc.com") { uid, name, result ->
+            loginRepository.login(username) { uid, name, result ->
                 if (uid != null && name != null) {
 
                     log(TAG, "loginRepositery.login - uid : ${uid}, name : ${name}", LogTag.I)
