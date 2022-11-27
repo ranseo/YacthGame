@@ -5,10 +5,7 @@ import com.ranseo.yatchgame.data.model.GameInfo
 import com.ranseo.yatchgame.data.model.GameInfoFirebaseModel
 import com.ranseo.yatchgame.data.model.Player
 import com.ranseo.yatchgame.data.model.WaitingRoom
-import com.ranseo.yatchgame.data.source.GameInfoDataSource
-import com.ranseo.yatchgame.data.source.LobbyRoomDataSource
-import com.ranseo.yatchgame.data.source.PlayerDataSource
-import com.ranseo.yatchgame.data.source.WaitingRoomDataSource
+import com.ranseo.yatchgame.data.source.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -16,7 +13,8 @@ import javax.inject.Inject
 class WaitingRepositery @Inject constructor(
     private val waitingRoomDataSource: WaitingRoomDataSource,
     private val playerDataSource: PlayerDataSource,
-    private val gameInfoDataSource: GameInfoDataSource
+    private val gameInfoFirebaseDataSource: GameInfoFirebaseDataSource,
+    private val gameInfoRoomDataSource: GameInfoRoomDataSource
 ) {
     suspend fun refreshHostPlayer() =
         withContext(Dispatchers.IO) { playerDataSource.getHostPlayer() }
@@ -42,11 +40,11 @@ class WaitingRepositery @Inject constructor(
     }
 
     suspend fun writeGameInfoAtFirst(waitingRoom: WaitingRoom, callback: (flag:Boolean, gameInfo:GameInfo)->Unit) = withContext(Dispatchers.IO){
-        gameInfoDataSource.writeGameInfoAtFirst(waitingRoom, callback)
+        gameInfoFirebaseDataSource.writeGameInfoAtFirst(waitingRoom, callback)
     }
 
     suspend fun insertGameInfoAtFirst(gameInfo: GameInfo) {
-        gameInfoDataSource.insertGameInfo(gameInfo)
+        gameInfoRoomDataSource.insertGameInfo(gameInfo)
     }
 
 }

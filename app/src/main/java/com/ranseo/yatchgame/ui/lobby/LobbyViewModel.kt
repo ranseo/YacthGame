@@ -28,8 +28,8 @@ class LobbyViewModel @Inject constructor(private val lobbyRepositery: LobbyRepos
     val makingRoom : LiveData<Event<Any?>>
         get() = _makingRoom
 
-    private val _makeWaitRoom = MutableLiveData<Event<Any?>>()
-    val makeWaitRoom : LiveData<Event<Any?>>
+    private val _makeWaitRoom = MutableLiveData<Event<String>>()
+    val makeWaitRoom : LiveData<Event<String>>
         get() = _makeWaitRoom
 
     private val _accessWaitRoom = MutableLiveData<Event<LobbyRoom>>()
@@ -78,15 +78,10 @@ class LobbyViewModel @Inject constructor(private val lobbyRepositery: LobbyRepos
     private fun writeLobbyRoom(lobbyRoom: LobbyRoom) {
         viewModelScope.launch {
             launch {
-                lobbyRepositery.writeLobbyRoom(lobbyRoom)
-            }.join()
-
-            launch {
-                log(TAG,"writeLobbyRoom -> makeWaitingFragment", LogTag.I)
-                makeWaitingFragment()
+                lobbyRepositery.writeLobbyRoom(lobbyRoom) { roomKey ->
+                    makeWaitingFragment(roomKey)
+                }
             }
-
-
         }
     }
 
@@ -130,8 +125,8 @@ class LobbyViewModel @Inject constructor(private val lobbyRepositery: LobbyRepos
     /**
      * navigate 'WaitingFragment' making waitRoom by Host
      * */
-    fun makeWaitingFragment() {
-        _makeWaitRoom.value = Event(Unit)
+    fun makeWaitingFragment(roomKey: String) {
+        _makeWaitRoom.value = Event(roomKey)
     }
 
     /**

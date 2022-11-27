@@ -17,13 +17,14 @@ class LobbyRoomDataSource @Inject constructor(private val firebaseDatabase: Fire
 
     private var lobbyRoomValueEventListener: ValueEventListener? = null
 
-    suspend fun writeLobbyRoom(lobbyRoom: LobbyRoom) = withContext(Dispatchers.IO) {
+    suspend fun writeLobbyRoom(lobbyRoom: LobbyRoom, callback: (roomKey:String) -> Unit) = withContext(Dispatchers.IO) {
         val ref = firebaseDatabase.reference.child("lobby").push()
         val key = ref.key ?: return@withContext
 
         ref.setValue(lobbyRoom.setRoomKey(key)).addOnCompleteListener {
             if (it.isSuccessful) {
                 log(TAG, "lobby에 쓰기 성공", LogTag.I)
+                callback(key)
             } else {
                 log(TAG, "lobby에 쓰기 실패 : ${it.exception?.message}", LogTag.D)
             }

@@ -33,7 +33,7 @@ class WaitingFragment : Fragment() {
 
     @Inject lateinit var waitingViewModelFactory: WaitingViewModel.AssistedFactory
     private val waitingViewModel : WaitingViewModel by viewModels {
-        WaitingViewModel.provideFactory(waitingViewModelFactory, navArgs.roomId)
+        WaitingViewModel.provideFactory(waitingViewModelFactory, navArgs.roomKey)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -75,7 +75,7 @@ class WaitingFragment : Fragment() {
     private fun waitingRoomObserver() =
         Observer<WaitingRoom>{
             it?.let { waitingRoom ->
-                if(navArgs.roomId != requireContext().getString(R.string.make_wait_room)) {
+                if(navArgs.roomKey.substringBefore(getString(R.string.border_string_for_parsing)) != requireContext().getString(R.string.make_wait_room)) {
                     log(TAG,"waitingRoomObserver() Guest의 update 시작", LogTag.I)
                     waitingViewModel.updateWaitingRoom(waitingRoom)
                 }

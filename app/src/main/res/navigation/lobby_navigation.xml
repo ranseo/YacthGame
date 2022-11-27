@@ -24,7 +24,7 @@
         tools:layout="@layout/fragment_waiting">
 
         <argument
-            android:name="roomId"
+            android:name="roomKey"
             app:argType="string"/>
     </fragment>
 </navigation>

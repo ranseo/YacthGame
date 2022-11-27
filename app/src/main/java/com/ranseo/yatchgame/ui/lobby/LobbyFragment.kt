@@ -83,12 +83,12 @@ class LobbyFragment : Fragment() {
      * WaitingFragment 으로 이동 (호스트로서 대기실 생성)
      * */
     private fun makeWaitRoomObserver() =
-        Observer<Event<Any?>> {
-            log(TAG, "makeWaitRoomObserver : null}", LogTag.I)
-            it.getContentIfNotHandled()?.let {
-                log(TAG, "makeWaitRoomObserver : ${requireContext().getString(R.string.make_wait_room)}", LogTag.I)
+        Observer<Event<String>> {
+            it.getContentIfNotHandled()?.let { roomKey ->
+                log(TAG, "makeWaitRoomObserver : ${roomKey}", LogTag.I)
+                val newKeyForHost =  requireContext().getString(R.string.make_wait_room) + requireContext().getString(R.string.border_string_for_parsing) + roomKey
                 findNavController().navigate(
-                    LobbyFragmentDirections.actionLobbyToWaiting(requireContext().getString(R.string.make_wait_room))
+                    LobbyFragmentDirections.actionLobbyToWaiting(newKeyForHost)
                 )
             }
         }
@@ -102,7 +102,7 @@ class LobbyFragment : Fragment() {
                 viewModel.removeLobbyRoomValue(lobbyRoom.roomKey)
 
                 findNavController().navigate(
-                    LobbyFragmentDirections.actionLobbyToWaiting(lobbyRoom.roomId)
+                    LobbyFragmentDirections.actionLobbyToWaiting(lobbyRoom.roomKey)
                 )
             }
         }

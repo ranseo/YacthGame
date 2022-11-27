@@ -31,8 +31,8 @@ class LobbyRepositery @Inject constructor(
         lobbyRoomDataSource.removeLobbyRoomsValueEventListener()
     }
 
-    suspend fun writeLobbyRoom(lobbyRoom: LobbyRoom) = withContext(Dispatchers.IO) {
-        lobbyRoomDataSource.writeLobbyRoom(lobbyRoom)
+    suspend fun writeLobbyRoom(lobbyRoom: LobbyRoom, callback: (roomKey:String) -> Unit) = withContext(Dispatchers.IO) {
+        lobbyRoomDataSource.writeLobbyRoom(lobbyRoom, callback)
     }
 
     suspend fun removeLobbyRoomValue(roomKey:String) = withContext(Dispatchers.IO) {

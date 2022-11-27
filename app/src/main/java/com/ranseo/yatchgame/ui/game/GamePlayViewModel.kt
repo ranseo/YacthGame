@@ -16,6 +16,10 @@ class GamePlayViewModel @Inject constructor(private val gamePlayRepositery: Game
     val gameId : LiveData<String>
         get() = _gameId
 
+    private val _gameInfo = MutableLiveData<GameInfo>()
+    val gameInfo : LiveData<GameInfo>
+        get() = _gameInfo
+
     init {
         refreshGameId()
     }
@@ -32,6 +36,21 @@ class GamePlayViewModel @Inject constructor(private val gamePlayRepositery: Game
     private fun refreshGameId() {
         viewModelScope.launch {
             _gameId.postValue(gamePlayRepositery.getGameId())
+        }
+    }
+
+    fun refreshGameInfo(gameInfoId:String) {
+        viewModelScope.launch {
+            gamePlayRepositery.getGameInfo(gameInfoId) { gameInfo ->
+                _gameInfo.postValue(gameInfo)
+                updateGameInfo(gameInfo)
+            }
+        }
+    }
+
+    private fun updateGameInfo(gameInfo: GameInfo) {
+        viewModelScope.launch {
+            gamePlayRepositery.updateGameInfo(gameInfo)
         }
     }
 

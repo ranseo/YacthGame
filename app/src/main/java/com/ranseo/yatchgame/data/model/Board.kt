@@ -36,4 +36,23 @@ data class Board(
     var yacht:Int=0,
     @field:Json(name="total")
     var total:Int=0
-)
+) {
+
+    constructor(hashMap:HashMap<*,*>): this(
+        hashMap["ones"] as Int,
+        hashMap["twos"] as Int,
+        hashMap["threes"] as Int,
+        hashMap["fours"] as Int,
+        hashMap["fives"] as Int,
+        hashMap["sixs"] as Int,
+        hashMap["sum"] as Int,
+        hashMap["bonus"] as Int,
+        hashMap["choice"] as Int,
+        hashMap["fourCard"] as Int,
+        hashMap["fullHouse"] as Int,
+        hashMap["smallStraight"] as Int,
+        hashMap["largeStraight"] as Int,
+        hashMap["yacht"] as Int,
+        hashMap["total"] as Int
+    )
+}

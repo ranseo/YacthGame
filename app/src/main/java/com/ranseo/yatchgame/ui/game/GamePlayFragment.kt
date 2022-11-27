@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.ranseo.yatchgame.LogTag
 import com.ranseo.yatchgame.R
+import com.ranseo.yatchgame.data.model.GameInfo
 import com.ranseo.yatchgame.databinding.FragmentGamePlayBinding
 import com.ranseo.yatchgame.log
 import dagger.hilt.android.AndroidEntryPoint
@@ -18,9 +19,9 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class GamePlayFragment : Fragment() {
     private val TAG = "GamePlayFragment"
-    private lateinit var binding:FragmentGamePlayBinding
+    private lateinit var binding: FragmentGamePlayBinding
 
-    private val gamePlayViewModel : GamePlayViewModel by viewModels()
+    private val gamePlayViewModel: GamePlayViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,14 +34,23 @@ class GamePlayFragment : Fragment() {
         binding.lifecycleOwner = viewLifecycleOwner
 
         gamePlayViewModel.gameId.observe(viewLifecycleOwner, gameIdObserver())
-
+        gamePlayViewModel.gameInfo.observe(viewLifecycleOwner, gameInfoObserver())
         return binding.root
     }
+
+    private fun gameInfoObserver() =
+        Observer<GameInfo> {
+            it?.let{ gameInfo ->
+                log(TAG, "gameInfoObserver : ${gameInfo}", LogTag.I)
+            }
+        }
+
 
     private fun gameIdObserver() =
         Observer<String> {
             it?.let { gameId ->
-                log(TAG,"gameIdObserver() : ${gameId}", LogTag.I)
+                log(TAG, "gameInfoObserver : ${gameId}", LogTag.I)
+                gamePlayViewModel.refreshGameInfo(gameId)
             }
         }
 }

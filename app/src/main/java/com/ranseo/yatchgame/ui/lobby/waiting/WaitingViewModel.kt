@@ -20,7 +20,7 @@ import kotlin.reflect.typeOf
 
 class WaitingViewModel @AssistedInject constructor(
     private val waitingRepositery: WaitingRepositery,
-    @Assisted private val roomId: String,
+    @Assisted private val waitingRoomId: String,
     application: Application
 ) : AndroidViewModel(application) {
     private val TAG = "WaitingViewModel"
@@ -44,43 +44,33 @@ class WaitingViewModel @AssistedInject constructor(
         get() = _gameInfo
 
     init {
+
         viewModelScope.launch {
             launch {
                 player = waitingRepositery.refreshHostPlayer()
             }.join()
 
-            if (roomId == getApplication<Application?>().getString(R.string.make_wait_room)) {//roomId가 R.string.make_wait_room과 같다면 Host가 방을 생성한다.
+            if (waitingRoomId.substringBefore(getApplication<Application?>().getString(R.string.border_string_for_parsing))
+                == getApplication<Application?>().getString(R.string.make_wait_room)) {
+                //roomId가 R.string.make_wait_room과 같다면 Host가 방을 생성한다.
+                val waitingRoomId = waitingRoomId.substringAfter(getApplication<Application?>().getString(R.string.border_string_for_parsing))
                 launch {
+
                     val new = WaitingRoom(
-                        player.playerId,
+                        waitingRoomId,
                         mutableMapOf("host" to player),
                         mutableMapOf("guest" to Player.getEmptyPlayer()),
-
                     )
 
                     writeWaitingRoom(new)
                 }.join()
 
-                refreshWaitingRoom(player.playerId)
+                refreshWaitingRoom(waitingRoomId)
 
             } else {
                 launch {
-                    refreshWaitingRoom(roomId)
-                }.join()
-
-//                launch {
-//                    try {
-//                        val new = WaitingRoom(
-//                            roomId,
-//                            mutableMapOf("host" to player),
-//                            mutableMapOf("guest" to player)
-//                        )
-//
-//                        waitingRepositery.updateWaitingRoom(new)
-//                    } catch (error: Exception) {
-//                        log(TAG, "updateWaitingRoom Error : ${error.message}", LogTag.D)
-//                    }
-//                }
+                    refreshWaitingRoom(waitingRoomId)
+                }
             }
         }
     }

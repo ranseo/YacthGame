@@ -29,7 +29,7 @@ data class GameInfo(
     var boards:List<Board>
 ) {
     constructor(waitingRoom: WaitingRoom, gameStartTime: String, boards: List<Board>) : this(
-        gameId = waitingRoom.waitingKey,
+        gameId = waitingRoom.roomId,
         gameStartTime = gameStartTime,
         first = waitingRoom.host["host"]!!,
         second = waitingRoom.guest["guest"]!!,
