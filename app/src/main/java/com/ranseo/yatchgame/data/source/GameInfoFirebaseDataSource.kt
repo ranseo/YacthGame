@@ -39,7 +39,7 @@ class GameInfoFirebaseDataSource @Inject constructor(private val firebaseDatabas
                 val first = Player(firstHashMap)
                 val second = Player(secondHashMap)
 
-                val boardsList = boardsHashMap["board"] as List<*>
+                val boardsList = boardsHashMap["boards"] as List<*>
                 val firstBoard = Board((boardsList[0] as HashMap<*,*>))
                 val secondBoard = Board(boardsList[1] as HashMap<*,*>)
 

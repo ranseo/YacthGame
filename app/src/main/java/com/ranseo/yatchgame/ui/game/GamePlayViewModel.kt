@@ -1,9 +1,6 @@
 package com.ranseo.yatchgame.ui.game
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.ranseo.yatchgame.data.model.GameInfo
 import com.ranseo.yatchgame.data.repo.GamePlayRepositery
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,6 +16,20 @@ class GamePlayViewModel @Inject constructor(private val gamePlayRepositery: Game
     private val _gameInfo = MutableLiveData<GameInfo>()
     val gameInfo : LiveData<GameInfo>
         get() = _gameInfo
+
+    val firstPlayer = Transformations.map(gameInfo) {
+        it.first
+    }
+    val secondPlayer = Transformations.map(gameInfo) {
+        it.second
+    }
+    val firstBoard = Transformations.map(gameInfo) {
+        it.boards[0]
+    }
+    val secondBoard = Transformations.map(gameInfo) {
+        it.boards[1]
+    }
+
 
     init {
         refreshGameId()

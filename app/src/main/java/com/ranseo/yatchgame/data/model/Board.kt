@@ -17,7 +17,7 @@ data class Board(
     @field:Json(name="fives")
     var fives:Int=0,
     @field:Json(name="sixs")
-    var sixs:Int=0,
+    var sixes:Int=0,
     @field:Json(name="sum")
     var sum:Int=0,
     @field:Json(name="bonus")
@@ -44,7 +44,7 @@ data class Board(
         hashMap["threes"] as Int,
         hashMap["fours"] as Int,
         hashMap["fives"] as Int,
-        hashMap["sixs"] as Int,
+        hashMap["sixes"] as Int,
         hashMap["sum"] as Int,
         hashMap["bonus"] as Int,
         hashMap["choice"] as Int,
@@ -55,4 +55,6 @@ data class Board(
         hashMap["yacht"] as Int,
         hashMap["total"] as Int
     )
+
+
 }
