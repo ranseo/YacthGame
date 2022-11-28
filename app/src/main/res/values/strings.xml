@@ -23,4 +23,21 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
+
+    <!--dice board name tag-->
+    <string name="dice_aces">Aces</string>
+    <string name="dice_deuces">Deuces</string>
+    <string name="dice_threes">Threes</string>
+    <string name="dice_fours">Fours</string>
+    <string name="dice_fives">Fives</string>
+    <string name="dice_sixes">Sixes</string>
+
+    <string name="dice_choice">Choice</string>
+    <string name="dice_four_of_a_kind">4 of a Kind</string>
+    <string name="dice_full_house">Full House</string>
+    <string name="dice_small_straight">S.Straight</string>
+    <string name="dice_large_straight">L.Straight</string>
+    <string name="dice_yacht">YACHT</string>
+
+
 </resources>
