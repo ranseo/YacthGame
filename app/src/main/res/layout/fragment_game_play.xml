@@ -18,117 +18,148 @@
 
         <include
             layout="@layout/layout_player_profile"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            bind:player="@{viewModel.firstPlayer}"
-            />
+            bind:player="@{viewModel.firstPlayer}" />
 
         <include
             layout="@layout/layout_player_profile_reverse"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            bind:player="@{viewModel.secondPlayer}"/>
+            bind:player="@{viewModel.secondPlayer}" />
 
-        <TextView
-            android:id="@+id/tv_turn"
-            android:textSize="24sp"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="218dp"
-            android:layout_marginStart="35dp"
-            tools:text="1/12" />
+            app:layout_constraintBottom_toTopOf="@+id/layout_board"
+            app:layout_constraintStart_toStartOf="@+id/layout_board"
+            android:layout_marginBottom="2dp"
+            >
+
+            <TextView
+                android:id="@+id/tv_turn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="24sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:text="턴 : " />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="24sp"
+
+                app:layout_constraintStart_toEndOf="@id/tv_turn"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="1/12" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:id="@+id/layout_board"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/board_border_line"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            tools:context=".ui.game.GamePlayFragment">
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            >
 
-            <ImageView
+            <include
+                layout="@layout/layout_game_play_board"
                 android:layout_width="wrap_content"
-                android:layout_height="500dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginEnd="6dp"
-                android:src="@drawable/ic_yacht_board" />
+                bind:viewModel="@{viewModel}"
+                />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="95dp"
-                android:layout_height="208dp"
-                android:layout_gravity="left|center"
-                android:layout_marginStart="104dp"
-                android:layout_marginBottom="6dp">
-
-                <androidx.constraintlayout.widget.Guideline
-                    android:id="@+id/left_guideline"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    app:layout_constraintGuide_percent="0.5" />
-
-                <include
-                    layout="@layout/layout_number_up_board_first"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/left_guideline"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    bind:board="@{viewModel.firstBoard}" />
-
-                <include
-                    layout="@layout/layout_number_up_board_first"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/left_guideline"
-                    app:layout_constraintTop_toTopOf="parent"
-                    bind:board="@{viewModel.secondBoard}" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="95dp"
-                android:layout_height="208dp"
-                android:layout_gravity="right|center"
-                android:layout_marginEnd="12dp"
-                android:layout_marginBottom="6dp">
-
-                <androidx.constraintlayout.widget.Guideline
-                    android:id="@+id/right_guideline"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    app:layout_constraintGuide_percent="0.5" />
-
-                <include
-                    layout="@layout/layout_ranks_up_board"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/right_guideline"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    bind:board="@{viewModel.firstBoard}" />
-
-                <include
-                    layout="@layout/layout_ranks_up_board"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/right_guideline"
-                    app:layout_constraintTop_toTopOf="parent"
-                    bind:board="@{viewModel.secondBoard}" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </FrameLayout>
+
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/bottom_guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.85"
+            />
+
+        <LinearLayout
+            android:id="@+id/layout_roll_dice"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@+id/layout_board"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_guideline"
+            android:gravity="center"
+            >
+
+            <ImageView
+                android:id="@+id/iv_roll_first"
+                tools:src="@drawable/selector_roll_dice_first"
+                setSelector="@{viewModel.rollDiceImages[0]}"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="12dp"/>
+
+
+            <ImageView
+                android:id="@+id/iv_roll_second"
+                tools:src="@drawable/selector_roll_dice_second"
+                setSelector="@{viewModel.rollDiceImages[1]}"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="12dp"/>
+
+
+            <ImageView
+                android:id="@+id/iv_roll_third"
+                tools:src="@drawable/selector_roll_dice_third"
+                setSelector="@{viewModel.rollDiceImages[2]}"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="12dp"/>
+
+
+            <ImageView
+                android:id="@+id/iv_roll_fourth"
+                tools:src="@drawable/selector_roll_dice_fourth"
+                setSelector="@{viewModel.rollDiceImages[3]}"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="12dp"/>
+
+
+            <ImageView
+                android:id="@+id/iv_roll_fifth"
+                tools:src="@drawable/selector_roll_dice_fifth"
+                setSelector="@{viewModel.rollDiceImages[4]}"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                />
+
+        </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_roll"
+            android:onClick="@{()->viewModel.rollDices()}"
+            android:text="Roll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/bottom_guideline"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

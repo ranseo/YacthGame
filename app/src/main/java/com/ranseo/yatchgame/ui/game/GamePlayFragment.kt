@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -35,7 +36,24 @@ class GamePlayFragment : Fragment() {
 
         gamePlayViewModel.gameId.observe(viewLifecycleOwner, gameIdObserver())
         gamePlayViewModel.gameInfo.observe(viewLifecycleOwner, gameInfoObserver())
+        binding.ivRollFirst.setOnClickListener(rollDiceSelected(0))
+        binding.ivRollSecond.setOnClickListener(rollDiceSelected(1))
+        binding.ivRollThird.setOnClickListener(rollDiceSelected(2))
+        binding.ivRollFourth.setOnClickListener(rollDiceSelected(3))
+        binding.ivRollFifth.setOnClickListener(rollDiceSelected(4))
+
         return binding.root
+    }
+
+    /**
+     * fragment_game_play.xml의 ImageView (iv_roll_dice_first..sixth)에 대해서 해당 iv를 클릭했을 때
+     * Selected 되도록 만드는 ClickListener
+     */
+    private fun rollDiceSelected(idx:Int) = { imageview:View ->
+        if(gamePlayViewModel.chance < 3) {
+            gamePlayViewModel.keepDice(idx)
+            imageview.isSelected = !imageview.isSelected
+        }
     }
 
     private fun gameInfoObserver() =
@@ -51,6 +69,12 @@ class GamePlayFragment : Fragment() {
             it?.let { gameId ->
                 log(TAG, "gameInfoObserver : ${gameId}", LogTag.I)
                 gamePlayViewModel.refreshGameInfo(gameId)
+                gamePlayViewModel.refreshRollDice(gameId)
             }
         }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        gamePlayViewModel.removeListener()
+    }
 }

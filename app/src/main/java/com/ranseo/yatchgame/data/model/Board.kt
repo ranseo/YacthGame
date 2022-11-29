@@ -39,21 +39,21 @@ data class Board(
 ) {
 
     constructor(hashMap:HashMap<*,*>): this(
-        hashMap["ones"] as Int,
-        hashMap["twos"] as Int,
-        hashMap["threes"] as Int,
-        hashMap["fours"] as Int,
-        hashMap["fives"] as Int,
-        hashMap["sixes"] as Int,
-        hashMap["sum"] as Int,
-        hashMap["bonus"] as Int,
-        hashMap["choice"] as Int,
-        hashMap["fourCard"] as Int,
-        hashMap["fullHouse"] as Int,
-        hashMap["smallStraight"] as Int,
-        hashMap["largeStraight"] as Int,
-        hashMap["yacht"] as Int,
-        hashMap["total"] as Int
+        (hashMap["ones"] as Long).toInt(),
+        (hashMap["twos"] as Long).toInt(),
+        (hashMap["threes"] as Long).toInt(),
+        (hashMap["fours"] as Long).toInt(),
+        (hashMap["fives"] as Long).toInt(),
+        (hashMap["sixes"] as Long).toInt(),
+        (hashMap["sum"] as Long).toInt(),
+        (hashMap["bonus"] as Long).toInt(),
+        (hashMap["choice"] as Long).toInt(),
+        (hashMap["fourCard"] as Long).toInt(),
+        (hashMap["fullHouse"] as Long).toInt(),
+        (hashMap["smallStraight"] as Long).toInt(),
+        (hashMap["largeStraight"] as Long).toInt(),
+        (hashMap["yacht"] as Long).toInt(),
+        (hashMap["total"] as Long).toInt()
     )
 
 
