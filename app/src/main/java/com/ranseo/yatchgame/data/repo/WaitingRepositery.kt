@@ -47,4 +47,8 @@ class WaitingRepositery @Inject constructor(
         gameInfoRoomDataSource.insertGameInfo(gameInfo)
     }
 
+    suspend fun writeRollDice() {
+
+    }
+
 }

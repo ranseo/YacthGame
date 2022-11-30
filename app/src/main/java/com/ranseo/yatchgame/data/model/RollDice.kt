@@ -29,7 +29,7 @@ data class RollDice(
         turn
     )
 
-    constructor(hashMap: HashMap<*, *>) : this (
+    constructor(hashMap: HashMap<*, *>) : this(
         hashMap["gameId"] as String,
         (hashMap["first"] as Long).toInt(),
         (hashMap["second"] as Long).toInt(),

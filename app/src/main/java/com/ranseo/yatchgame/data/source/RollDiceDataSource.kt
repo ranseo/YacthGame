@@ -19,10 +19,14 @@ class RollDiceDataSource @Inject constructor(private val firebaseDatabase: Fireb
         withContext(Dispatchers.IO) {
             rollDiceValueEventListener = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    val hashMap = snapshot.value as HashMap<*, *>
-                    val new = RollDice(hashMap)
-                    callback(new)
-                    log(TAG, "getRollDice Success : $new", LogTag.D)
+                    try {
+                        val hashMap = snapshot.value as HashMap<*, *>
+                        val new = RollDice(hashMap)
+                        callback(new)
+                        log(TAG, "getRollDice onDataChange Success : $new", LogTag.I)
+                    } catch (error: Exception) {
+                        log(TAG, "getRollDice onDataChange Failure : ${error.message}", LogTag.D)
+                    }
                 }
 
                 override fun onCancelled(error: DatabaseError) {

@@ -23,7 +23,7 @@ class YachtGame {
 
     }
 
-    fun getScore(dices:List<Int>) : String {
+    fun getScore(dices:Array<Int>) : String {
 
         val numberCnt = dices.groupingBy { it }.eachCount()
         val ranks = getRankScore(dices, numberCnt)
@@ -38,7 +38,7 @@ class YachtGame {
         return result.toString()
     }
 
-    private fun getRankScore(dices: List<Int>, numberCnt: Map<Int, Int>): IntArray {
+    private fun getRankScore(dices: Array<Int>, numberCnt: Map<Int, Int>): IntArray {
         var ranks = intArrayOf()
 
         //1.chocie

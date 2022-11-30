@@ -17,28 +17,47 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class GamePlayViewModel @Inject constructor(private val gamePlayRepositery: GamePlayRepositery, application: Application) : AndroidViewModel(application) {
+class GamePlayViewModel @Inject constructor(
+    private val gamePlayRepositery: GamePlayRepositery,
+    application: Application
+) : AndroidViewModel(application) {
     private val yachtGame = YachtGame()
 
-    private lateinit var player : Player
+    private lateinit var player: Player
 
     private val _gameId = MutableLiveData<String>()
-    val gameId : LiveData<String>
+    val gameId: LiveData<String>
         get() = _gameId
 
     private val _gameInfo = MutableLiveData<GameInfo>()
-    val gameInfo : LiveData<GameInfo>
+    val gameInfo: LiveData<GameInfo>
         get() = _gameInfo
 
     private val _rollDice = MutableLiveData<RollDice>()
-    val rollDice : LiveData<RollDice>
+    val rollDice: LiveData<RollDice>
         get() = _rollDice
+
+    private val _myTurn = MediatorLiveData<Boolean>()
+    val myTurn: LiveData<Boolean>
+        get() = _myTurn
+
+    private fun setMyTurn(
+        player:Player,
+        firstPlayer: LiveData<Player>,
+        rollDice: LiveData<RollDice>
+    ) {
+        if (player != null && rollDice.value != null) {
+            _myTurn.value = if (player == firstPlayer.value && rollDice.value!!.turn) true
+            else player == secondPlayer.value && !rollDice.value!!.turn
+        }
+    }
+
 
     private var diceList = INIT_DICE_LIST
     private var keepList = INIT_KEEP_LIST
-    private var _chance : Int = CHANCE
-    val chance : Int
-        get() =_chance
+    private var _chance: Int = CHANCE
+    val chance: Int
+        get() = _chance
 
 
     val firstPlayer = Transformations.map(gameInfo) {
@@ -62,12 +81,28 @@ class GamePlayViewModel @Inject constructor(private val gamePlayRepositery: Game
     init {
         refreshPlayer()
         refreshGameId()
+
         setRollDiceImage(START_LIST)
+
     }
 
+
+
+    /**
+     * 사용자의 player data를 초기화하고,
+     * player data가 초기화되면 해당 player값을 이용하여 myTurn (MediatorLiveData<>)의 Source 설정.
+     * */
     private fun refreshPlayer() {
         viewModelScope.launch {
             player = gamePlayRepositery.refreshHostPlayer()
+            with(_myTurn) {
+                addSource(firstPlayer) {
+                    setMyTurn(player, firstPlayer, rollDice)
+                }
+                addSource(rollDice) {
+                    setMyTurn(player, firstPlayer,rollDice)
+                }
+            }
         }
     }
 
@@ -88,9 +123,9 @@ class GamePlayViewModel @Inject constructor(private val gamePlayRepositery: Game
 
     /**
      * gameInfo data를 Firebase Database로부터 읽어온 뒤,
-     * 이 과정은 Firebase Database의 gameinfo data가 갱신될 때마다 실행된다.
+     * 이 과정은 Firebase Database의 gameinfo data가  갱신될 때마다 실행된다.
      * */
-    fun refreshGameInfo(gameInfoId:String) {
+    fun refreshGameInfo(gameInfoId: String) {
         viewModelScope.launch {
             gamePlayRepositery.getGameInfo(gameInfoId) { gameInfo ->
                 _gameInfo.postValue(gameInfo)
@@ -102,13 +137,36 @@ class GamePlayViewModel @Inject constructor(private val gamePlayRepositery: Game
     /**
      * "RollDice" data 를 Firebase Database 로부터 읽어온다.
      * */
-    fun refreshRollDice(gameId:String) {
+    fun refreshRollDice(gameId: String) {
         viewModelScope.launch {
             gamePlayRepositery.getRollDice(gameId) {
                 _rollDice.postValue(it)
             }
         }
     }
+
+    /**
+     * viewModel 이 생성될 때, HostPlayer가 Firebase 에 rollDice data wrtie
+     * */
+    fun writeRollDiceAtFirst(gameId:String) {
+        viewModelScope.launch {
+            val rollDice = RollDice(gameId, START_LIST ,INIT_KEEP_LIST, true )
+            gamePlayRepositery.writeRollDice(rollDice)
+        }
+    }
+
+    /**
+     * RollDice Data를 Firebase Database에 write
+     * */
+    fun writeRollDice(dices: Array<Int>, keeps: Array<Boolean>, turn: Boolean) {
+        viewModelScope.launch{
+            rollDice.value?.let{
+                val new = RollDice(it.gameId,dices, keeps,turn)
+                gamePlayRepositery.writeRollDice(new)
+            }
+        }
+    }
+
     /**
      * room DATABASE에 gameInfo 데이터 업데이트.
      * */
@@ -122,14 +180,14 @@ class GamePlayViewModel @Inject constructor(private val gamePlayRepositery: Game
      * 선택한 주사위를 KEEP 하는 함수
      * 매개변수로 받은 idx 값을 이용하여 'keepList'배열의 값을 true or false로 할당.
      * */
-    fun keepDice(idx:Int) {
+    fun keepDice(idx: Int) {
         keepList[idx] = !keepList[idx]
     }
 
     /**
      * roll dice 와 관련된 변수 [keepList, chance] 초기화
      * */
-    private fun reloadBeforeRollDice() {
+    fun reloadBeforeRollDice() {
         diceList = INIT_DICE_LIST
         keepList = INIT_KEEP_LIST
         _chance = CHANCE
@@ -140,13 +198,13 @@ class GamePlayViewModel @Inject constructor(private val gamePlayRepositery: Game
      * 'YachtGame'의 rollDice 시작.
      * */
     fun rollDices() {
-        //if(chance<=0) return
+        if(chance<=0) return
         yachtGame.rollDice(diceList, keepList)
-        //chance--
-        log(TAG,"rollDice() : ${diceList.toList()}", LogTag.I)
+        _chance--
+        log(TAG, "rollDice() : ${diceList.toList()}", LogTag.I)
         setRollDiceImage(diceList)
+        getScore(diceList)
     }
-
 
     /**
      * 'keepList'의 data에 맞춰 주사위 모양 변형하기.
@@ -154,23 +212,31 @@ class GamePlayViewModel @Inject constructor(private val gamePlayRepositery: Game
     @SuppressLint("UseCompatLoadingForDrawables")
     fun setRollDiceImage(diceList: Array<Int>) {
         var list = mutableListOf<Drawable>()
-        for(dice in diceList) {
-            val drawable = when(dice) {
-                1->getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_first)!!
-                2->getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_second)!!
-                3->getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_third)!!
-                4->getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_fourth)!!
-                5->getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_fifth)!!
-                6->getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_sixth)!!
+        for (dice in diceList) {
+            val drawable = when (dice) {
+                1 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_first)!!
+                2 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_second)!!
+                3 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_third)!!
+                4 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_fourth)!!
+                5 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_fifth)!!
+                6 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_sixth)!!
                 else -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_first)!!
             }
-
             list.add(drawable)
 
         }
-
-        log(TAG,"setRollDiceImage : ${list}", LogTag.I)
+        log(TAG, "setRollDiceImage : ${list}", LogTag.I)
         _rollDiceImages.value = list
+    }
+
+
+    /**
+     * diceList에 따라 board 결과를 반한
+     * 'YachtGame' 의 getScore() 메서드를 사용
+     * */
+    fun getScore(dices: Array<Int>) {
+        val score = yachtGame.getScore(diceList)
+        log(TAG, "score : $score" , LogTag.I)
     }
 
 
@@ -179,7 +245,7 @@ class GamePlayViewModel @Inject constructor(private val gamePlayRepositery: Game
      * */
     fun removeListener() {
         viewModelScope.launch {
-            gameId.value?.let{
+            gameId.value?.let {
                 gamePlayRepositery.removeListener(it)
             }
         }
@@ -190,9 +256,9 @@ class GamePlayViewModel @Inject constructor(private val gamePlayRepositery: Game
         private const val TAG = "GamePlayViewModel"
         private const val REPEAT = 5
         private const val CHANCE = 3
-        private val START_LIST = arrayOf(1,2,3,4,5)
-        private val INIT_DICE_LIST = Array<Int>(5){0}
-        private val INIT_KEEP_LIST = Array<Boolean>(6){false}
+        private val START_LIST = arrayOf(1, 2, 3, 4, 5)
+        private val INIT_DICE_LIST = Array<Int>(5) { 0 }
+        private val INIT_KEEP_LIST = Array<Boolean>(6) { false }
     }
 
 }
