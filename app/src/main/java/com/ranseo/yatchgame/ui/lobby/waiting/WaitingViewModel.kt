@@ -165,6 +165,7 @@ class WaitingViewModel @AssistedInject constructor(
     }
 
 
+
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {
         fun create(roomId: String): WaitingViewModel

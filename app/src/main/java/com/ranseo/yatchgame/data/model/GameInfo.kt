@@ -57,7 +57,7 @@ data class GameInfoFirebaseModel(
         gameInfo.gameStartTime,
         gameInfo.gameFinishTime,
         mutableMapOf("first" to gameInfo.first),
-        mutableMapOf("first" to gameInfo.second),
+        mutableMapOf("second" to gameInfo.second),
         gameInfo.result,
         mutableMapOf("boards" to gameInfo.boards)
     )

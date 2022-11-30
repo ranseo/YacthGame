@@ -15,6 +15,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:padding="3dp"
+        android:paddingEnd="0dp"
         >
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -167,7 +169,6 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="100dp"
             android:layout_height="34dp"
-            android:layout_marginTop="5dp"
             android:background="@drawable/board_list_border_line_grey"
             android:padding="3dp">
 
