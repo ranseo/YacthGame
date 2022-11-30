@@ -1,8 +1,9 @@
 package com.ranseo.yatchgame.util
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.ranseo.yatchgame.data.model.Board
-import kotlin.random.Random
-import kotlin.random.nextInt
+//import java.security.SecureRandom
 
 class YachtGame {
     private val smalls = arrayOf(listOf(1,2,3,4), listOf(2,3,4,5), listOf(3,4,5,6))
@@ -12,14 +13,14 @@ class YachtGame {
      * 주사위를 k개를 굴려 나온 숫자들을 list(+keep)에 담아서 반환.
      * */
     fun rollDice(dices:Array<Int>, keepIdx:Array<Boolean>)  {
-        val random = Random
+        //val random = SecureRandom.getInstanceStrong()
+        val list = listOf(1,2,3,4,5,6)
 
-
-        if(!keepIdx[0]) dices[0] = random.nextInt(1..6)
-        if(!keepIdx[1]) dices[1] = random.nextInt(1..6)
-        if(!keepIdx[2]) dices[2] = random.nextInt(1..6)
-        if(!keepIdx[3]) dices[3] = random.nextInt(1..6)
-        if(!keepIdx[4]) dices[4] = random.nextInt(1..6)
+        if(!keepIdx[0]) dices[0] = list.shuffled().first()
+        if(!keepIdx[1]) dices[1] = list.shuffled().first()
+        if(!keepIdx[2]) dices[2] = list.shuffled().first()
+        if(!keepIdx[3]) dices[3] = list.shuffled().first()
+        if(!keepIdx[4]) dices[4] = list.shuffled().first()
 
     }
 

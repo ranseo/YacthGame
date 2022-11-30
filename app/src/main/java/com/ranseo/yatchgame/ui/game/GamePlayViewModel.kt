@@ -3,7 +3,10 @@ package com.ranseo.yatchgame.ui.game
 import android.annotation.SuppressLint
 import android.app.Application
 import android.graphics.drawable.Drawable
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
+import com.ranseo.yatchgame.Event
 import com.ranseo.yatchgame.LogTag
 import com.ranseo.yatchgame.R
 import com.ranseo.yatchgame.data.model.GameInfo
@@ -41,6 +44,10 @@ class GamePlayViewModel @Inject constructor(
     val myTurn: LiveData<Boolean>
         get() = _myTurn
 
+    private val _initRollDiceKeep = MutableLiveData<Event<Any?>>()
+    val initRollDiceKeep : LiveData<Event<Any?>>
+        get() = _initRollDiceKeep
+
     private fun setMyTurn(
         player:Player,
         firstPlayer: LiveData<Player>,
@@ -53,9 +60,9 @@ class GamePlayViewModel @Inject constructor(
     }
 
 
-    private var diceList = INIT_DICE_LIST
-    private var keepList = INIT_KEEP_LIST
-    private var _chance: Int = CHANCE
+    private var diceList = INIT_DICE_LIST.clone()
+    private var keepList = INIT_KEEP_LIST.clone()
+    private var _chance: Int = INIT_CHANCE
     val chance: Int
         get() = _chance
 
@@ -83,7 +90,6 @@ class GamePlayViewModel @Inject constructor(
         refreshGameId()
 
         setRollDiceImage(START_LIST)
-
     }
 
 
@@ -150,7 +156,7 @@ class GamePlayViewModel @Inject constructor(
      * */
     fun writeRollDiceAtFirst(gameId:String) {
         viewModelScope.launch {
-            val rollDice = RollDice(gameId, START_LIST ,INIT_KEEP_LIST, true )
+            val rollDice = RollDice(gameId, START_LIST ,INIT_KEEP_LIST.clone(), true )
             gamePlayRepositery.writeRollDice(rollDice)
         }
     }
@@ -182,14 +188,17 @@ class GamePlayViewModel @Inject constructor(
      * */
     fun keepDice(idx: Int) {
         keepList[idx] = !keepList[idx]
+        viewModelScope.launch {
+            writeRollDice(diceList.clone(), keepList.clone(), rollDice.value!!.turn)
+        }
     }
 
     /**
      * roll dice 와 관련된 변수 [keepList, chance] 초기화
      * */
     fun reloadBeforeRollDice() {
-        diceList = INIT_DICE_LIST
-        keepList = INIT_KEEP_LIST
+        diceList = INIT_DICE_LIST.clone()
+        keepList = INIT_KEEP_LIST.clone()
         _chance = CHANCE
     }
 
@@ -204,7 +213,7 @@ class GamePlayViewModel @Inject constructor(
         log(TAG, "rollDice() : ${diceList.toList()}", LogTag.I)
         setRollDiceImage(diceList)
         getScore(diceList)
-        writeRollDice(diceList, keepList, rollDice.value!!.turn)
+        writeRollDice(diceList.clone(), keepList.clone(), rollDice.value!!.turn)
     }
 
     /**
@@ -244,8 +253,20 @@ class GamePlayViewModel @Inject constructor(
      * 임시
      * */
     fun finishTurn() {
-        writeRollDice(diceList, INIT_KEEP_LIST, player != firstPlayer.value)
+        writeRollDice(diceList, INIT_KEEP_LIST.clone(), player != firstPlayer.value)
+        _chance = INIT_CHANCE
+        _initRollDiceKeep.value = Event(Unit)
     }
+
+    /**
+     * 현재 내 턴이 아닐 때, 상대방이 주사위를 굴랴서 어떤 주사위 눈금을 얻었는 지 확인할 수 있게 하기 위하여
+     * rollDice의 변수 값에 따라 현재 주사위 이미지를 바꾸고, keep의 현황을 확인.
+     * */
+    fun checkOpponentDiceState(dices: RollDice) {
+        val tmpDices = arrayOf(dices.first, dices.second, dices.third, dices.fourth, dices.fifth)
+        setRollDiceImage(tmpDices)
+    }
+
 
     /**
      * Firebase Database Reference에 연결된 ValueEventListener 제거
@@ -261,7 +282,8 @@ class GamePlayViewModel @Inject constructor(
 
     companion object {
         private const val TAG = "GamePlayViewModel"
-        private const val CHANCE = 3
+        const val INIT_CHANCE = 500
+        const val CHANCE = 3
         private val START_LIST = arrayOf(1, 2, 3, 4, 5)
         private val INIT_DICE_LIST = Array<Int>(5) { 0 }
         private val INIT_KEEP_LIST = Array<Boolean>(6) { false }
