@@ -102,7 +102,7 @@ class GamePlayFragment : Fragment() {
         Observer<Boolean> {
             it?.let { myTurn ->
                 if (myTurn) {
-                    gamePlayViewModel.reloadBeforeRollDice()
+                    if(gamePlayViewModel.chance==0) gamePlayViewModel.reloadBeforeRollDice()
                     log(TAG, "myTurnObserver : 현재 나의 턴 입니다.", LogTag.I)
                     Toast.makeText(requireContext(), "내 턴 입니다.", Toast.LENGTH_SHORT).show()
                 } else {

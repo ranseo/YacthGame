@@ -159,6 +159,16 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_finish"
+            android:text="Finish"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/bottom_guideline"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btn_roll"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
 
 
 

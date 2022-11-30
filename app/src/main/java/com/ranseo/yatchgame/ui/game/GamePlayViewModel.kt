@@ -204,6 +204,7 @@ class GamePlayViewModel @Inject constructor(
         log(TAG, "rollDice() : ${diceList.toList()}", LogTag.I)
         setRollDiceImage(diceList)
         getScore(diceList)
+        writeRollDice(diceList, keepList, rollDice.value!!.turn)
     }
 
     /**
@@ -234,11 +235,17 @@ class GamePlayViewModel @Inject constructor(
      * diceList에 따라 board 결과를 반한
      * 'YachtGame' 의 getScore() 메서드를 사용
      * */
-    fun getScore(dices: Array<Int>) {
-        val score = yachtGame.getScore(diceList)
+    private fun getScore(dices: Array<Int>) {
+        val score = yachtGame.getScore(dices)
         log(TAG, "score : $score" , LogTag.I)
     }
 
+    /**
+     * 임시
+     * */
+    fun finishTurn() {
+        writeRollDice(diceList, INIT_KEEP_LIST, player != firstPlayer.value)
+    }
 
     /**
      * Firebase Database Reference에 연결된 ValueEventListener 제거
@@ -254,7 +261,6 @@ class GamePlayViewModel @Inject constructor(
 
     companion object {
         private const val TAG = "GamePlayViewModel"
-        private const val REPEAT = 5
         private const val CHANCE = 3
         private val START_LIST = arrayOf(1, 2, 3, 4, 5)
         private val INIT_DICE_LIST = Array<Int>(5) { 0 }
