@@ -12,6 +12,7 @@
     <!--보드판에 적용할 컬러-->
     <color name="board_grey">#404040</color>
     <color name="board_yellow">#FFDF60</color>
+    <color name="board_score_color_before_record">#CD5E5E5E</color>
 
     <!--돌리는 주사위에 적용할 컬러-->
     <color name="keep_red">#BB0000</color>

@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="board"
             type="com.ranseo.yatchgame.data.model.Board" />
 
+        <variable
+            name="onClickListener"
+            type="com.ranseo.yatchgame.data.model.OnBoardClickListener" />
+
+        <variable
+            name="boardRecord"
+            type="com.ranseo.yatchgame.data.model.BoardRecord" />
+
+        <import type="com.ranseo.yatchgame.data.model.BoardTag"/>
+        <import type="android.view.View"/>
 
     </data>
 
@@ -15,72 +26,160 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="3dp"
-        android:paddingStart="0dp">
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        >
 
         <TextView
             android:text="@{Integer.toString(board.choice)}"
-            android:background="@drawable/board_list_border_line"
-            tools:text="1"
-            android:textAlignment="center"
-            android:gravity="center"
+            android:visibility="@{boardRecord.choice ? View.VISIBLE : View.GONE}"
             android:layout_width="42dp"
-            android:layout_height="34dp" />
+            android:layout_height="34dp"
+            android:background="@drawable/board_list_border_line"
+            android:gravity="center"
+            android:textAlignment="center"
+            tools:text="1" />
+        <TextView
+            android:text="@{Integer.toString(board.choice)}"
+            android:onClick="@{()->onClickListener.onClick(BoardTag.CHOICE)}"
+            android:visibility="@{boardRecord.choice ? View.GONE : View.VISIBLE}"
+            android:layout_width="42dp"
+            android:layout_height="34dp"
+            tools:visibility="gone"
+            android:background="@drawable/board_list_border_line"
+            android:gravity="center"
+            android:textAlignment="center"
+            tools:text="1" />
+
+        <!-- -->
 
         <TextView
             android:text="@{Integer.toString(board.fourCard)}"
-            android:background="@drawable/board_list_border_line"
-            tools:text="2"
-            android:textAlignment="center"
-            android:gravity="center"
+            android:visibility="@{boardRecord.fourCard ? View.VISIBLE : View.GONE}"
             android:layout_width="42dp"
-            android:layout_height="34dp"/>
+            android:layout_height="34dp"
+            android:background="@drawable/board_list_border_line"
+            android:gravity="center"
+            android:textAlignment="center"
+            tools:text="2" />
+        <TextView
+            android:text="@{Integer.toString(board.fourCard)}"
+            android:onClick="@{()->onClickListener.onClick(BoardTag.FOURCARD)}"
+            android:visibility="@{boardRecord.fourCard ? View.GONE : View.VISIBLE}"
+            android:layout_width="42dp"
+            android:layout_height="34dp"
+            tools:visibility="gone"
+            android:background="@drawable/board_list_border_line"
+            android:gravity="center"
+            android:textAlignment="center"
+            tools:text="1" />
+
+        <!-- -->
 
         <TextView
             android:text="@{Integer.toString(board.fullHouse)}"
-            android:background="@drawable/board_list_border_line"
-            tools:text="3"
-            android:textAlignment="center"
-            android:gravity="center"
+            android:visibility="@{boardRecord.fullHouse? View.VISIBLE : View.GONE}"
             android:layout_width="42dp"
-            android:layout_height="34dp"/>
+            android:layout_height="34dp"
+            android:background="@drawable/board_list_border_line"
+            android:gravity="center"
+            android:textAlignment="center"
+            tools:text="3" />
+
+        <TextView
+            android:text="@{Integer.toString(board.fullHouse)}"
+            android:onClick="@{()->onClickListener.onClick(BoardTag.FULLHOUSE)}"
+            android:visibility="@{boardRecord.fullHouse? View.GONE : View.VISIBLE}"
+            android:layout_width="42dp"
+            android:layout_height="34dp"
+            tools:visibility="gone"
+            android:background="@drawable/board_list_border_line"
+            android:gravity="center"
+            android:textAlignment="center"
+            tools:text="1" />
+
+        <!-- -->
 
         <TextView
             android:text="@{Integer.toString(board.smallStraight)}"
-            android:background="@drawable/board_list_border_line"
-            tools:text="4"
-            android:textAlignment="center"
-            android:gravity="center"
+            android:visibility="@{boardRecord.smallStraight? View.VISIBLE : View.GONE}"
             android:layout_width="42dp"
-            android:layout_height="34dp"/>
+            android:layout_height="34dp"
+            android:background="@drawable/board_list_border_line"
+            android:gravity="center"
+            android:textAlignment="center"
+            tools:text="4" />
+
+        <TextView
+            android:text="@{Integer.toString(board.smallStraight)}"
+            android:onClick="@{()->onClickListener.onClick(BoardTag.SMALLSTRAIGHT)}"
+            android:visibility="@{boardRecord.smallStraight? View.GONE : View.VISIBLE}"
+            android:layout_width="42dp"
+            android:layout_height="34dp"
+            tools:visibility="gone"
+            android:background="@drawable/board_list_border_line"
+            android:gravity="center"
+            android:textAlignment="center"
+            tools:text="1" />
+
+        <!-- -->
 
         <TextView
             android:text="@{Integer.toString(board.largeStraight)}"
-            android:background="@drawable/board_list_border_line"
-            tools:text="5"
-            android:textAlignment="center"
-            android:gravity="center"
+            android:visibility="@{boardRecord.largeStraight? View.VISIBLE : View.GONE}"
             android:layout_width="42dp"
-            android:layout_height="34dp" />
+            android:layout_height="34dp"
+            android:background="@drawable/board_list_border_line"
+            android:gravity="center"
+            android:textAlignment="center"
+            tools:text="5" />
+
+        <TextView
+            android:text="@{Integer.toString(board.largeStraight)}"
+            android:onClick="@{()->onClickListener.onClick(BoardTag.LARGESTRAIGHT)}"
+            android:visibility="@{boardRecord.largeStraight? View.GONE : View.VISIBLE}"
+            android:layout_width="42dp"
+            android:layout_height="34dp"
+            tools:visibility="gone"
+            android:background="@drawable/board_list_border_line"
+            android:gravity="center"
+            android:textAlignment="center"
+            tools:text="1" />
+
+        <!-- -->
 
         <TextView
             android:text="@{Integer.toString(board.yacht)}"
-            android:background="@drawable/board_list_border_line"
-            tools:text="6"
-            android:textAlignment="center"
-            android:gravity="center"
+            android:visibility="@{boardRecord.yacht? View.VISIBLE : View.GONE}"
             android:layout_width="42dp"
-            android:layout_height="34dp" />
+            android:layout_height="34dp"
+            android:background="@drawable/board_list_border_line"
+            android:gravity="center"
+            android:textAlignment="center"
+            tools:text="6" />
 
         <TextView
-            android:text="@{Integer.toString(board.total)}"
-            android:background="@drawable/board_list_border_line"
-            tools:text="63"
-            android:textAlignment="center"
-            android:gravity="center"
+            android:text="@{Integer.toString(board.yacht)}"
+            android:onClick="@{()->onClickListener.onClick(BoardTag.YACHT)}"
+            android:visibility="@{boardRecord.yacht? View.GONE : View.VISIBLE}"
             android:layout_width="42dp"
-            android:layout_height="68dp" />
+            android:layout_height="34dp"
+            tools:visibility="gone"
+            android:background="@drawable/board_list_border_line"
+            android:gravity="center"
+            android:textAlignment="center"
+            tools:text="1" />
 
+        <!-- -->
+
+        <TextView
+            android:layout_width="42dp"
+            android:layout_height="68dp"
+            android:background="@drawable/board_list_border_line"
+            android:gravity="center"
+            android:text="@{Integer.toString(board.total)}"
+            android:textAlignment="center"
+            tools:text="63" />
 
 
     </LinearLayout>

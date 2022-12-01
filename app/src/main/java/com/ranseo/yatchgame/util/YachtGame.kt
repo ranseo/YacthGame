@@ -3,9 +3,11 @@ package com.ranseo.yatchgame.util
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.ranseo.yatchgame.data.model.Board
+import javax.inject.Inject
+
 //import java.security.SecureRandom
 
-class YachtGame {
+class YachtGame @Inject constructor() {
     private val smalls = arrayOf(listOf(1,2,3,4), listOf(2,3,4,5), listOf(3,4,5,6))
     private val larges = arrayOf(listOf(1,2,3,4,5), listOf(2,3,4,5,6))
 
@@ -24,19 +26,29 @@ class YachtGame {
 
     }
 
-    fun getScore(dices:Array<Int>) : String {
+    fun getScore(dices:Array<Int>) : Board {
 
         val numberCnt = dices.groupingBy { it }.eachCount()
         val ranks = getRankScore(dices, numberCnt)
 
-        val result = StringBuilder()
+        val result = IntArray(15){0}
 
         for((key,value) in numberCnt.toSortedMap(compareBy{ it })) {
-            result.append("$key : ${value*key}\n")
+            result[key] = value
         }
 
-        result.append("choice : ${ranks[0]}\nfour of a kind : ${ranks[1]}\nfull house : ${ranks[2]}\ns.Straight : ${ranks[3]}\nl.Straight : ${ranks[4]}\nyacht : ${ranks[5]}")
-        return result.toString()
+        result[8] = ranks[0]//choice
+        result[9] = ranks[1]//fourCard
+        result[10] = ranks[2]//fullHouse
+        result[11] = ranks[3]//s.straight
+        result[12] = ranks[4]//l.straight
+        result[13] = ranks[5]//yacht
+
+
+        //idx 6 = sum , idx 7 = bonus , idx 14 = total
+
+
+        return Board(result)
     }
 
     private fun getRankScore(dices: Array<Int>, numberCnt: Map<Int, Int>): IntArray {

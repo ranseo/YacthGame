@@ -9,6 +9,10 @@
             name="viewModel"
             type="com.ranseo.yatchgame.ui.game.GamePlayViewModel" />
 
+        <variable
+            name="onClickListener"
+            type="com.ranseo.yatchgame.data.model.OnBoardClickListener" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -33,7 +37,9 @@
             app:layout_constraintStart_toEndOf="@+id/layout_number_tag"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            bind:board="@{viewModel.firstBoard}"/>
+            bind:board="@{viewModel.firstBoard}"
+            bind:onClickListener="@{onClickListener}"
+            bind:boardRecord="@{viewModel.boardRecord}"/>
 
         <include
             android:id="@+id/layout_number_second"
@@ -43,7 +49,9 @@
             app:layout_constraintStart_toEndOf="@+id/layout_number_first"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            bind:board="@{viewModel.secondBoard}"/>
+            bind:board="@{viewModel.secondBoard}"
+            bind:onClickListener="@{onClickListener}"
+            bind:boardRecord="@{viewModel.boardRecord}"/>
 
         <include
             android:id="@+id/layout_rank_tag"
@@ -63,7 +71,9 @@
             app:layout_constraintStart_toEndOf="@+id/layout_rank_tag"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            bind:board="@{viewModel.firstBoard}"/>
+            bind:board="@{viewModel.firstBoard}"
+            bind:onClickListener="@{onClickListener}"
+            bind:boardRecord="@{viewModel.boardRecord}"/>
 
         <include
             layout="@layout/layout_ranks_up_board_second"
@@ -72,7 +82,9 @@
             app:layout_constraintStart_toEndOf="@id/layout_rank_first"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            bind:board="@{viewModel.secondBoard}"/>
+            bind:board="@{viewModel.secondBoard}"
+            bind:onClickListener="@{onClickListener}"
+            bind:boardRecord="@{viewModel.boardRecord}"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -12,9 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.ranseo.yatchgame.LogTag
 import com.ranseo.yatchgame.R
-import com.ranseo.yatchgame.data.model.GameInfo
-import com.ranseo.yatchgame.data.model.Player
-import com.ranseo.yatchgame.data.model.RollDice
+import com.ranseo.yatchgame.data.model.*
 import com.ranseo.yatchgame.databinding.FragmentGamePlayBinding
 import com.ranseo.yatchgame.log
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,6 +34,11 @@ class GamePlayFragment : Fragment() {
 
         binding.viewModel = gamePlayViewModel
         binding.lifecycleOwner = viewLifecycleOwner
+        binding.onClickListener = OnBoardClickListener { boardTag ->
+            gamePlayViewModel.confirmBoardRecord(boardTag)
+
+            //todo : 클릭을 하면 상대턴으로 넘어가는 코드 구현.
+        }
 
         gamePlayViewModel.gameId.observe(viewLifecycleOwner, gameIdObserver())
         gamePlayViewModel.gameInfo.observe(viewLifecycleOwner, gameInfoObserver())

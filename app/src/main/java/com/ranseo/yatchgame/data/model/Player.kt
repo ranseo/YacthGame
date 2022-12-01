@@ -7,7 +7,7 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 @Entity(tableName = "player_table")
-data class Player(
+data class Player (
     @field:Json(name = "playerId")
     @PrimaryKey(autoGenerate = false)
     val playerId: String,

@@ -35,9 +35,6 @@ data class GameInfo(
         second = waitingRoom.guest["guest"]!!,
         boards = boards
     )
-
-
-
 }
 
 //Firebase Database read/write 용

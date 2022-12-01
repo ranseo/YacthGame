@@ -9,9 +9,7 @@ import androidx.lifecycle.*
 import com.ranseo.yatchgame.Event
 import com.ranseo.yatchgame.LogTag
 import com.ranseo.yatchgame.R
-import com.ranseo.yatchgame.data.model.GameInfo
-import com.ranseo.yatchgame.data.model.Player
-import com.ranseo.yatchgame.data.model.RollDice
+import com.ranseo.yatchgame.data.model.*
 import com.ranseo.yatchgame.data.repo.GamePlayRepositery
 import com.ranseo.yatchgame.log
 import com.ranseo.yatchgame.util.YachtGame
@@ -22,9 +20,9 @@ import javax.inject.Inject
 @HiltViewModel
 class GamePlayViewModel @Inject constructor(
     private val gamePlayRepositery: GamePlayRepositery,
+    private val yachtGame: YachtGame,
     application: Application
 ) : AndroidViewModel(application) {
-    private val yachtGame = YachtGame()
 
     private lateinit var player: Player
 
@@ -47,6 +45,12 @@ class GamePlayViewModel @Inject constructor(
     private val _initRollDiceKeep = MutableLiveData<Event<Any?>>()
     val initRollDiceKeep : LiveData<Event<Any?>>
         get() = _initRollDiceKeep
+
+    private val _boardRecord = MutableLiveData<BoardRecord>()
+    val boardRecord : LiveData<BoardRecord>
+        get() = _boardRecord
+    val records = INIT_RECORDS.clone()
+
 
     private fun setMyTurn(
         player:Player,
@@ -88,10 +92,18 @@ class GamePlayViewModel @Inject constructor(
     init {
         refreshPlayer()
         refreshGameId()
+        refreshBoardRecord() //임시
 
         setRollDiceImage(START_LIST)
     }
 
+
+    /**
+     * 임시 - BoardRecord 설정.
+     * */
+    private fun refreshBoardRecord() {
+        _boardRecord.value = BoardRecord()
+    }
 
 
     /**
@@ -247,6 +259,11 @@ class GamePlayViewModel @Inject constructor(
     private fun getScore(dices: Array<Int>) {
         val score = yachtGame.getScore(dices)
         log(TAG, "score : $score" , LogTag.I)
+        val origin = if(firstPlayer.value == player) firstBoard.value else secondBoard.value
+        origin?.let {
+            val newBoard = score
+            //todo: 임시 보드판에만 보이는 fakeBoard : LiveData<Board>를 만들어야 겠다.
+        }
     }
 
     /**
@@ -280,6 +297,31 @@ class GamePlayViewModel @Inject constructor(
     }
 
 
+    /**
+     * BoardRecord 객체의 각 프로퍼티값을 BoardTag에 따라 true로 변환
+     * */
+    fun confirmBoardRecord(boardTag: BoardTag) {
+        when(boardTag) {
+            BoardTag.ONES -> records[0] = true
+            BoardTag.TWOS -> records[1] = true
+            BoardTag.THREES -> records[2] = true
+            BoardTag.FOURS -> records[3] = true
+            BoardTag.FIVES -> records[4] = true
+            BoardTag.SIXES -> records[5] = true
+            BoardTag.CHOICE -> records[6] = true
+            BoardTag.FOURCARD -> records[7] = true
+            BoardTag.FULLHOUSE -> records[8] = true
+            BoardTag.SMALLSTRAIGHT -> records[9] = true
+            BoardTag.LARGESTRAIGHT -> records[10] = true
+            BoardTag.YACHT -> records[11] = true
+        }
+
+        val newBoardRecord = BoardRecord(records.clone())
+        _boardRecord.value = newBoardRecord
+
+
+    }
+
     companion object {
         private const val TAG = "GamePlayViewModel"
         const val INIT_CHANCE = 500
@@ -287,6 +329,7 @@ class GamePlayViewModel @Inject constructor(
         private val START_LIST = arrayOf(1, 2, 3, 4, 5)
         private val INIT_DICE_LIST = Array<Int>(5) { 0 }
         private val INIT_KEEP_LIST = Array<Boolean>(6) { false }
+        private val INIT_RECORDS = Array<Boolean>(12){false}
     }
 
 }

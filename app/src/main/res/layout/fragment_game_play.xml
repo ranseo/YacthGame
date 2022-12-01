@@ -10,6 +10,11 @@
             name="viewModel"
             type="com.ranseo.yatchgame.ui.game.GamePlayViewModel" />
 
+        <variable
+            name="onClickListener"
+            type="com.ranseo.yatchgame.data.model.OnBoardClickListener" />
+
+
         <import type="android.view.View"/>
 
     </data>
@@ -78,6 +83,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 bind:viewModel="@{viewModel}"
+                bind:onClickListener="@{onClickListener}"
                 />
 
 
