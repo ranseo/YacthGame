@@ -33,6 +33,9 @@ class GamePlayRepositery @Inject constructor(
     suspend fun updateGameInfo(gameInfo: GameInfo) =
         withContext(Dispatchers.IO) { gameInfoRoomDataSource.updateGameInfo(gameInfo) }
 
+    suspend fun writeGameInfo(gameInfo: GameInfo) =
+        withContext(Dispatchers.IO) {gameInfoFirebaseDataSource.writeGameInfo(gameInfo)}
+
     ///
 
     suspend fun writeRollDice(rollDice: RollDice) = withContext(Dispatchers.IO) {

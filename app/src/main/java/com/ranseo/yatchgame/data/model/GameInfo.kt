@@ -35,6 +35,14 @@ data class GameInfo(
         second = waitingRoom.guest["guest"]!!,
         boards = boards
     )
+
+    constructor(gameInfo:GameInfo, boards:List<Board>) : this(
+        gameId = gameInfo.gameId,
+        gameStartTime = gameInfo.gameStartTime,
+        first = gameInfo.first,
+        second = gameInfo.second,
+        boards = boards
+    )
 }
 
 //Firebase Database read/write 용

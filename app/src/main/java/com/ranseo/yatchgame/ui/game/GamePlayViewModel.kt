@@ -257,12 +257,19 @@ class GamePlayViewModel @Inject constructor(
      * 'YachtGame' 의 getScore() 메서드를 사용
      * */
     private fun getScore(dices: Array<Int>) {
-        val score = yachtGame.getScore(dices)
-        log(TAG, "score : $score" , LogTag.I)
-        val origin = if(firstPlayer.value == player) firstBoard.value else secondBoard.value
-        origin?.let {
-            val newBoard = score
-            //todo: 임시 보드판에만 보이는 fakeBoard : LiveData<Board>를 만들어야 겠다.
+        val score : Board = yachtGame.getScore(dices)
+
+        try {
+            val boards = if(firstPlayer.value == player) listOf(score, secondBoard.value!!) else listOf(firstBoard.value!!, score)
+            val newGameInfo = GameInfo(gameInfo.value!!, boards)
+            viewModelScope.launch {
+                gamePlayRepositery.writeGameInfo(newGameInfo)
+            }
+
+            log(TAG, "getScore() score : $score" , LogTag.I)
+
+        } catch (error:Exception) {
+            log(TAG,"getScore() error :${error.message}", LogTag.D)
         }
     }
 
@@ -276,7 +283,7 @@ class GamePlayViewModel @Inject constructor(
     }
 
     /**
-     * 현재 내 턴이 아닐 때, 상대방이 주사위를 굴랴서 어떤 주사위 눈금을 얻었는 지 확인할 수 있게 하기 위하여
+     * 현재 내 턴이 아닐 때, 상대방이 주사위를 굴려서 주사위 눈금을 얻었는 지 확인할 수 있게 하기 위하여
      * rollDice의 변수 값에 따라 현재 주사위 이미지를 바꾸고, keep의 현황을 확인.
      * */
     fun checkOpponentDiceState(dices: RollDice) {
@@ -298,6 +305,7 @@ class GamePlayViewModel @Inject constructor(
 
 
     /**
+     * Board를 클릭할 때, 클릭한 곳의 수를 확정하기 위해
      * BoardRecord 객체의 각 프로퍼티값을 BoardTag에 따라 true로 변환
      * */
     fun confirmBoardRecord(boardTag: BoardTag) {

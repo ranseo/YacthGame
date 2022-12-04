@@ -132,6 +132,7 @@ class GamePlayFragment : Fragment() {
             it?.let {
                 gamePlayViewModel.gameId.value?.let { gameId ->
                     gamePlayViewModel.writeRollDiceAtFirst(gameId)
+//                    todo: gameInfo가 갱신될 때 (board값 갱신에 의해서도 턴이넘어가는 사례발생.)
                 }
 
             }
