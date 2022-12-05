@@ -58,12 +58,12 @@ class GamePlayFragment : Fragment() {
         Observer<RollDice> {
             it?.let { rollDice ->
                 gamePlayViewModel.myTurn.value?.let { myTurn ->
-                    if(!myTurn) {
+                    if (!myTurn) {
                         gamePlayViewModel.checkOpponentDiceState(rollDice)
                         setRollDiceSelected(rollDice)
-                        log(TAG,"rollDiceObserver() : Not My Turn  ${rollDice}", LogTag.I)
+                        log(TAG, "rollDiceObserver() : Not My Turn  ${rollDice}", LogTag.I)
                     } else {
-                        log(TAG,"rollDiceObserver() : my Turn  ${rollDice}", LogTag.I)
+                        log(TAG, "rollDiceObserver() : my Turn  ${rollDice}", LogTag.I)
                     }
                 }
             }
@@ -90,7 +90,7 @@ class GamePlayFragment : Fragment() {
         binding.ivRollFifth.isSelected = false
     }
 
-    private fun setRollDiceSelected(keeps:RollDice) {
+    private fun setRollDiceSelected(keeps: RollDice) {
         binding.ivRollFirst.isSelected = keeps.firstFix
         binding.ivRollSecond.isSelected = keeps.secondFix
         binding.ivRollThird.isSelected = keeps.thirdFix
@@ -103,7 +103,7 @@ class GamePlayFragment : Fragment() {
      * Selected 되도록 만드는 ClickListener
      */
     private fun rollDiceSelected(idx: Int) = { imageview: View ->
-        if (gamePlayViewModel.chance <GamePlayViewModel.CHANCE) {
+        if (gamePlayViewModel.chance < GamePlayViewModel.CHANCE) {
             gamePlayViewModel.keepDice(idx)
             imageview.isSelected = !imageview.isSelected
         }
@@ -123,6 +123,7 @@ class GamePlayFragment : Fragment() {
                 log(TAG, "gameIdObserver : ${gameId}", LogTag.I)
                 gamePlayViewModel.refreshGameInfo(gameId)
                 gamePlayViewModel.refreshRollDice(gameId)
+                gamePlayViewModel.refreshBoardInfo(gameId)
                 //gamePlayViewModel.writeRollDiceAtFirst(gameId)
             }
         }
@@ -130,9 +131,11 @@ class GamePlayFragment : Fragment() {
     private fun firstPlayerObserver() =
         Observer<Player> {
             it?.let {
-                gamePlayViewModel.gameId.value?.let { gameId ->
-                    gamePlayViewModel.writeRollDiceAtFirst(gameId)
-//                    todo: gameInfo가 갱신될 때 (board값 갱신에 의해서도 턴이넘어가는 사례발생.)
+                if (gamePlayViewModel.rollDiceFirstFlag) {
+                    gamePlayViewModel.gameId.value?.let { gameId ->
+                        gamePlayViewModel.writeRollDiceAtFirst(gameId)
+                        gamePlayViewModel.rollDiceFirstFlag = false
+                    }
                 }
 
             }
@@ -164,7 +167,7 @@ class GamePlayFragment : Fragment() {
      * 현재 keep되어 있는 (=selected 가 true로 설정된) fragment_game_play.xml의 주사위들의 상태를 해제함.
      * */
     private fun initRollDiceKeepObserver() =
-        Observer<Any?>{
+        Observer<Any?> {
             it?.let {
                 setRollDiceUnSelected()
             }

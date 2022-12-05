@@ -6,7 +6,11 @@
 
     <data>
         <variable
-            name="board"
+            name="realBoard"
+            type="com.ranseo.yatchgame.data.model.Board" />
+
+        <variable
+            name="fakeBoard"
             type="com.ranseo.yatchgame.data.model.Board" />
 
         <variable
@@ -23,7 +27,7 @@
     </data>
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="34dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingTop="3dp"
@@ -31,18 +35,18 @@
         >
 
         <TextView
-            android:text="@{Integer.toString(board.ones)}"
+            android:text="@{Integer.toString(realBoard.ones)}"
             android:background="@drawable/board_list_border_line"
             android:visibility="@{boardRecord.isOnes ? View.VISIBLE : View.GONE}"
             tools:text="1"
             android:textAlignment="center"
             android:gravity="center"
-            android:layout_width="42dp"
+            android:layout_width="match_parent"
             android:layout_height="34dp"/>
 
 
         <TextView
-            android:text="@{Integer.toString(board.ones)}"
+            android:text="@{fakeBoard.ones>-1 ? Integer.toString(fakeBoard.ones) : Character.toString(' ')}"
             android:background="@drawable/board_list_border_line"
             android:onClick="@{()->onClickListener.onClick(BoardTag.ONES)}"
             android:visibility="@{boardRecord.isOnes ? View.GONE : View.VISIBLE}"
@@ -51,24 +55,24 @@
             tools:visibility="gone"
             android:textAlignment="center"
             android:gravity="center"
-            android:layout_width="42dp"
+            android:layout_width="match_parent"
             android:layout_height="34dp"/>
 
         <!---->
 
 
         <TextView
-            android:text="@{Integer.toString(board.twos)}"
+            android:text="@{Integer.toString(realBoard.twos)}"
             android:background="@drawable/board_list_border_line"
             android:visibility="@{boardRecord.isTwos ? View.VISIBLE : View.GONE}"
             tools:text="2"
             android:textAlignment="center"
             android:gravity="center"
-            android:layout_width="42dp"
+            android:layout_width="match_parent"
             android:layout_height="34dp" />
 
         <TextView
-            android:text="@{Integer.toString(board.twos)}"
+            android:text="@{fakeBoard.twos>-1 ? Integer.toString(fakeBoard.twos) : Character.toString(' ')}"
             android:background="@drawable/board_list_border_line"
             android:onClick="@{()->onClickListener.onClick(BoardTag.TWOS)}"
             android:visibility="@{boardRecord.isTwos ? View.GONE : View.VISIBLE}"
@@ -77,24 +81,24 @@
             tools:visibility="gone"
             android:textAlignment="center"
             android:gravity="center"
-            android:layout_width="42dp"
+            android:layout_width="match_parent"
             android:layout_height="34dp"/>
 
         <!---->
 
 
         <TextView
-            android:text="@{Integer.toString(board.threes)}"
+            android:text="@{Integer.toString(realBoard.threes)}"
             android:background="@drawable/board_list_border_line"
             android:visibility="@{boardRecord.isThrees ? View.VISIBLE : View.GONE}"
             tools:text="3"
             android:textAlignment="center"
             android:gravity="center"
-            android:layout_width="42dp"
+            android:layout_width="match_parent"
             android:layout_height="34dp" />
 
         <TextView
-            android:text="@{Integer.toString(board.threes)}"
+            android:text="@{fakeBoard.threes>-1 ? Integer.toString(fakeBoard.threes) : Character.toString(' ')}"
             android:background="@drawable/board_list_border_line"
             android:onClick="@{()->onClickListener.onClick(BoardTag.THREES)}"
             android:visibility="@{boardRecord.isThrees ? View.GONE : View.VISIBLE}"
@@ -103,23 +107,23 @@
             tools:visibility="gone"
             android:textAlignment="center"
             android:gravity="center"
-            android:layout_width="42dp"
+            android:layout_width="match_parent"
             android:layout_height="34dp"/>
 
         <!---->
 
         <TextView
-            android:text="@{Integer.toString(board.fours)}"
+            android:text="@{Integer.toString(realBoard.fours)}"
             android:background="@drawable/board_list_border_line"
             android:visibility="@{boardRecord.isFours ? View.VISIBLE : View.GONE}"
             tools:text="4"
             android:textAlignment="center"
             android:gravity="center"
-            android:layout_width="42dp"
+            android:layout_width="match_parent"
             android:layout_height="34dp" />
 
         <TextView
-            android:text="@{Integer.toString(board.fours)}"
+            android:text="@{fakeBoard.fours>-1 ? Integer.toString(fakeBoard.fours) : Character.toString(' ')}"
             android:background="@drawable/board_list_border_line"
             android:onClick="@{()->onClickListener.onClick(BoardTag.FOURS)}"
             android:visibility="@{boardRecord.isFours ? View.GONE : View.VISIBLE}"
@@ -128,23 +132,23 @@
             tools:visibility="gone"
             android:textAlignment="center"
             android:gravity="center"
-            android:layout_width="42dp"
+            android:layout_width="match_parent"
             android:layout_height="34dp" />
 
         <!---->
 
         <TextView
-            android:text="@{Integer.toString(board.fives)}"
+            android:text="@{Integer.toString(realBoard.fives)}"
             android:background="@drawable/board_list_border_line"
             android:visibility="@{boardRecord.isFives ? View.VISIBLE : View.GONE}"
             tools:text="5"
             android:textAlignment="center"
             android:gravity="center"
-            android:layout_width="42dp"
+            android:layout_width="match_parent"
             android:layout_height="34dp" />
 
         <TextView
-            android:text="@{Integer.toString(board.fives)}"
+            android:text="@{fakeBoard.fives>-1 ? Integer.toString(fakeBoard.fives) : Character.toString(' ')}"
             android:background="@drawable/board_list_border_line"
             android:onClick="@{()->onClickListener.onClick(BoardTag.FIVES)}"
             android:visibility="@{boardRecord.isFives ? View.GONE : View.VISIBLE}"
@@ -153,23 +157,23 @@
             tools:visibility="gone"
             android:textAlignment="center"
             android:gravity="center"
-            android:layout_width="42dp"
+            android:layout_width="match_parent"
             android:layout_height="34dp" />
 
         <!---->
 
         <TextView
-            android:text="@{Integer.toString(board.sixes)}"
+            android:text="@{Integer.toString(realBoard.sixes)}"
             android:background="@drawable/board_list_border_line"
             android:visibility="@{boardRecord.isSixes? View.VISIBLE : View.GONE}"
             tools:text="6"
             android:textAlignment="center"
             android:gravity="center"
-            android:layout_width="42dp"
+            android:layout_width="match_parent"
             android:layout_height="34dp" />
 
         <TextView
-            android:text="@{Integer.toString(board.sixes)}"
+            android:text="@{fakeBoard.sixes>-1 ? Integer.toString(fakeBoard.sixes) : Character.toString(' ')}"
             android:background="@drawable/board_list_border_line"
             android:onClick="@{()->onClickListener.onClick(BoardTag.SIXES)}"
             android:visibility="@{boardRecord.isSixes? View.GONE : View.VISIBLE}"
@@ -178,27 +182,27 @@
             tools:visibility="gone"
             android:textAlignment="center"
             android:gravity="center"
-            android:layout_width="42dp"
+            android:layout_width="match_parent"
             android:layout_height="34dp" />
 
         <!---->
 
         <TextView
-            android:text="@{Integer.toString(board.sum)}"
+            android:text="@{Integer.toString(realBoard.sum)}"
             android:background="@drawable/board_list_border_line"
             tools:text="63"
             android:textAlignment="center"
             android:gravity="center"
-            android:layout_width="42dp"
+            android:layout_width="match_parent"
             android:layout_height="34dp" />
 
         <TextView
-            android:text="@{Integer.toString(board.bonus)}"
+            android:text="@{fakeBoard.bonus>-1 ? Integer.toString(fakeBoard.bonus) : Character.toString(' ')}"
             android:background="@drawable/board_list_border_line"
             tools:text="36"
             android:textAlignment="center"
             android:gravity="center"
-            android:layout_width="42dp"
+            android:layout_width="match_parent"
             android:layout_height="34dp" />
 
 

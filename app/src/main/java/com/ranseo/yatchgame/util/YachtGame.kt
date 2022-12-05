@@ -34,7 +34,7 @@ class YachtGame @Inject constructor() {
         val result = IntArray(15){0}
 
         for((key,value) in numberCnt.toSortedMap(compareBy{ it })) {
-            result[key] = value
+            result[key-1] = (value*key)
         }
 
         result[8] = ranks[0]//choice

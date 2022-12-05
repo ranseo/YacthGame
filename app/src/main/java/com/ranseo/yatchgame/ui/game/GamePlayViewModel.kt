@@ -15,6 +15,7 @@ import com.ranseo.yatchgame.log
 import com.ranseo.yatchgame.util.YachtGame
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.lang.Error
 import javax.inject.Inject
 
 @HiltViewModel
@@ -38,6 +39,10 @@ class GamePlayViewModel @Inject constructor(
     val rollDice: LiveData<RollDice>
         get() = _rollDice
 
+    private val _boardInfo = MutableLiveData<BoardInfo>()
+    val boardInfo: LiveData<BoardInfo>
+        get()= _boardInfo
+
     private val _myTurn = MediatorLiveData<Boolean>()
     val myTurn: LiveData<Boolean>
         get() = _myTurn
@@ -50,6 +55,13 @@ class GamePlayViewModel @Inject constructor(
     val boardRecord : LiveData<BoardRecord>
         get() = _boardRecord
     val records = INIT_RECORDS.clone()
+
+    private val _opponentBoardRecord = MutableLiveData<BoardRecord>()
+    val opponentBoardRecord: LiveData<BoardRecord>
+        get() = _opponentBoardRecord
+    val opponentRecords = INIT_RECORDS.clone()
+
+    var rollDiceFirstFlag : Boolean = true
 
 
     private fun setMyTurn(
@@ -77,11 +89,28 @@ class GamePlayViewModel @Inject constructor(
     val secondPlayer = Transformations.map(gameInfo) {
         it.second
     }
-    val firstBoard = Transformations.map(gameInfo) {
+    val firstRealBoard = Transformations.map(gameInfo) {
         it.boards[0]
     }
-    val secondBoard = Transformations.map(gameInfo) {
+    val secondRealBoard = Transformations.map(gameInfo) {
         it.boards[1]
+    }
+    @RequiresApi(Build.VERSION_CODES.N)
+    val firstFakeBoard = Transformations.map(boardInfo) {
+        it.returnBoard(0)
+    }
+    @RequiresApi(Build.VERSION_CODES.N)
+    val secondFakeBoard = Transformations.map(boardInfo) {
+        it.returnBoard(1)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    val firstBoardRecord = Transformations.map(boardInfo) {
+        it.returnBoardRecord(0)
+    }
+    @RequiresApi(Build.VERSION_CODES.N)
+    val secondBoardRecord = Transformations.map(boardInfo) {
+        it.returnBoardRecord(1)
     }
 
     //
@@ -104,6 +133,8 @@ class GamePlayViewModel @Inject constructor(
     private fun refreshBoardRecord() {
         _boardRecord.value = BoardRecord()
     }
+
+
 
 
     /**
@@ -164,6 +195,21 @@ class GamePlayViewModel @Inject constructor(
     }
 
     /**
+     * boardInfo refresh
+     * boardInfo는 first, second 플레이어들의 board상황과 boardRecord상황을 기록할 수 있다.
+     * */
+    fun refreshBoardInfo(gameId:String) {
+        viewModelScope.launch {
+            gamePlayRepositery.getBoardInfo(gameId) { boardInfo ->
+                _boardInfo.value = boardInfo
+            }
+
+            val boardInfo = BoardInfo(listOf(Board(), Board()), listOf(BoardRecord(), BoardRecord()))
+            writeBoardInfo(gameId, boardInfo)
+        }
+    }
+
+    /**
      * viewModel 이 생성될 때, HostPlayer가 Firebase 에 rollDice data wrtie
      * */
     fun writeRollDiceAtFirst(gameId:String) {
@@ -182,6 +228,17 @@ class GamePlayViewModel @Inject constructor(
                 val new = RollDice(it.gameId,dices, keeps,turn)
                 gamePlayRepositery.writeRollDice(new)
             }
+        }
+    }
+
+    /**
+     * BoardInfo Data를 Firebase Database에 write
+     * viewModel이 처음 생성될 떄 초기 BoardInfo를 한번 write
+     * 이 후, score를 board에 기록할 때 마다 write
+     * */
+    fun writeBoardInfo(gameId:String, boardInfo: BoardInfo) {
+        viewModelScope.launch {
+            gamePlayRepositery.writeBoardInfo(gameId, boardInfo)
         }
     }
 
@@ -253,25 +310,38 @@ class GamePlayViewModel @Inject constructor(
 
 
     /**
-     * diceList에 따라 board 결과를 반한
-     * 'YachtGame' 의 getScore() 메서드를 사용
+     * diceList의 주사위들의 정보에 따라 플레이어가 얻을 수 있는 score를 계산하고,
+     * 해당 score값을 새 board 인스턴스에 (boardInfo에 쓰일) 매개변수로 전달한다.
      * */
-    private fun getScore(dices: Array<Int>) {
+    private fun showScore(dices:Array<Int>) {
         val score : Board = yachtGame.getScore(dices)
 
         try {
-            val boards = if(firstPlayer.value == player) listOf(score, secondBoard.value!!) else listOf(firstBoard.value!!, score)
-            val newGameInfo = GameInfo(gameInfo.value!!, boards)
-            viewModelScope.launch {
-                gamePlayRepositery.writeGameInfo(newGameInfo)
-            }
 
-            log(TAG, "getScore() score : $score" , LogTag.I)
-
-        } catch (error:Exception) {
-            log(TAG,"getScore() error :${error.message}", LogTag.D)
+            log(TAG, "showScore Success ", LogTag.I)
+        } catch (error:Error) {
+            log(TAG, "showScore Failure ", LogTag.D)
         }
     }
+
+    /**
+     * diceList에 따라 board 결과를 반한
+     * 'YachtGame' 의 getScore() 메서드를 사용
+     * */
+//    private fun getScore(dices: Array<Int>) {
+//        val score : Board = yachtGame.getScore(dices)
+//
+//        try {
+//            val boards = if(firstPlayer.value == player) listOf(score, secondBoard.value!!) else listOf(firstBoard.value!!, score)
+//            val newGameInfo = GameInfo(gameInfo.value!!, boards)
+//            viewModelScope.launch {
+//                gamePlayRepositery.writeGameInfo(newGameInfo)
+//            }
+//            log(TAG, "getScore() score : $score" , LogTag.I)
+//        } catch (error:Exception) {
+//            log(TAG,"getScore() error : ${error.message}", LogTag.D)
+//        }
+//    }
 
     /**
      * 임시

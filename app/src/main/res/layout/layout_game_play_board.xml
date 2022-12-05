@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:bind="http://schemas.android.com/apk/res-auto">
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="viewModel"
             type="com.ranseo.yatchgame.ui.game.GamePlayViewModel" />
@@ -15,76 +16,83 @@
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
 
 
-        <include
-            android:id="@+id/layout_number_tag"
-            layout="@layout/layout_number_board_tag"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            android:layout_gravity="center"
+            android:elevation="12dp">
 
-        <include
-            android:id="@+id/layout_number_first"
-            layout="@layout/layout_number_board_first"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@+id/layout_number_tag"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            bind:board="@{viewModel.firstBoard}"
-            bind:onClickListener="@{onClickListener}"
-            bind:boardRecord="@{viewModel.boardRecord}"/>
 
-        <include
-            android:id="@+id/layout_number_second"
-            layout="@layout/layout_number_board_second"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@+id/layout_number_first"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            bind:board="@{viewModel.secondBoard}"
-            bind:onClickListener="@{onClickListener}"
-            bind:boardRecord="@{viewModel.boardRecord}"/>
+            <include
+                android:id="@+id/layout_number_tag"
+                layout="@layout/layout_number_board_tag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <include
-            android:id="@+id/layout_rank_tag"
-            layout="@layout/layout_rank_board_tag"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@+id/layout_number_second"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            />
+            <include
+                android:id="@+id/layout_number_first"
+                layout="@layout/layout_number_board_first"
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/layout_number_tag"
+                app:layout_constraintTop_toTopOf="parent"
+                bind:realBoard="@{viewModel.firstRealBoard}"
+                bind:fakeBoard="@{viewModel.firstFakeBoard}"
+                bind:boardRecord="@{viewModel.boardRecord}"
+                bind:onClickListener="@{onClickListener}" />
 
-        <include
-            android:id="@+id/layout_rank_first"
-            layout="@layout/layout_ranks_up_board_first"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@+id/layout_rank_tag"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            bind:board="@{viewModel.firstBoard}"
-            bind:onClickListener="@{onClickListener}"
-            bind:boardRecord="@{viewModel.boardRecord}"/>
+            <include
+                android:id="@+id/layout_number_second"
+                layout="@layout/layout_number_board_second"
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/layout_number_first"
+                app:layout_constraintTop_toTopOf="parent"
+                bind:realBoard="@{viewModel.secondRealBoard}"
+                bind:fakeBoard="@{viewModel.secondFakeBoard}"
+                bind:boardRecord="@{viewModel.boardRecord}"
+                bind:onClickListener="@{onClickListener}" />
 
-        <include
-            layout="@layout/layout_ranks_up_board_second"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@id/layout_rank_first"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            bind:board="@{viewModel.secondBoard}"
-            bind:onClickListener="@{onClickListener}"
-            bind:boardRecord="@{viewModel.boardRecord}"/>
+            <include
+                android:id="@+id/layout_rank_tag"
+                layout="@layout/layout_rank_board_tag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/layout_number_second"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <include
+                android:id="@+id/layout_rank_first"
+                layout="@layout/layout_ranks_up_board_first"
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/layout_rank_tag"
+                app:layout_constraintTop_toTopOf="parent"
+                bind:realBoard="@{viewModel.firstRealBoard}"
+                bind:fakeBoard="@{viewModel.firstFakeBoard}"
+                bind:boardRecord="@{viewModel.boardRecord}"
+                bind:onClickListener="@{onClickListener}" />
+
+            <include
+                layout="@layout/layout_ranks_up_board_second"
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/layout_rank_first"
+                app:layout_constraintTop_toTopOf="parent"
+                bind:realBoard="@{viewModel.secondRealBoard}"
+                bind:fakeBoard="@{viewModel.secondFakeBoard}"
+                bind:boardRecord="@{viewModel.boardRecord}"
+                bind:onClickListener="@{onClickListener}" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
