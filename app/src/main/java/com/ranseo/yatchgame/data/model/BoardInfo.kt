@@ -8,7 +8,7 @@ data class BoardInfo(
     val boardRecords : MutableMap<String, List<BoardRecord>>
 ) {
     constructor(boards:List<Board>, boardRecords:List<BoardRecord>) : this (
-        boards = mutableMapOf("board" to boards),
+        boards = mutableMapOf("boards" to boards),
         boardRecords = mutableMapOf("boardRecords" to boardRecords)
     )
 

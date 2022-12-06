@@ -88,24 +88,37 @@ data class Board(
         (hashMap["total"] as Long).toInt()
     )
 
-    fun plusScore(board: Board): Board {
-        val ones = this.ones + board.ones
-        val twos = this.twos + board.twos
-        val threes = this.threes + board.threes
-        val fours = this.fours + board.fours
-        val fives = this.fives + board.fives
-        val sixes = this.sixes + board.sixes
-        val sum = ones + twos + threes + fours + fives + sixes
-        val bonus = if (sum < 63) 0 else 35
+    fun plusScore(board: Board, boardTag: BoardTag): Board {
+        var ones = if (this.ones > -1) this.ones else 0; var twos = if (this.twos > -1) this.twos else 0;
+        var threes = if (this.threes > -1) this.threes else 0; var fours = if (this.fours > -1) this.fours else 0;
+        var fives = if(this.fives >-1) this.fives else 0; var sixes = if(this.sixes >-1) this.sixes else 0;
+        var choice = if(this.choice >-1) this.choice else 0; var fourCard = if(this.fourCard >-1) this.fourCard else 0;
+        var fullHouse = if(this.fullHouse >-1) this.fullHouse else 0; var smallStraight = if(this.smallStraight >-1) this.smallStraight else 0;
+        var largeStraight = if(this.largeStraight >-1) this.largeStraight else 0; var yacht = if(this.yacht >-1) this.yacht else 0;
 
-        val choice = this.choice + board.choice
-        val fourCard = this.fourCard + board.fourCard
-        val fullHouse = this.fullHouse + board.fullHouse
-        val smallStraight = this.smallStraight + board.smallStraight
-        val largeStraight = this.largeStraight + board.largeStraight
-        val yacht = this.yacht + board.yacht
-        val total =
+        when (boardTag) {
+            BoardTag.ONES -> ones += board.ones
+            BoardTag.TWOS -> twos += board.twos
+            BoardTag.THREES -> threes += board.threes
+            BoardTag.FOURS -> fours += board.fours
+            BoardTag.FIVES -> fives += board.fives
+            BoardTag.SIXES -> sixes += board.sixes
+            BoardTag.CHOICE -> choice += board.choice
+            BoardTag.FOURCARD -> fourCard += board.fourCard
+            BoardTag.FULLHOUSE -> fullHouse += board.fullHouse
+            BoardTag.SMALLSTRAIGHT -> smallStraight += board.smallStraight
+            BoardTag.LARGESTRAIGHT -> largeStraight += board.largeStraight
+            BoardTag.YACHT -> yacht += board.yacht
+        }
+
+
+        this.sum = ones + twos + threes + fours + fives + sixes
+        this.bonus = if (sum < 63) -1 else 35
+
+        this.total =
             sum + bonus + (choice + fourCard + fullHouse + smallStraight + largeStraight + yacht)
+
+
         return Board(
             ones,
             twos,
@@ -170,19 +183,19 @@ data class BoardRecord(
         records[11]
     )
 
-    constructor(hashMap: HashMap<*, *>) : this (
-        hashMap["isOnes"] as Boolean,
-        hashMap["isTwos"] as Boolean,
-        hashMap["isThrees"] as Boolean,
-        hashMap["isFours"] as Boolean,
-        hashMap["isFives"] as Boolean,
-        hashMap["isSixes"] as Boolean,
-        hashMap["isChoice"] as Boolean,
-        hashMap["isFourCard"] as Boolean,
-        hashMap["isFullHouse"] as Boolean,
-        hashMap["isSmallStraight"] as Boolean,
-        hashMap["isLargeStraight"] as Boolean,
-        hashMap["isYacht"] as Boolean
+    constructor(hashMap: HashMap<*, *>) : this(
+        hashMap["ones"] as Boolean,
+        hashMap["twos"] as Boolean,
+        hashMap["threes"] as Boolean,
+        hashMap["fours"] as Boolean,
+        hashMap["fives"] as Boolean,
+        hashMap["sixes"] as Boolean,
+        hashMap["choice"] as Boolean,
+        hashMap["fourCard"] as Boolean,
+        hashMap["fullHouse"] as Boolean,
+        hashMap["smallStraight"] as Boolean,
+        hashMap["largeStraight"] as Boolean,
+        hashMap["yacht"] as Boolean
     )
 }
 

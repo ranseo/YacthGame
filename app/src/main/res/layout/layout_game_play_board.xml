@@ -44,7 +44,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 bind:realBoard="@{viewModel.firstRealBoard}"
                 bind:fakeBoard="@{viewModel.firstFakeBoard}"
-                bind:boardRecord="@{viewModel.boardRecord}"
+                bind:boardRecord="@{viewModel.firstBoardRecord}"
                 bind:onClickListener="@{onClickListener}" />
 
             <include
@@ -57,7 +57,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 bind:realBoard="@{viewModel.secondRealBoard}"
                 bind:fakeBoard="@{viewModel.secondFakeBoard}"
-                bind:boardRecord="@{viewModel.boardRecord}"
+                bind:boardRecord="@{viewModel.secondBoardRecord}"
                 bind:onClickListener="@{onClickListener}" />
 
             <include
@@ -79,7 +79,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 bind:realBoard="@{viewModel.firstRealBoard}"
                 bind:fakeBoard="@{viewModel.firstFakeBoard}"
-                bind:boardRecord="@{viewModel.boardRecord}"
+                bind:boardRecord="@{viewModel.firstBoardRecord}"
                 bind:onClickListener="@{onClickListener}" />
 
             <include
@@ -91,7 +91,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 bind:realBoard="@{viewModel.secondRealBoard}"
                 bind:fakeBoard="@{viewModel.secondFakeBoard}"
-                bind:boardRecord="@{viewModel.boardRecord}"
+                bind:boardRecord="@{viewModel.secondBoardRecord}"
                 bind:onClickListener="@{onClickListener}" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,5 +1,6 @@
 package com.ranseo.yatchgame.ui.game
 
+import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -7,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -25,6 +27,7 @@ class GamePlayFragment : Fragment() {
 
     private val gamePlayViewModel: GamePlayViewModel by viewModels()
 
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -35,21 +38,44 @@ class GamePlayFragment : Fragment() {
         binding.viewModel = gamePlayViewModel
         binding.lifecycleOwner = viewLifecycleOwner
         binding.onClickListener = OnBoardClickListener { boardTag ->
+            //보드판의 점수를 사용자가 클릭하면 해당 점수가 확정되고, 상대턴으로 넘어가는 과정
+            //1.getScore() : 점수 확정한 뒤, 확정된 점수판을 database에 기록
+            gamePlayViewModel.getScore(boardTag)
+            //2.confirmBoardRecord() : 점수를 확정하면 확정 점수가 사용자에게 보이도록 boardRecord를 변경하고, database에 기록
             gamePlayViewModel.confirmBoardRecord(boardTag)
+            //3.finishTurn() : 현재 턴을 넘기고 주사위를 초기화.
+            gamePlayViewModel.finishTurn()
 
-            //todo : 클릭을 하면 상대턴으로 넘어가는 코드 구현.
         }
 
-        gamePlayViewModel.gameId.observe(viewLifecycleOwner, gameIdObserver())
-        gamePlayViewModel.gameInfo.observe(viewLifecycleOwner, gameInfoObserver())
-        gamePlayViewModel.myTurn.observe(viewLifecycleOwner, myTurnObserver())
-        gamePlayViewModel.firstPlayer.observe(viewLifecycleOwner, firstPlayerObserver())
-        gamePlayViewModel.initRollDiceKeep.observe(viewLifecycleOwner, initRollDiceKeepObserver())
-        gamePlayViewModel.rollDice.observe(viewLifecycleOwner, rollDiceObserver())
+        with(gamePlayViewModel) {
+            gameId.observe(viewLifecycleOwner, gameIdObserver())
+            gameInfo.observe(viewLifecycleOwner, gameInfoObserver())
+            myTurn.observe(viewLifecycleOwner, myTurnObserver())
+            firstPlayer.observe(viewLifecycleOwner, firstPlayerObserver())
+            initRollDiceKeep.observe(viewLifecycleOwner, initRollDiceKeepObserver())
+            rollDice.observe(viewLifecycleOwner, rollDiceObserver())
+            firstBoardRecord.observe(viewLifecycleOwner, firstBoardRecordObserver())
+            secondBoardRecord.observe(viewLifecycleOwner, secondBoardRecordObserver())
+        }
         setRollDiceImageViewClickListener()
 
         return binding.root
     }
+
+    private fun firstBoardRecordObserver() =
+        Observer<BoardRecord?>{
+            it?.let { boardRecord ->
+                log(TAG,"firstBoardRecordObserver : ${boardRecord}", LogTag.I)
+            }
+        }
+
+    private fun secondBoardRecordObserver() =
+        Observer<BoardRecord?>{
+            it?.let { boardRecord ->
+                log(TAG,"secondBoardRecordObserver : ${boardRecord}", LogTag.I)
+            }
+        }
 
     /**
      *
@@ -152,6 +178,7 @@ class GamePlayFragment : Fragment() {
                     if (gamePlayViewModel.chance == GamePlayViewModel.INIT_CHANCE) {
                         gamePlayViewModel.reloadBeforeRollDice()
                         log(TAG, "myTurnObserver : 현재 나의 턴 입니다.", LogTag.I)
+                        gamePlayViewModel.implementTurnCount()
                         Toast.makeText(requireContext(), "내 턴 입니다.", Toast.LENGTH_SHORT).show()
                     }
                 } else {

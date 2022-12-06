@@ -22,7 +22,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/black"
+        android:background="@color/white"
         >
 
         <include
@@ -61,7 +61,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="24sp"
-
+                android:text="@{viewModel.turnCountStr}"
                 app:layout_constraintStart_toEndOf="@id/tv_turn"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="1/12" />
@@ -159,6 +159,17 @@
 
         </LinearLayout>
 
+        <TextView
+            tools:text="0/3"
+            android:text="@{viewModel.chanceStr}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/bottom_guideline"
+            app:layout_constraintStart_toStartOf="@+id/btn_roll"
+            app:layout_constraintEnd_toEndOf="@id/btn_roll"
+            app:layout_constraintBottom_toTopOf="@id/btn_roll"
+            />
+
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_roll"
             android:onClick="@{()->viewModel.rollDices()}"
@@ -171,16 +182,16 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_finish"
-            android:text="Finish"
-            android:onClick="@{()->viewModel.finishTurn()}"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/bottom_guideline"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/btn_roll"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+<!--        <androidx.appcompat.widget.AppCompatButton-->
+<!--            android:id="@+id/btn_finish"-->
+<!--            android:text="Finish"-->
+<!--            android:onClick="@{()->viewModel.finishTurn()}"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/bottom_guideline"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toEndOf="@id/btn_roll"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"/>-->
 
 
 
