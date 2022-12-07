@@ -36,7 +36,7 @@
 
         <TextView
             android:id="@+id/tv_room_host"
-            android:text="란서"
+            tools:text="란서"
             android:textColor="@color/grey"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -6,6 +6,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.ranseo.yatchgame.LogTag
 import com.ranseo.yatchgame.data.model.LobbyRoom
+import com.ranseo.yatchgame.data.model.Player
 import com.ranseo.yatchgame.log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -36,7 +37,11 @@ class LobbyRoomDataSource @Inject constructor(private val firebaseDatabase: Fire
             override fun onDataChange(snapshot: DataSnapshot) {
                 val lobbyRooms = snapshot.children.map { list ->
                     val hashMap = list.value as HashMap<*, *>
-                    val lobbyRoom = LobbyRoom(hashMap)
+
+                    val playerHashMap = hashMap["host"] as HashMap<*,*>
+                    val playerMap = playerHashMap["host"] as HashMap<*,*>
+                    val player = Player(playerMap)
+                    val lobbyRoom = LobbyRoom(hashMap, mutableMapOf<String,Player>("host" to player))
 
                     lobbyRoom
                 }

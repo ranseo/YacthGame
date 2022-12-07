@@ -150,6 +150,7 @@ class GamePlayFragment : Fragment() {
                 gamePlayViewModel.refreshGameInfo(gameId)
                 gamePlayViewModel.refreshRollDice(gameId)
                 gamePlayViewModel.refreshBoardInfo(gameId)
+                gamePlayViewModel.refreshTurnCount()
                 //gamePlayViewModel.writeRollDiceAtFirst(gameId)
             }
         }
@@ -178,7 +179,7 @@ class GamePlayFragment : Fragment() {
                     if (gamePlayViewModel.chance == GamePlayViewModel.INIT_CHANCE) {
                         gamePlayViewModel.reloadBeforeRollDice()
                         log(TAG, "myTurnObserver : 현재 나의 턴 입니다.", LogTag.I)
-                        gamePlayViewModel.implementTurnCount()
+                        if(gamePlayViewModel.isFirstPlayer()) gamePlayViewModel.implementTurnCount()
                         Toast.makeText(requireContext(), "내 턴 입니다.", Toast.LENGTH_SHORT).show()
                     }
                 } else {

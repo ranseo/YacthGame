@@ -3,12 +3,19 @@
     <!-- Strings related to login -->
     <string name="title_activity_login">LoginActivity</string>
     <string name="prompt_nickname">아이디</string>
-    <string name="action_sign_in">Sign in or register</string>
+
     <string name="action_sign_in_short">Sign in</string>
     <string name="welcome">"Welcome !"</string>
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
+
+    <!--login_fragment.xml-->
+    <string name="login_email_input">이메일을 입력하세요</string>
+    <string name="login_nickname_input">게임에서 사용하실 별명을 입력하세요</string>
+    <string name="action_sign_in">로그인</string>
+    <string name="action_sign_up">회원가입</string>
+
     <!--lobby_fragment.xml-->
     <string name="yacth_dice_room_list">야추 다이스 방 목록</string>
 

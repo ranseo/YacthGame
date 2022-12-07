@@ -29,20 +29,20 @@ class LoginViewModel @Inject constructor(private val loginRepository: LoginRepos
     val loginResult: LiveData<LoginResult> = _loginResult
 
 
-    fun login(username: String) {
+    fun login(email: String, nickName:String) {
         // can be launched in a separate asynchronous job
 
         viewModelScope.launch(Dispatchers.Main) {
-            loginRepository.login(username) { uid, name, result ->
-                if (uid != null && name != null) {
+            loginRepository.login(email) { uid, _, result ->
+                if (uid != null && nickName != null) {
 
-                    log(TAG, "loginRepositery.login - uid : ${uid}, name : ${name}", LogTag.I)
+                    log(TAG, "loginRepositery.login - uid : ${uid}, name : ${nickName}", LogTag.I)
 
                     viewModelScope.launch {
                         launch {
                             val player = Player(
                                 uid,
-                                name
+                                nickName
                             )
                             loginRepository.insertPlayer(player)
                         }.join()
@@ -55,8 +55,6 @@ class LoginViewModel @Inject constructor(private val loginRepository: LoginRepos
                                 _loginResult.value = LoginResult(error = R.string.login_failed)
                             }
                         }.join()
-
-
                     }
                 }
             }

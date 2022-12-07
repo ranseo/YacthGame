@@ -28,6 +28,24 @@ class GamePlayViewModel @Inject constructor(
 
     private lateinit var player: Player
 
+    private val nameTag = listOf(
+        R.drawable.name_tag_cat,
+        R.drawable.name_tag_bear,
+        R.drawable.name_tag_deer,
+        R.drawable.name_tag_frog,
+        R.drawable.name_tag_rabbit
+    )
+    private val nameTagReversed = listOf(
+        R.drawable.name_tag_cat_reverse,
+        R.drawable.name_tag_bear_reverse,
+        R.drawable.name_tag_deer_reverse,
+        R.drawable.name_tag_frog_reverse,
+        R.drawable.name_tag_rabbit_reverse
+    )
+    private val _nameTagImages = MutableLiveData<List<Drawable>>()
+    val nameTagImages: LiveData<List<Drawable>>
+        get() = _nameTagImages
+
     private val _gameId = MutableLiveData<String>()
     val gameId: LiveData<String>
         get() = _gameId
@@ -79,11 +97,11 @@ class GamePlayViewModel @Inject constructor(
         get() = _chance
 
     private val _chanceStr = MutableLiveData<String>()
-    val chanceStr : LiveData<String>
+    val chanceStr: LiveData<String>
         get() = _chanceStr
 
     private fun getChanceStr() {
-        _chanceStr.value = if(chance== INIT_CHANCE) "-/3" else "${3-chance}/3"
+        _chanceStr.value = if (chance == INIT_CHANCE) "-/3" else "${3 - chance}/3"
     }
 
 
@@ -126,12 +144,35 @@ class GamePlayViewModel @Inject constructor(
         get() = _rollDiceImages
 
     init {
+        refreshNameTag()
+
         refreshPlayer()
         refreshGameId()
 
         setRollDiceImage(START_LIST)
+
+
     }
 
+
+    /**
+     * Profile - NameTag drawable 이미지를 무작위로 설정
+     * */
+    private fun refreshNameTag() {
+        try {
+            val first = nameTag.shuffled().first()
+            val second = nameTagReversed.shuffled().first()
+
+            val list = listOf(
+                getApplication<Application>().getDrawable(first)!!,
+                getApplication<Application>().getDrawable(second)!!
+            )
+            _nameTagImages.value = list
+
+        } catch (error: NullPointerException) {
+            log(TAG,"refreshNameTag : error ${error.message}", LogTag.D)
+        }
+    }
 
     /**
      * 사용자의 player data를 초기화하고,
@@ -207,6 +248,13 @@ class GamePlayViewModel @Inject constructor(
 
 
         }
+    }
+
+    /**
+     *
+     * */
+    fun refreshTurnCount() {
+        if (isFirstPlayer()) _turnCount.value = 0 else _turnCount.value = 1
     }
 
     /**
@@ -381,6 +429,7 @@ class GamePlayViewModel @Inject constructor(
         writeRollDice(diceList, INIT_KEEP_LIST.clone(), player != firstPlayer.value)
         _chance = INIT_CHANCE
         _initRollDiceKeep.value = Event(Unit)
+        if (!isFirstPlayer()) implementTurnCount()
         getChanceStr()
     }
 
@@ -456,6 +505,11 @@ class GamePlayViewModel @Inject constructor(
     fun implementTurnCount() {
         _turnCount.value = _turnCount.value?.plus(1) ?: 0
     }
+
+    /**
+     *
+     * */
+    fun isFirstPlayer() = firstPlayer.value == player
 
     companion object {
         private const val TAG = "GamePlayViewModel"

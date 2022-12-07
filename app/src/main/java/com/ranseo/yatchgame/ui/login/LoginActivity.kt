@@ -10,6 +10,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -34,8 +35,9 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val username = binding.username
-        val login = binding.login
+        val userEmail : EditText = binding.etEmail!!
+        val userNickName : EditText = binding.etNickname!!
+        val login : Button = binding.btnLogin!!
 
         loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
             val loginState = it ?: return@Observer
@@ -44,13 +46,12 @@ class LoginActivity : AppCompatActivity() {
             login.isEnabled = loginState.isDataValid
 
             if (loginState.usernameError != null) {
-                username.error = getString(loginState.usernameError)
+                userEmail.error = getString(loginState.usernameError)
             }
         })
 
         loginViewModel.loginResult.observe(this@LoginActivity, Observer {
             val loginResult = it ?: return@Observer
-
 
             if (loginResult.error != null) {
                 showLoginFailed(loginResult.error)
@@ -64,26 +65,27 @@ class LoginActivity : AppCompatActivity() {
             finish()
         })
 
-        username.apply{
+        userEmail.apply{
             afterTextChanged {
                 loginViewModel.loginDataChanged(
-                    username.text.toString()
+                    userEmail.text.toString()
                 )
             }
 
-            setOnEditorActionListener { _, actionId, _ ->
-                when (actionId) {
-                    EditorInfo.IME_ACTION_DONE ->
-                        loginViewModel.login(
-                            username.text.toString()
-                        )
-                }
-                false
-            }
+//            setOnEditorActionListener { _, actionId, _ ->
+//                when (actionId) {
+//                    EditorInfo.IME_ACTION_DONE ->
+//                        loginViewModel.login(
+//                            username.text.toString()
+//                        )
+//                }
+//                false
+//            }
+        }
 
-            login.setOnClickListener {
-                loginViewModel.login(username.text.toString())
-            }
+
+        login.setOnClickListener {
+            loginViewModel.login(userEmail.text.toString(), userNickName.text.toString())
         }
     }
 

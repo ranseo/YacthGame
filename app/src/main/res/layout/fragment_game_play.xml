@@ -30,14 +30,16 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            bind:player="@{viewModel.firstPlayer}" />
+            bind:player="@{viewModel.firstPlayer}"
+            bind:viewModel="@{viewModel}"/>
 
         <include
             layout="@layout/layout_player_profile_reverse"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            bind:player="@{viewModel.secondPlayer}" />
+            bind:player="@{viewModel.secondPlayer}"
+            bind:viewModel="@{viewModel}"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"

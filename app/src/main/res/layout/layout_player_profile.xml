@@ -8,6 +8,10 @@
             name="player"
             type="com.ranseo.yatchgame.data.model.Player" />
 
+        <variable
+            name="viewModel"
+            type="com.ranseo.yatchgame.ui.game.GamePlayViewModel" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -21,7 +25,8 @@
             android:layout_width="140dp"
             android:layout_height="50dp"
             android:scaleType="fitXY"
-            android:src="@drawable/name_tag_rabbit"
+            tools:src="@drawable/name_tag_rabbit"
+            setProfileSrc="@{viewModel.nameTagImages[0]}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             />
@@ -31,7 +36,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.1"/>
+            app:layout_constraintGuide_percent="0.12"/>
 
         <TextView
             android:id="@+id/tv_player_name"

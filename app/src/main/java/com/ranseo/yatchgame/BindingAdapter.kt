@@ -12,3 +12,9 @@ fun bindRollDice(imageView: ImageView, dice:Drawable) {
     log(TAG,"bindRollDice() : ${dice}", LogTag.I)
     imageView.setImageDrawable(dice)
 }
+
+@BindingAdapter("setProfileSrc")
+fun bindProfile(imageView: ImageView, nameTag:Drawable) {
+    log(TAG,"bindRollDice() : ${nameTag}", LogTag.I)
+    imageView.setImageDrawable(nameTag)
+}

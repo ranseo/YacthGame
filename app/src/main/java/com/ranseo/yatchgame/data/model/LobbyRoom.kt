@@ -11,10 +11,10 @@ data class LobbyRoom(
     val host: MutableMap<String, Player>,
     var roomKey : String
 ) {
-    constructor(hashMap:HashMap<*,*>) : this (
+    constructor(hashMap:HashMap<*,*>, player: MutableMap<String,Player>) : this (
         hashMap["roomId"] as String,
         hashMap["roomName"]!! as String,
-        hashMap["host"] as MutableMap<String,Player>,
+        player,
         hashMap["roomKey"] as String
     )
 
