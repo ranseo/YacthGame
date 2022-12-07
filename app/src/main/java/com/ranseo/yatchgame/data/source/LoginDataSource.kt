@@ -2,6 +2,8 @@ package com.ranseo.yatchgame.data.source
 
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.ranseo.yatchgame.data.Result
 import com.ranseo.yatchgame.data.model.LoggedInUser
 import java.io.IOException
@@ -38,6 +40,16 @@ class LoginDataSource @Inject constructor(private val auth : FirebaseAuth){
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "createUserWithEmail:failure", task.exception)
+
+                    when(task.exception) {
+                        is FirebaseAuthUserCollisionException -> {
+                            loginWithEmail(email, password, callback)
+                            Log.w(TAG, "이메일이 이미 등록되어 있으므로 로그인 실행")
+                        }
+                        else -> {
+
+                        }
+                    }
                 }
             }
     }

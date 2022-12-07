@@ -36,7 +36,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.12"/>
+            app:layout_constraintGuide_percent="0.10"/>
 
         <TextView
             android:id="@+id/tv_player_name"
@@ -48,7 +48,7 @@
             app:layout_constraintBottom_toBottomOf="@id/name_tag"
             app:layout_constraintStart_toEndOf="@id/guideline"
             app:layout_constraintTop_toTopOf="@id/name_tag"
-            tools:text="란서" />
+            tools:text="란서란서란서란서" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

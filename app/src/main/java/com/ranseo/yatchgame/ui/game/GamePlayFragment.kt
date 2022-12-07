@@ -57,43 +57,12 @@ class GamePlayFragment : Fragment() {
             rollDice.observe(viewLifecycleOwner, rollDiceObserver())
             firstBoardRecord.observe(viewLifecycleOwner, firstBoardRecordObserver())
             secondBoardRecord.observe(viewLifecycleOwner, secondBoardRecordObserver())
+            turnCount.observe(viewLifecycleOwner, turnCountObserver())
         }
         setRollDiceImageViewClickListener()
 
         return binding.root
     }
-
-    private fun firstBoardRecordObserver() =
-        Observer<BoardRecord?>{
-            it?.let { boardRecord ->
-                log(TAG,"firstBoardRecordObserver : ${boardRecord}", LogTag.I)
-            }
-        }
-
-    private fun secondBoardRecordObserver() =
-        Observer<BoardRecord?>{
-            it?.let { boardRecord ->
-                log(TAG,"secondBoardRecordObserver : ${boardRecord}", LogTag.I)
-            }
-        }
-
-    /**
-     *
-     * */
-    private fun rollDiceObserver() =
-        Observer<RollDice> {
-            it?.let { rollDice ->
-                gamePlayViewModel.myTurn.value?.let { myTurn ->
-                    if (!myTurn) {
-                        gamePlayViewModel.checkOpponentDiceState(rollDice)
-                        setRollDiceSelected(rollDice)
-                        log(TAG, "rollDiceObserver() : Not My Turn  ${rollDice}", LogTag.I)
-                    } else {
-                        log(TAG, "rollDiceObserver() : my Turn  ${rollDice}", LogTag.I)
-                    }
-                }
-            }
-        }
 
 
     /**
@@ -150,7 +119,7 @@ class GamePlayFragment : Fragment() {
                 gamePlayViewModel.refreshGameInfo(gameId)
                 gamePlayViewModel.refreshRollDice(gameId)
                 gamePlayViewModel.refreshBoardInfo(gameId)
-                gamePlayViewModel.refreshTurnCount()
+                //gamePlayViewModel.refreshTurnCount()
                 //gamePlayViewModel.writeRollDiceAtFirst(gameId)
             }
         }
@@ -162,6 +131,7 @@ class GamePlayFragment : Fragment() {
                     gamePlayViewModel.gameId.value?.let { gameId ->
                         gamePlayViewModel.writeRollDiceAtFirst(gameId)
                         gamePlayViewModel.rollDiceFirstFlag = false
+                        if(gamePlayViewModel.isFirstPlayer())gamePlayViewModel.refreshTurnCount()
                     }
                 }
 
@@ -198,6 +168,52 @@ class GamePlayFragment : Fragment() {
         Observer<Any?> {
             it?.let {
                 setRollDiceUnSelected()
+            }
+        }
+
+
+    private fun firstBoardRecordObserver() =
+        Observer<BoardRecord?>{
+            it?.let { boardRecord ->
+                log(TAG,"firstBoardRecordObserver : ${boardRecord}", LogTag.I)
+            }
+        }
+
+    private fun secondBoardRecordObserver() =
+        Observer<BoardRecord?>{
+            it?.let { boardRecord ->
+                log(TAG,"secondBoardRecordObserver : ${boardRecord}", LogTag.I)
+            }
+        }
+
+    /**
+     * 내 턴이 아니고 상대턴일 경우 상대가 주사위를 굴렸을 때, 주사위 눈을 현황을 보여주기 위하여
+     * rollDice가 갱신될 때 마다 ViewModel의 checkOpponentDiceState() 메서드 및 Fragment의 setRollDiceSelected() 메서드 실행
+     * */
+    private fun rollDiceObserver() =
+        Observer<RollDice> {
+            it?.let { rollDice ->
+                gamePlayViewModel.myTurn.value?.let { myTurn ->
+                    if (!myTurn) {
+                        gamePlayViewModel.checkOpponentDiceState(rollDice)
+                        setRollDiceSelected(rollDice)
+                        log(TAG, "rollDiceObserver() : Not My Turn  ${rollDice}", LogTag.I)
+                    } else {
+                        log(TAG, "rollDiceObserver() : my Turn  ${rollDice}", LogTag.I)
+                    }
+                }
+            }
+        }
+    /**
+     *
+     * */
+    private fun turnCountObserver() =
+        Observer<Int> {
+            it?.let{ turnCount ->
+                if(turnCount > 12) {
+
+                }
+
             }
         }
 

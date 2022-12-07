@@ -66,11 +66,11 @@ class GamePlayViewModel @Inject constructor(
     val myTurn: LiveData<Boolean>
         get() = _myTurn
 
-    private val _turnCount = MutableLiveData<Int>(0)
+    private val _turnCount = MutableLiveData<Int>(1)
     val turnCount: LiveData<Int>
         get() = _turnCount
     val turnCountStr = Transformations.map(turnCount) {
-        "$it/12"
+        if(it<13) "$it/12" else "종료"
     }
 
     private val _initRollDiceKeep = MutableLiveData<Event<Any?>>()
@@ -182,9 +182,6 @@ class GamePlayViewModel @Inject constructor(
         viewModelScope.launch {
             player = gamePlayRepositery.refreshHostPlayer()
             with(_myTurn) {
-//                addSource(firstPlayer) {
-//                    setMyTurn(player, firstPlayer, rollDice)
-//                }
                 addSource(rollDice) {
                     setMyTurn(player, firstPlayer, rollDice)
                 }
@@ -254,7 +251,8 @@ class GamePlayViewModel @Inject constructor(
      *
      * */
     fun refreshTurnCount() {
-        if (isFirstPlayer()) _turnCount.value = 0 else _turnCount.value = 1
+        _turnCount.value = 0
+        log(TAG,"turnCount.value : ${turnCount.value}", LogTag.I)
     }
 
     /**
@@ -510,6 +508,31 @@ class GamePlayViewModel @Inject constructor(
      *
      * */
     fun isFirstPlayer() = firstPlayer.value == player
+
+
+    /**
+     * 게임이 끝나고, 승패여부=Resulut 를 알려주는 문자열 및 custom dialog
+     * */
+    fun getGameResult() : String {
+        val first = firstRealBoard.value!!
+        val second = secondRealBoard.value!!
+        var isDraw = false
+
+        val winner = if(first.total>second.total){
+            firstPlayer.value!!.name
+        } else if(first.total < second.total) {
+            secondPlayer.value!!.name
+        } else {
+            isDraw= true
+            "무승부"
+        }
+
+        return if(!isDraw) {
+            getApplication<Application?>().getString(R.string.game_result_win, winner)
+        } else {
+            getApplication<Application?>().getString(R.string.game_result_draw)
+        }
+    }
 
     companion object {
         private const val TAG = "GamePlayViewModel"

@@ -6,7 +6,7 @@ import java.util.*
 
 object DateTime {
     private val dateFormat = DateFormat.getDateInstance(DateFormat.FULL, Locale.KOREAN)
-    private val simpleDateFormat = SimpleDateFormat("yyyy년 MM월 EEE요일 HH시:mm분:ss초", Locale.KOREAN)
+    private val simpleDateFormat = SimpleDateFormat("yyyy년 MM월 dd일 EEE요일 HH시:mm분:ss초", Locale.KOREAN)
 
     fun getNowDate() : String{
         val date = Date()
