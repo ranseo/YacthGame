@@ -29,7 +29,7 @@ class LoginViewModel @Inject constructor(private val loginRepository: LoginRepos
     val loginResult: LiveData<LoginResult> = _loginResult
 
 
-    fun login(email: String, nickName:String) {
+    fun login(email: String, nickName: String) {
         // can be launched in a separate asynchronous job
 
         viewModelScope.launch(Dispatchers.Main) {
@@ -44,15 +44,22 @@ class LoginViewModel @Inject constructor(private val loginRepository: LoginRepos
                                 uid,
                                 nickName
                             )
-                            loginRepository.insertPlayer(player)
-                        }.join()
-
-
-                        launch {
-                            if(result is Result.Success) {
-                                _loginResult.postValue(LoginResult(LoggedInUserView(result.data.displayName)))
-                            } else {
-                                _loginResult.value = LoginResult(error = R.string.login_failed)
+                            loginRepository.insertPlayer(player) { isWrite ->
+                                viewModelScope.launch {
+                                    if (isWrite) {
+                                        if (result is Result.Success) {
+                                            _loginResult.postValue(
+                                                LoginResult(
+                                                    LoggedInUserView(
+                                                        result.data.displayName
+                                                    )
+                                                )
+                                            )
+                                        } else {
+                                            _loginResult.postValue(LoginResult(error = R.string.login_failed))
+                                        }
+                                    }
+                                }
                             }
                         }.join()
                     }

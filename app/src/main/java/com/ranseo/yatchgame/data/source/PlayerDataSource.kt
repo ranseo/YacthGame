@@ -26,18 +26,21 @@ class PlayerDataSource @Inject constructor(private val yachtRoomDao: YachtRoomDa
 
     suspend fun getHostPlayer() = getPlayer(firebaseAuth.currentUser!!.uid)
 
+    fun getMyPlayer() = yachtRoomDao.getHostPlayer(firebaseAuth.currentUser!!.uid)
     suspend fun insert(player: Player) = withContext(Dispatchers.IO){
 
         yachtRoomDao.insertPlayer(player)
     }
 
-    suspend fun write(player:Player) = withContext(Dispatchers.IO){
+    suspend fun write(player:Player, callBack:(isWrite:Boolean)->Unit) = withContext(Dispatchers.IO){
         val path = firebaseDatabase.reference.child("player").child(player.playerId)
         path.setValue(player).addOnCompleteListener {
             if(it.isSuccessful) {
                 log(TAG, "player 쓰기 성공", LogTag.I)
+                callBack(true)
             } else {
                 log(TAG, "player 쓰기 실패 : ${it.exception?.message}", LogTag.D)
+                callBack(false)
             }
         }
     }

@@ -1,13 +1,16 @@
 package com.ranseo.yatchgame.ui.game
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
@@ -17,15 +20,31 @@ import com.ranseo.yatchgame.R
 import com.ranseo.yatchgame.data.model.*
 import com.ranseo.yatchgame.databinding.FragmentGamePlayBinding
 import com.ranseo.yatchgame.log
+import com.ranseo.yatchgame.ui.dialog.GameResultDialog
+import com.ranseo.yatchgame.ui.lobby.LobbyActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class GamePlayFragment : Fragment() {
+class GamePlayFragment() : Fragment() {
     private val TAG = "GamePlayFragment"
     private lateinit var binding: FragmentGamePlayBinding
 
     private val gamePlayViewModel: GamePlayViewModel by viewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val onBackPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val gameResult = gamePlayViewModel.getGameResult(true)
+                gamePlayViewModel.finishGame(gameResult)
+                gamePlayViewModel.earlyFinishGame = true
+            }
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+    }
+
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreateView(
@@ -108,6 +127,18 @@ class GamePlayFragment : Fragment() {
         Observer<GameInfo> {
             it?.let { gameInfo ->
                 log(TAG, "gameInfoObserver : ${gameInfo}", LogTag.I)
+                if (gameInfo.result.isNotEmpty() && gameInfo.gameFinishTime.isNotEmpty()) {
+                    if (gamePlayViewModel.earlyFinishGame) startLobbyActivity()
+                    else {
+                        if (EARLY_FLAG.matches(gameInfo.result)) {
+                            val gameResult = gamePlayViewModel.getGameResult(true)
+                            showGameResultDialog(gameResult,false)
+                        } else {
+                            val gameResult = gamePlayViewModel.getGameResult(false)
+                            showGameResultDialog(gameResult,true)
+                        }
+                    }
+                }
             }
         }
 
@@ -131,7 +162,8 @@ class GamePlayFragment : Fragment() {
                     gamePlayViewModel.gameId.value?.let { gameId ->
                         gamePlayViewModel.writeRollDiceAtFirst(gameId)
                         gamePlayViewModel.rollDiceFirstFlag = false
-                        if(gamePlayViewModel.isFirstPlayer())gamePlayViewModel.refreshTurnCount()
+                        if (gamePlayViewModel.isFirstPlayer()) gamePlayViewModel.refreshTurnCount()
+
                     }
                 }
 
@@ -147,10 +179,11 @@ class GamePlayFragment : Fragment() {
             it?.let { myTurn ->
                 if (myTurn) {
                     if (gamePlayViewModel.chance == GamePlayViewModel.INIT_CHANCE) {
+                        log(TAG, "myTurnObserver : chance = ${gamePlayViewModel.chance}",LogTag.I)
                         gamePlayViewModel.reloadBeforeRollDice()
                         log(TAG, "myTurnObserver : 현재 나의 턴 입니다.", LogTag.I)
-                        if(gamePlayViewModel.isFirstPlayer()) gamePlayViewModel.implementTurnCount()
-                        Toast.makeText(requireContext(), "내 턴 입니다.", Toast.LENGTH_SHORT).show()
+                        if (gamePlayViewModel.isFirstPlayer()) gamePlayViewModel.implementTurnCount()
+                        val toast = Toast.makeText(requireContext(), "내 턴 입니다.", Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     log(TAG, "myTurnObserver : 현재 나의 턴이 아닙니다.", LogTag.I)
@@ -173,16 +206,16 @@ class GamePlayFragment : Fragment() {
 
 
     private fun firstBoardRecordObserver() =
-        Observer<BoardRecord?>{
+        Observer<BoardRecord?> {
             it?.let { boardRecord ->
-                log(TAG,"firstBoardRecordObserver : ${boardRecord}", LogTag.I)
+                log(TAG, "firstBoardRecordObserver : ${boardRecord}", LogTag.I)
             }
         }
 
     private fun secondBoardRecordObserver() =
-        Observer<BoardRecord?>{
+        Observer<BoardRecord?> {
             it?.let { boardRecord ->
-                log(TAG,"secondBoardRecordObserver : ${boardRecord}", LogTag.I)
+                log(TAG, "secondBoardRecordObserver : ${boardRecord}", LogTag.I)
             }
         }
 
@@ -204,23 +237,65 @@ class GamePlayFragment : Fragment() {
                 }
             }
         }
+
     /**
      *
      * */
     private fun turnCountObserver() =
         Observer<Int> {
-            it?.let{ turnCount ->
-                if(turnCount > 12) {
+            it?.let { turnCount ->
+                if (turnCount > 12) {
+                    val gameResult = gamePlayViewModel.getGameResult(false)
+                    gamePlayViewModel.finishGame(gameResult)
+                }
+            }
+        }
+
+    /**
+     * 게임이 끝났을 때, 띄우는 Dialog
+     * */
+    private fun showGameResultDialog(gameResult: List<String>, isRematch:Boolean) {
+        val dialog = GameResultDialog(
+            requireContext(),
+            gameResult[0],
+            gameResult[1],
+            gameResult[2],
+            gameResult[3],
+            gameResult[4],
+            isRematch
+        )
+
+        dialog.setOnClickListener(
+            object : GameResultDialog.OnGameResultDialogClickListener {
+                override fun onExitBtn() {
+                    startLobbyActivity()
+                }
+
+                override fun onRematchBtn() {
 
                 }
 
             }
-        }
+        )
+        dialog.showDialog()
+    }
+
+    /**
+     * dialog의 onExitBtn()을 누를 때 로비로 돌아감
+     * */
+    private fun startLobbyActivity() {
+        val intent = Intent(requireContext(), LobbyActivity::class.java)
+        startActivity(intent)
+        requireActivity().finish()
+    }
 
     override fun onDestroy() {
         super.onDestroy()
         gamePlayViewModel.removeListener()
     }
 
+    companion object {
+        private val EARLY_FLAG = Regex("님이 게임에서 나가셨습니다.")
+    }
 
 }

@@ -16,6 +16,7 @@ class GamePlayRepositery @Inject constructor(
     private val boardInfoDataSource: BoardInfoDataSource
 ) {
 
+    val player = playerDataSource.getMyPlayer()
     //Player
     suspend fun refreshHostPlayer() =
         withContext(Dispatchers.IO) { playerDataSource.getHostPlayer() }
@@ -23,6 +24,10 @@ class GamePlayRepositery @Inject constructor(
     //GameInfo
     suspend fun getGameId() =
         withContext(Dispatchers.IO) { gameInfoRoomDataSource.getGameInfoGameId() }
+
+    suspend fun getGameStartTime() = withContext(Dispatchers.IO) {
+        gameInfoRoomDataSource.getGameInfoGameStartTime()
+    }
 
     suspend fun getGameInfo(gameInfoId: String, callback: (gameInfo: GameInfo) -> Unit) =
         withContext(Dispatchers.IO) { gameInfoFirebaseDataSource.getGameInfo(gameInfoId, callback) }

@@ -5,6 +5,7 @@ import android.app.Application
 import android.graphics.drawable.Drawable
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.core.content.getSystemService
 import androidx.lifecycle.*
 import com.ranseo.yatchgame.Event
 import com.ranseo.yatchgame.LogTag
@@ -12,6 +13,7 @@ import com.ranseo.yatchgame.R
 import com.ranseo.yatchgame.data.model.*
 import com.ranseo.yatchgame.data.repo.GamePlayRepositery
 import com.ranseo.yatchgame.log
+import com.ranseo.yatchgame.util.DateTime
 import com.ranseo.yatchgame.util.YachtGame
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -27,6 +29,7 @@ class GamePlayViewModel @Inject constructor(
 ) : AndroidViewModel(application) {
 
     private lateinit var player: Player
+    private var myPlayer = gamePlayRepositery.player
 
     private val nameTag = listOf(
         R.drawable.name_tag_cat,
@@ -66,11 +69,23 @@ class GamePlayViewModel @Inject constructor(
     val myTurn: LiveData<Boolean>
         get() = _myTurn
 
+    private fun setMyTurn(
+        player: LiveData<Player>,
+        firstPlayer: LiveData<Player>,
+        secondPlayer: LiveData<Player>,
+        rollDice: LiveData<RollDice>
+    ) {
+        if (player.value != null && rollDice.value != null) {
+            _myTurn.value = if (player.value == firstPlayer.value && rollDice.value!!.turn) true
+            else player.value == secondPlayer.value && !rollDice.value!!.turn
+        }
+    }
+
     private val _turnCount = MutableLiveData<Int>(1)
     val turnCount: LiveData<Int>
         get() = _turnCount
     val turnCountStr = Transformations.map(turnCount) {
-        if(it<13) "$it/12" else "종료"
+        if (it < 13) "$it/12" else "종료"
     }
 
     private val _initRollDiceKeep = MutableLiveData<Event<Any?>>()
@@ -78,17 +93,6 @@ class GamePlayViewModel @Inject constructor(
         get() = _initRollDiceKeep
 
     var rollDiceFirstFlag: Boolean = true
-
-    private fun setMyTurn(
-        player: Player,
-        firstPlayer: LiveData<Player>,
-        rollDice: LiveData<RollDice>
-    ) {
-        if (player != null && rollDice.value != null) {
-            _myTurn.value = if (player == firstPlayer.value && rollDice.value!!.turn) true
-            else player == secondPlayer.value && !rollDice.value!!.turn
-        }
-    }
 
     private var diceList = INIT_DICE_LIST.clone()
     private var keepList = INIT_KEEP_LIST.clone()
@@ -143,17 +147,34 @@ class GamePlayViewModel @Inject constructor(
     val rollDiceImages: LiveData<List<Drawable>>
         get() = _rollDiceImages
 
+
+    var earlyFinishGame : Boolean = false
+
     init {
         refreshNameTag()
 
         refreshPlayer()
         refreshGameId()
+        refreshMyTurn()
 
         setRollDiceImage(START_LIST)
 
 
     }
 
+    /**
+     * myTurn - MediatorLiveData를
+     * */
+    private fun refreshMyTurn() {
+        with(_myTurn) {
+            addSource(rollDice) {
+                setMyTurn(myPlayer, firstPlayer, secondPlayer, rollDice)
+            }
+            addSource(myPlayer) {
+                setMyTurn(myPlayer, firstPlayer, secondPlayer, rollDice)
+            }
+        }
+    }
 
     /**
      * Profile - NameTag drawable 이미지를 무작위로 설정
@@ -170,7 +191,7 @@ class GamePlayViewModel @Inject constructor(
             _nameTagImages.value = list
 
         } catch (error: NullPointerException) {
-            log(TAG,"refreshNameTag : error ${error.message}", LogTag.D)
+            log(TAG, "refreshNameTag : error ${error.message}", LogTag.D)
         }
     }
 
@@ -181,11 +202,7 @@ class GamePlayViewModel @Inject constructor(
     private fun refreshPlayer() {
         viewModelScope.launch {
             player = gamePlayRepositery.refreshHostPlayer()
-            with(_myTurn) {
-                addSource(rollDice) {
-                    setMyTurn(player, firstPlayer, rollDice)
-                }
-            }
+            log(TAG, "refreshPlayer : ${player}", LogTag.I)
         }
     }
 
@@ -201,6 +218,10 @@ class GamePlayViewModel @Inject constructor(
     private fun refreshGameId() {
         viewModelScope.launch {
             _gameId.postValue(gamePlayRepositery.getGameId())
+        }
+
+        viewModelScope.launch {
+            gamePlayRepositery.getGameStartTime()
         }
     }
 
@@ -252,7 +273,7 @@ class GamePlayViewModel @Inject constructor(
      * */
     fun refreshTurnCount() {
         _turnCount.value = 0
-        log(TAG,"turnCount.value : ${turnCount.value}", LogTag.I)
+        log(TAG, "turnCount.value : ${turnCount.value}", LogTag.I)
     }
 
     /**
@@ -260,7 +281,7 @@ class GamePlayViewModel @Inject constructor(
      * */
     fun writeRollDiceAtFirst(gameId: String) {
         viewModelScope.launch {
-            val rollDice = RollDice(gameId, START_LIST, INIT_KEEP_LIST.clone(), true)
+            val rollDice = RollDice(gameId, START_LIST.clone(), INIT_KEEP_LIST.clone(), true)
             gamePlayRepositery.writeRollDice(rollDice)
         }
     }
@@ -288,14 +309,6 @@ class GamePlayViewModel @Inject constructor(
         }
     }
 
-    /**
-     * room DATABASE에 gameInfo 데이터 업데이트.
-     * */
-    private fun updateGameInfo(gameInfo: GameInfo) {
-        viewModelScope.launch {
-            gamePlayRepositery.updateGameInfo(gameInfo)
-        }
-    }
 
     /**
      * 선택한 주사위를 KEEP 하는 함수
@@ -426,6 +439,7 @@ class GamePlayViewModel @Inject constructor(
     fun finishTurn() {
         writeRollDice(diceList, INIT_KEEP_LIST.clone(), player != firstPlayer.value)
         _chance = INIT_CHANCE
+        log(TAG, "finishTurn()  : chance = ${chance}",LogTag.I)
         _initRollDiceKeep.value = Event(Unit)
         if (!isFirstPlayer()) implementTurnCount()
         getChanceStr()
@@ -512,25 +526,87 @@ class GamePlayViewModel @Inject constructor(
 
     /**
      * 게임이 끝나고, 승패여부=Resulut 를 알려주는 문자열 및 custom dialog
+     * 'result : List<String>' idx별로 각 원소 = 1.첫번째 플레이어의 점수, 2.첫번째 플레이어의 이름, 3.두번째 플레이어의 점수, 4.두번째 플레이어의 이름, 5.승리 결과
+     *
+     * 누군가가 나갔을 때, 해당 플레이어의 패배로 게임을 끝내고 = early : Boolean -> true일 경우
+     * 이에 맞게 GameResult:String을 생성
      * */
-    fun getGameResult() : String {
+    fun getGameResult(early: Boolean): List<String> {
+        val result = mutableListOf<String>()
+
         val first = firstRealBoard.value!!
         val second = secondRealBoard.value!!
         var isDraw = false
 
-        val winner = if(first.total>second.total){
+
+        val winner = if (first.total > second.total) {
             firstPlayer.value!!.name
-        } else if(first.total < second.total) {
+        } else if (first.total < second.total) {
             secondPlayer.value!!.name
         } else {
-            isDraw= true
+            isDraw = true
             "무승부"
         }
+        result.addAll(
+            listOf(
+                first.total.toString(),
+                firstPlayer.value!!.name,
+                second.total.toString(),
+                secondPlayer.value!!.name
+            )
+        )
 
-        return if(!isDraw) {
-            getApplication<Application?>().getString(R.string.game_result_win, winner)
+
+        if (early) {
+            result.add(getApplication<Application?>().getString(R.string.game_result_early, player, if(firstPlayer.value==player) secondPlayer.value!!.name else firstPlayer.value!!.name))
+            return result
+        }
+
+        if (!isDraw) {
+            result.add(getApplication<Application?>().getString(R.string.game_result_win, winner))
         } else {
-            getApplication<Application?>().getString(R.string.game_result_draw)
+            result.add(getApplication<Application?>().getString(R.string.game_result_draw))
+        }
+
+        return result
+    }
+
+
+    /**
+     * 게임이 끝나면 완성된 GameInfo 인스턴스를 만들어서 Firebase 및 Room Database에 write, insert
+     * */
+    fun finishGame(gameResult: List<String>) {
+
+        val gameInfo = gameInfo.value!!
+        val gameScore = getApplication<Application?>().getString(
+            R.string.game_score,
+            gameResult[0],
+            gameResult[2]
+        )
+        val finishTime = DateTime.getNowDate(System.currentTimeMillis())
+        val result = gameResult[4]
+
+        val new = GameInfo(gameInfo, gameScore, finishTime, result)
+        writeGameInfo(new)
+        updateGameInfo(new)
+    }
+
+
+    /**
+     * Firebase Database 에 GameInfo Write.
+     * */
+    private fun writeGameInfo(gameInfo: GameInfo) {
+        viewModelScope.launch {
+            gamePlayRepositery.writeGameInfo(gameInfo)
+        }
+    }
+
+    /**
+     * room DATABASE 에 gameInfo 데이터 업데이트.
+     * */
+    private fun updateGameInfo(gameInfo: GameInfo) {
+        viewModelScope.launch {
+            gamePlayRepositery.updateGameInfo(gameInfo)
         }
     }
 

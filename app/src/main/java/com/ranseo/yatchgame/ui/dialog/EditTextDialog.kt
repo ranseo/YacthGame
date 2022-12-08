@@ -39,7 +39,7 @@ class EditTextDialog(
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.WRAP_CONTENT
         )
-        dialog.setCanceledOnTouchOutside(true)
+        //dialog.setCanceledOnTouchOutside(true)
         dialog.setCancelable(true)
 
         okBtn.setOnClickListener {

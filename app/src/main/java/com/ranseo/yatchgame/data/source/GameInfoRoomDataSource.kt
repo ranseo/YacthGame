@@ -25,6 +25,12 @@ class GameInfoRoomDataSource @Inject constructor(private val yachtRoomDao: Yacht
      * */
     suspend fun getGameInfoGameId() = withContext(Dispatchers.IO) {
         yachtRoomDao.getGameInfoGameId()
+
+    }
+
+    suspend fun getGameInfoGameStartTime() = withContext(Dispatchers.IO) {
+        val a= yachtRoomDao.getGameInfoGameStartTime()
+        log(TAG,"getGameInfoGameStartTime() : $a ", LogTag.I)
     }
 
     /**

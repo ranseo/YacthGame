@@ -38,9 +38,9 @@ class LoginRepository @Inject constructor(private val loginDataSource: LoginData
         this.user = loggedInUser
     }
 
-    suspend fun insertPlayer(player: Player) {
+    suspend fun insertPlayer(player: Player,callBack:(isWrite:Boolean)->Unit) {
         playerDataSource.insert(player)
-        playerDataSource.write(player)
+        playerDataSource.write(player,callBack)
     }
 
 }

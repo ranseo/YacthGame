@@ -43,6 +43,17 @@ data class GameInfo(
         second = gameInfo.second,
         boards = boards
     )
+
+    constructor(gameInfo:GameInfo, gameScore: String, gameFinishTime: String, result:String) : this(
+        gameId = gameInfo.gameId,
+        gameScore = gameScore,
+        gameStartTime = gameInfo.gameStartTime,
+        gameFinishTime = gameFinishTime,
+        first = gameInfo.first,
+        second = gameInfo.second,
+        result = result,
+        boards = gameInfo.boards
+    )
 }
 
 //Firebase Database read/write 용
