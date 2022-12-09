@@ -3,6 +3,8 @@ package com.ranseo.yatchgame.ui.game
 import android.annotation.SuppressLint
 import android.app.Application
 import android.graphics.drawable.Drawable
+import android.media.AudioAttributes
+import android.media.SoundPool
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
@@ -16,6 +18,7 @@ import com.ranseo.yatchgame.log
 import com.ranseo.yatchgame.util.DateTime
 import com.ranseo.yatchgame.util.YachtGame
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.Error
 import java.lang.NullPointerException
@@ -27,6 +30,10 @@ class GamePlayViewModel @Inject constructor(
     private val yachtGame: YachtGame,
     application: Application
 ) : AndroidViewModel(application) {
+
+//    private lateinit var audioAttributes: AudioAttributes
+//    private var soundPool: SoundPool? = null
+//    private var upSound: Int = 0
 
     private lateinit var player: Player
     private var myPlayer = gamePlayRepositery.player
@@ -60,6 +67,9 @@ class GamePlayViewModel @Inject constructor(
     private val _rollDice = MutableLiveData<RollDice>()
     val rollDice: LiveData<RollDice>
         get() = _rollDice
+    val turnFlag = Transformations.map(rollDice) {
+        it.turn
+    }
 
     private val _boardInfo = MutableLiveData<BoardInfo>()
     val boardInfo: LiveData<BoardInfo>
@@ -69,17 +79,6 @@ class GamePlayViewModel @Inject constructor(
     val myTurn: LiveData<Boolean>
         get() = _myTurn
 
-    private fun setMyTurn(
-        player: LiveData<Player>,
-        firstPlayer: LiveData<Player>,
-        secondPlayer: LiveData<Player>,
-        rollDice: LiveData<RollDice>
-    ) {
-        if (player.value != null && rollDice.value != null) {
-            _myTurn.value = if (player.value == firstPlayer.value && rollDice.value!!.turn) true
-            else player.value == secondPlayer.value && !rollDice.value!!.turn
-        }
-    }
 
     private val _turnCount = MutableLiveData<Int>(1)
     val turnCount: LiveData<Int>
@@ -100,6 +99,10 @@ class GamePlayViewModel @Inject constructor(
     val chance: Int
         get() = _chance
 
+    fun initChance() {
+        _chance = INIT_CHANCE
+    }
+
     private val _chanceStr = MutableLiveData<String>()
     val chanceStr: LiveData<String>
         get() = _chanceStr
@@ -115,6 +118,7 @@ class GamePlayViewModel @Inject constructor(
     val secondPlayer = Transformations.map(gameInfo) {
         it.second
     }
+
     val firstRealBoard = Transformations.map(gameInfo) {
         it.boards[0]
     }
@@ -148,9 +152,12 @@ class GamePlayViewModel @Inject constructor(
         get() = _rollDiceImages
 
 
-    var earlyFinishGame : Boolean = false
+    var earlyFinishGame: Boolean = false
 
     init {
+
+        //refreshSoundPool()
+
         refreshNameTag()
 
         refreshPlayer()
@@ -163,15 +170,58 @@ class GamePlayViewModel @Inject constructor(
     }
 
     /**
+     * sound
+     * */
+//    private fun refreshSoundPool() {
+//        audioAttributes = AudioAttributes.Builder()
+//            .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+//            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+//            .build()
+//
+//        soundPool = SoundPool.Builder()
+//            .setMaxStreams(1)
+//            .setAudioAttributes(audioAttributes)
+//            .build()
+//
+//        upSound = soundPool!!.load(
+//            getApplication(), R.raw.roll_dice, 1
+//        )
+//    }
+
+    /**
+     * MediatorLiveData 타입의 MyTurn 프로퍼티값을 초기화하는 함수.
+     * */
+    private fun setMyTurn(
+        player: LiveData<Player>,
+        firstPlayer: LiveData<Player>,
+        secondPlayer: LiveData<Player>,
+        turnFlag: LiveData<Boolean>
+    ) {
+        if (player.value != null && turnFlag.value != null) {
+            _myTurn.value = if (player.value == firstPlayer.value && turnFlag.value!!) {
+                true
+            } else if (player.value == secondPlayer.value && !turnFlag.value!!) {
+                true
+            } else {
+                initChance()
+                false
+            }
+        }
+    }
+
+    /**
      * myTurn - MediatorLiveData를
      * */
     private fun refreshMyTurn() {
         with(_myTurn) {
-            addSource(rollDice) {
-                setMyTurn(myPlayer, firstPlayer, secondPlayer, rollDice)
+            addSource(turnFlag) {
+                setMyTurn(myPlayer, firstPlayer, secondPlayer, turnFlag)
             }
             addSource(myPlayer) {
-                setMyTurn(myPlayer, firstPlayer, secondPlayer, rollDice)
+                setMyTurn(myPlayer, firstPlayer, secondPlayer, turnFlag)
+            }
+            addSource(firstPlayer) {
+                setMyTurn(myPlayer, firstPlayer, secondPlayer, turnFlag)
             }
         }
     }
@@ -338,9 +388,11 @@ class GamePlayViewModel @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.N)
     fun rollDices() {
         if (chance <= 0) return
+
         yachtGame.rollDice(diceList, keepList)
         _chance--
         log(TAG, "rollDice() : ${diceList.toList()}", LogTag.I)
+
 
         getChanceStr()
 
@@ -356,22 +408,23 @@ class GamePlayViewModel @Inject constructor(
      * */
     @SuppressLint("UseCompatLoadingForDrawables")
     fun setRollDiceImage(diceList: Array<Int>) {
-        var list = mutableListOf<Drawable>()
-        for (dice in diceList) {
-            val drawable = when (dice) {
-                1 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_first)!!
-                2 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_second)!!
-                3 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_third)!!
-                4 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_fourth)!!
-                5 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_fifth)!!
-                6 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_sixth)!!
-                else -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_first)!!
-            }
-            list.add(drawable)
+            var list = mutableListOf<Drawable>()
+            for (dice in diceList) {
+                val drawable = when (dice) {
+                    1 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_first)!!
+                    2 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_second)!!
+                    3 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_third)!!
+                    4 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_fourth)!!
+                    5 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_fifth)!!
+                    6 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_sixth)!!
+                    else -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_first)!!
+                }
+                list.add(drawable)
 
-        }
-        log(TAG, "setRollDiceImage : ${list}", LogTag.I)
-        _rollDiceImages.value = list
+            }
+            log(TAG, "setRollDiceImage : ${list}", LogTag.I)
+            _rollDiceImages.value = list
+
     }
 
 
@@ -438,8 +491,7 @@ class GamePlayViewModel @Inject constructor(
      * */
     fun finishTurn() {
         writeRollDice(diceList, INIT_KEEP_LIST.clone(), player != firstPlayer.value)
-        _chance = INIT_CHANCE
-        log(TAG, "finishTurn()  : chance = ${chance}",LogTag.I)
+        log(TAG, "finishTurn()  : chance = ${chance}", LogTag.I)
         _initRollDiceKeep.value = Event(Unit)
         if (!isFirstPlayer()) implementTurnCount()
         getChanceStr()
@@ -466,6 +518,14 @@ class GamePlayViewModel @Inject constructor(
         }
     }
 
+    /**
+     * SoundPool을 비롯한 여러 Resource Release
+     * */
+//    fun releaseResource() {
+//        soundPool?.let {
+//            it.release()
+//        }
+//    }
 
     /**
      * Board를 클릭할 때, 클릭한 곳의 수를 확정하고 사용자에게 display 위해
@@ -558,7 +618,13 @@ class GamePlayViewModel @Inject constructor(
 
 
         if (early) {
-            result.add(getApplication<Application?>().getString(R.string.game_result_early, player, if(firstPlayer.value==player) secondPlayer.value!!.name else firstPlayer.value!!.name))
+            result.add(
+                getApplication<Application?>().getString(
+                    R.string.game_result_early,
+                    player,
+                    if (firstPlayer.value == player) secondPlayer.value!!.name else firstPlayer.value!!.name
+                )
+            )
             return result
         }
 

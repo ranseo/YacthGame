@@ -71,7 +71,7 @@
 
         <FrameLayout
             android:id="@+id/layout_board"
-            android:layout_width="340dp"
+            android:layout_width="350dp"
             android:layout_height="wrap_content"
             android:background="@drawable/board_border_line"
             app:layout_constraintStart_toStartOf="parent"
@@ -174,7 +174,6 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_roll"
-            android:onClick="@{()->viewModel.rollDices()}"
             android:text="Roll"
             android:background="@drawable/selector_btn"
             android:enabled="@{viewModel.myTurn}"
@@ -196,6 +195,7 @@
 <!--            app:layout_constraintEnd_toEndOf="parent"-->
 <!--            app:layout_constraintStart_toEndOf="@id/btn_roll"-->
 <!--            app:layout_constraintBottom_toBottomOf="parent"/>-->
+
 
 
 

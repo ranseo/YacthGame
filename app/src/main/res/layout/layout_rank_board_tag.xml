@@ -21,154 +21,160 @@
         >
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="110dp"
+            android:layout_width="72dp"
             android:layout_height="34dp"
             android:background="@drawable/board_list_border_line"
             android:padding="3dp">
 
-            <ImageView
-                android:id="@+id/iv_choice"
-                android:src="@drawable/dice_choice"
-                android:layout_width="42dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"/>
+<!--            <ImageView-->
+<!--                android:id="@+id/iv_choice"-->
+<!--                android:src="@drawable/dice_choice"-->
+<!--                android:layout_width="42dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"/>-->
 
             <TextView
                 android:text="@string/dice_choice"
                 android:gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
-                app:layout_constraintStart_toEndOf="@+id/iv_choice"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="110dp"
+            android:layout_width="72dp"
             android:layout_height="34dp"
             android:background="@drawable/board_list_border_line"
             android:padding="3dp">
 
-            <ImageView
-                android:id="@+id/iv_four_of_a_kind"
-                android:src="@drawable/dice_4ofakind"
-                android:layout_width="42dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"/>
+<!--            <ImageView-->
+<!--                android:id="@+id/iv_four_of_a_kind"-->
+<!--                android:src="@drawable/dice_4ofakind"-->
+<!--                android:layout_width="42dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"/>-->
 
             <TextView
                 android:text="@string/dice_four_of_a_kind"
                 android:gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
-                app:layout_constraintStart_toEndOf="@+id/iv_four_of_a_kind"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="110dp"
+            android:layout_width="72dp"
             android:layout_height="34dp"
             android:background="@drawable/board_list_border_line"
             android:padding="3dp">
 
-            <ImageView
-                android:id="@+id/iv_full_house"
-                android:src="@drawable/dice_full_house"
-                android:layout_width="42dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"/>
+<!--            <ImageView-->
+<!--                android:id="@+id/iv_full_house"-->
+<!--                android:src="@drawable/dice_full_house"-->
+<!--                android:layout_width="42dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"/>-->
 
             <TextView
                 android:text="@string/dice_full_house"
                 android:gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
-                app:layout_constraintStart_toEndOf="@+id/iv_full_house"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="110dp"
+            android:layout_width="72dp"
             android:layout_height="34dp"
             android:background="@drawable/board_list_border_line"
             android:padding="3dp">
 
-            <ImageView
-                android:id="@+id/iv_small_straight"
-                android:src="@drawable/dice_s_straight"
-                android:layout_width="42dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"/>
+<!--            <ImageView-->
+<!--                android:id="@+id/iv_small_straight"-->
+<!--                android:src="@drawable/dice_s_straight"-->
+<!--                android:layout_width="42dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"/>-->
 
             <TextView
                 android:text="@string/dice_small_straight"
                 android:gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
-                app:layout_constraintStart_toEndOf="@+id/iv_small_straight"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="110dp"
+            android:layout_width="72dp"
             android:layout_height="34dp"
             android:background="@drawable/board_list_border_line"
             android:padding="3dp">
 
-            <ImageView
-                android:id="@+id/iv_large_straight"
-                android:src="@drawable/dice_l_straight"
-                android:layout_width="42dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"/>
+<!--            <ImageView-->
+<!--                android:id="@+id/iv_large_straight"-->
+<!--                android:src="@drawable/dice_l_straight"-->
+<!--                android:layout_width="42dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"/>-->
 
             <TextView
                 android:text="@string/dice_large_straight"
                 android:gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
-                app:layout_constraintStart_toEndOf="@+id/iv_large_straight"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="110dp"
+            android:layout_width="72dp"
             android:layout_height="34dp"
             android:background="@drawable/board_list_border_line"
             android:padding="3dp">
 
-            <ImageView
-                android:id="@+id/iv_yacht"
-                android:src="@drawable/dice_yacht"
-                android:layout_width="42dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"/>
+<!--            <ImageView-->
+<!--                android:id="@+id/iv_yacht"-->
+<!--                android:src="@drawable/dice_yacht"-->
+<!--                android:layout_width="42dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"/>-->
 
             <TextView
                 android:text="@string/dice_yacht"
                 android:gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
-                app:layout_constraintStart_toEndOf="@+id/iv_yacht"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="110dp"
+            android:layout_width="72dp"
             android:layout_height="68dp"
 
             android:background="@drawable/board_list_border_line_grey"

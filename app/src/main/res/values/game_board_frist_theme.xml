@@ -2,5 +2,6 @@
     <!-- Base application theme. -->
     <style name="Theme.GameBoardFirst" parent="Theme.YatchGame">
         <item name="android:textColor">@color/board_first_score</item>
+        <item name="android:textSize">18sp</item>
     </style>
 </resources>

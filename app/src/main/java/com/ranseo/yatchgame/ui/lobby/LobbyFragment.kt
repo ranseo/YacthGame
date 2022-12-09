@@ -1,5 +1,6 @@
 package com.ranseo.yatchgame.ui.lobby
 
+import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -51,6 +52,16 @@ class LobbyFragment : Fragment() {
         viewModel.makingRoom.observe(viewLifecycleOwner, makingRoomObserver())
         viewModel.makeWaitRoom.observe(viewLifecycleOwner, makeWaitRoomObserver())
         viewModel.accessWaitRoom.observe(viewLifecycleOwner, accessWaitRoomObserver())
+
+        //임시
+        binding.ivTmpAnimation.setBackgroundResource(R.drawable.animation_roll_dice)
+        val animation = binding.ivTmpAnimation.background as AnimationDrawable
+
+        binding.ivTmpAnimation.setOnClickListener {
+            animation.stop()
+            animation.start()
+        }
+
         return binding.root
     }
 
