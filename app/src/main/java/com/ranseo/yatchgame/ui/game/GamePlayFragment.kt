@@ -1,8 +1,11 @@
 package com.ranseo.yatchgame.ui.game
 
 import android.content.Intent
+import android.media.AudioAttributes
+import android.media.SoundPool
 import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -32,6 +35,9 @@ class GamePlayFragment() : Fragment() {
 
     private val gamePlayViewModel: GamePlayViewModel by viewModels()
 
+    private lateinit var audioAttributes: AudioAttributes
+    private lateinit var soundPool :SoundPool
+    private var upSound : Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val onBackPressedCallback = object : OnBackPressedCallback(true) {
@@ -43,6 +49,19 @@ class GamePlayFragment() : Fragment() {
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+        audioAttributes = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+            .setContentType( AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .build()
+
+        soundPool = SoundPool.Builder()
+            .setMaxStreams(1)
+            .setAudioAttributes(audioAttributes)
+            .build()
+        
+        upSound = soundPool.load(
+            requireActivity(), R.raw.roll_dice, 1)
+        
     }
 
 
@@ -118,8 +137,17 @@ class GamePlayFragment() : Fragment() {
      */
     private fun rollDiceSelected(idx: Int) = { imageview: View ->
         if (gamePlayViewModel.chance < GamePlayViewModel.CHANCE) {
+            soundPool.play(
+                upSound,
+                1f,
+                1f,
+                0,
+                0,
+                1.0f
+            )
             gamePlayViewModel.keepDice(idx)
             imageview.isSelected = !imageview.isSelected
+            
         }
     }
 
@@ -132,10 +160,10 @@ class GamePlayFragment() : Fragment() {
                     else {
                         if (EARLY_FLAG.matches(gameInfo.result)) {
                             val gameResult = gamePlayViewModel.getGameResult(true)
-                            showGameResultDialog(gameResult,false)
+                            showGameResultDialog(gameResult, false)
                         } else {
                             val gameResult = gamePlayViewModel.getGameResult(false)
-                            showGameResultDialog(gameResult,true)
+                            showGameResultDialog(gameResult, true)
                         }
                     }
                 }
@@ -179,11 +207,12 @@ class GamePlayFragment() : Fragment() {
             it?.let { myTurn ->
                 if (myTurn) {
                     if (gamePlayViewModel.chance == GamePlayViewModel.INIT_CHANCE) {
-                        log(TAG, "myTurnObserver : chance = ${gamePlayViewModel.chance}",LogTag.I)
+                        log(TAG, "myTurnObserver : chance = ${gamePlayViewModel.chance}", LogTag.I)
                         gamePlayViewModel.reloadBeforeRollDice()
                         log(TAG, "myTurnObserver : 현재 나의 턴 입니다.", LogTag.I)
                         if (gamePlayViewModel.isFirstPlayer()) gamePlayViewModel.implementTurnCount()
-                        val toast = Toast.makeText(requireContext(), "내 턴 입니다.", Toast.LENGTH_SHORT).show()
+                        val toast =
+                            Toast.makeText(requireContext(), "내 턴 입니다.", Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     log(TAG, "myTurnObserver : 현재 나의 턴이 아닙니다.", LogTag.I)
@@ -254,7 +283,7 @@ class GamePlayFragment() : Fragment() {
     /**
      * 게임이 끝났을 때, 띄우는 Dialog
      * */
-    private fun showGameResultDialog(gameResult: List<String>, isRematch:Boolean) {
+    private fun showGameResultDialog(gameResult: List<String>, isRematch: Boolean) {
         val dialog = GameResultDialog(
             requireContext(),
             gameResult[0],
@@ -292,6 +321,7 @@ class GamePlayFragment() : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         gamePlayViewModel.removeListener()
+        soundPool.release()
     }
 
     companion object {

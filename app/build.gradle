@@ -60,6 +60,10 @@ android {
         correctErrorTypes = true
     }
 
+    aaptOptions{
+        noCompress 'mp3'
+    }
+
 }
 
 dependencies {
