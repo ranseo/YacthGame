@@ -70,6 +70,7 @@ class GamePlayViewModel @Inject constructor(
     val turnFlag = Transformations.map(rollDice) {
         it.turn
     }
+    var prevRollDice : RollDice? = null
 
     private val _boardInfo = MutableLiveData<BoardInfo>()
     val boardInfo: LiveData<BoardInfo>
@@ -99,16 +100,16 @@ class GamePlayViewModel @Inject constructor(
     val chance: Int
         get() = _chance
 
-    fun initChance() {
+    private fun initChance() {
         _chance = INIT_CHANCE
     }
 
-    private val _chanceStr = MutableLiveData<String>()
-    val chanceStr: LiveData<String>
-        get() = _chanceStr
+    private val _chanceString = MutableLiveData<String>()
+    val chanceString: LiveData<String>
+        get() = _chanceString
 
     private fun getChanceStr() {
-        _chanceStr.value = if (chance == INIT_CHANCE) "-/3" else "${3 - chance}/3"
+        _chanceString.value = if (chance == INIT_CHANCE) "-/3" else "${3 - chance}/3"
     }
 
 
@@ -204,6 +205,7 @@ class GamePlayViewModel @Inject constructor(
                 true
             } else {
                 initChance()
+                getChanceStr()
                 false
             }
         }
@@ -494,7 +496,7 @@ class GamePlayViewModel @Inject constructor(
         log(TAG, "finishTurn()  : chance = ${chance}", LogTag.I)
         _initRollDiceKeep.value = Event(Unit)
         if (!isFirstPlayer()) implementTurnCount()
-        getChanceStr()
+        //getChanceStr()
     }
 
     /**

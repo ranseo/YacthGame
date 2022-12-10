@@ -43,4 +43,14 @@ data class RollDice(
         hashMap["fifthFix"] as Boolean,
         hashMap["turn"] as Boolean,
     )
+
+    fun checkKeepChange(rollDice: RollDice): Boolean {
+        return !(rollDice.first != this.first
+                || rollDice.second != this.second
+                || rollDice.third != this.third
+                || rollDice.fourth != this.fourth
+                || rollDice.fifth != this.fifth)
+
+
+    }
 }

@@ -4,11 +4,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.ranseo.yatchgame.R
 import com.ranseo.yatchgame.databinding.ActivityGameBinding
+import com.ranseo.yatchgame.util.YachtSound
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class GameActivity : AppCompatActivity() {
     private lateinit var binding: ActivityGameBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityGameBinding.inflate(layoutInflater)
@@ -22,5 +25,9 @@ class GameActivity : AppCompatActivity() {
         }
         super.onBackPressed()
 
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 }

@@ -210,7 +210,7 @@
             android:layout_height="34dp" />
 
         <TextView
-            android:text="@{realBoard.bonus>-1 ? Integer.toString(realBoard.bonus) : Character.toString('-')}"
+            android:text="@{realBoard.bonus>0 ? Integer.toString(realBoard.bonus) : Character.toString('-')}"
             android:background="@drawable/board_list_border_line_yellow"
             tools:text="36"
             android:textAlignment="center"

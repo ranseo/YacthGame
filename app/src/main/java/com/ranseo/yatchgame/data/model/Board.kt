@@ -113,7 +113,7 @@ data class Board(
 
 
         this.sum = ones + twos + threes + fours + fives + sixes
-        this.bonus = if (sum < 63) -1 else 35
+        this.bonus = if (sum < 63) 0 else 35
 
         this.total =
             sum + bonus + (choice + fourCard + fullHouse + smallStraight + largeStraight + yacht)

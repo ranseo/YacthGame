@@ -22,48 +22,62 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
-        >
+        android:background="@color/white">
 
         <include
+            android:id="@+id/layout_first_profile"
             layout="@layout/layout_player_profile"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             bind:player="@{viewModel.firstPlayer}"
-            bind:viewModel="@{viewModel}"/>
+            bind:viewModel="@{viewModel}"
+            bind:board="@{viewModel.firstRealBoard}"/>
+
 
         <include
+            android:id="@+id/layout_second_profile"
             layout="@layout/layout_player_profile_reverse"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             bind:player="@{viewModel.secondPlayer}"
-            bind:viewModel="@{viewModel}"/>
+            bind:viewModel="@{viewModel}"
+            bind:board="@{viewModel.secondRealBoard}"/>
+
+        <TextView
+            android:textSize="62sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=":"
+            app:layout_constraintStart_toStartOf="@+id/layout_first_profile"
+            app:layout_constraintEnd_toEndOf="@id/layout_second_profile"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="46dp"
+            />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@+id/layout_board"
-            app:layout_constraintStart_toStartOf="@+id/layout_board"
             android:layout_marginBottom="2dp"
             android:theme="@style/Theme.GamePlay"
-            >
+            app:layout_constraintBottom_toTopOf="@+id/layout_board"
+            app:layout_constraintStart_toStartOf="@+id/layout_board">
 
             <TextView
                 android:id="@+id/tv_turn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="턴 : "
                 android:textSize="24sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:text="턴 : " />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="24sp"
                 android:text="@{viewModel.turnCountStr}"
+                android:textSize="24sp"
                 app:layout_constraintStart_toEndOf="@id/tv_turn"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="1/12" />
@@ -73,23 +87,21 @@
             android:id="@+id/layout_board"
             android:layout_width="350dp"
             android:layout_height="wrap_content"
-            android:background="@drawable/board_border_line"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
-            >
+            android:background="@drawable/board_border_line"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <include
                 layout="@layout/layout_game_play_board"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                bind:viewModel="@{viewModel}"
                 bind:onClickListener="@{onClickListener}"
-                />
+                bind:viewModel="@{viewModel}" />
 
 
         </FrameLayout>
@@ -100,104 +112,97 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.85"
-            />
+            app:layout_constraintGuide_percent="0.85" />
 
         <LinearLayout
             android:id="@+id/layout_roll_dice"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@+id/layout_board"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/bottom_guideline"
             android:gravity="center"
-            >
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_guideline"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/layout_board">
 
             <ImageView
                 android:id="@+id/iv_roll_first"
-                tools:src="@drawable/selector_roll_dice_first"
                 setSelector="@{viewModel.rollDiceImages[0]}"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:layout_marginEnd="12dp"/>
+                android:layout_marginEnd="12dp"
+                tools:src="@drawable/selector_roll_dice_first" />
 
 
             <ImageView
                 android:id="@+id/iv_roll_second"
-                tools:src="@drawable/selector_roll_dice_second"
                 setSelector="@{viewModel.rollDiceImages[1]}"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:layout_marginEnd="12dp"/>
+                android:layout_marginEnd="12dp"
+                tools:src="@drawable/selector_roll_dice_second" />
 
 
             <ImageView
                 android:id="@+id/iv_roll_third"
-                tools:src="@drawable/selector_roll_dice_third"
                 setSelector="@{viewModel.rollDiceImages[2]}"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:layout_marginEnd="12dp"/>
+                android:layout_marginEnd="12dp"
+                tools:src="@drawable/selector_roll_dice_third" />
 
 
             <ImageView
                 android:id="@+id/iv_roll_fourth"
-                tools:src="@drawable/selector_roll_dice_fourth"
                 setSelector="@{viewModel.rollDiceImages[3]}"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:layout_marginEnd="12dp"/>
+                android:layout_marginEnd="12dp"
+                tools:src="@drawable/selector_roll_dice_fourth" />
 
 
             <ImageView
                 android:id="@+id/iv_roll_fifth"
-                tools:src="@drawable/selector_roll_dice_fifth"
                 setSelector="@{viewModel.rollDiceImages[4]}"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                />
+                tools:src="@drawable/selector_roll_dice_fifth" />
 
         </LinearLayout>
 
         <TextView
-            tools:text="0/3"
-            android:text="@{viewModel.chanceStr}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/bottom_guideline"
-            app:layout_constraintStart_toStartOf="@+id/btn_roll"
-            app:layout_constraintEnd_toEndOf="@id/btn_roll"
+            android:text="@{viewModel.chanceString}"
             app:layout_constraintBottom_toTopOf="@id/btn_roll"
-            />
+            app:layout_constraintEnd_toEndOf="@id/btn_roll"
+            app:layout_constraintStart_toStartOf="@+id/btn_roll"
+            app:layout_constraintTop_toBottomOf="@+id/bottom_guideline"
+            tools:text="0/3" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_roll"
-            android:text="Roll"
-            android:background="@drawable/selector_btn"
-            android:enabled="@{viewModel.myTurn}"
-            android:textColor="@color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/bottom_guideline"
-            app:layout_constraintStart_toStartOf="parent"
+            android:background="@drawable/selector_btn"
+            android:enabled="@{viewModel.myTurn}"
+            android:text="Roll"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bottom_guideline" />
 
-<!--        <androidx.appcompat.widget.AppCompatButton-->
-<!--            android:id="@+id/btn_finish"-->
-<!--            android:text="Finish"-->
-<!--            android:onClick="@{()->viewModel.finishTurn()}"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            app:layout_constraintTop_toBottomOf="@id/bottom_guideline"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintStart_toEndOf="@id/btn_roll"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"/>-->
-
-
-
+        <!--        <androidx.appcompat.widget.AppCompatButton-->
+        <!--            android:id="@+id/btn_finish"-->
+        <!--            android:text="Finish"-->
+        <!--            android:onClick="@{()->viewModel.finishTurn()}"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            app:layout_constraintTop_toBottomOf="@id/bottom_guideline"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintStart_toEndOf="@id/btn_roll"-->
+        <!--            app:layout_constraintBottom_toBottomOf="parent"/>-->
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -15,6 +15,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.ranseo.yatchgame.R
 import com.ranseo.yatchgame.databinding.ActivityLobbyBinding
 import com.ranseo.yatchgame.ui.login.LoginActivity
+import com.ranseo.yatchgame.util.YachtSound
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -27,6 +28,7 @@ class LobbyActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
     private lateinit var navController : NavController
     private lateinit var appBarConfiguration : AppBarConfiguration
+
 
     //firebase
     @Inject lateinit var auth : FirebaseAuth
@@ -67,5 +69,8 @@ class LobbyActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         finish()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+    }
 
 }

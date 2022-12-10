@@ -26,24 +26,29 @@ import com.ranseo.yatchgame.databinding.FragmentGamePlayBinding
 import com.ranseo.yatchgame.log
 import com.ranseo.yatchgame.ui.dialog.GameResultDialog
 import com.ranseo.yatchgame.ui.lobby.LobbyActivity
+import com.ranseo.yatchgame.util.YachtSound
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class GamePlayFragment() : Fragment() {
     private val TAG = "GamePlayFragment"
     private lateinit var binding: FragmentGamePlayBinding
+    @Inject lateinit var yachtSound : YachtSound
+
 
     private val gamePlayViewModel: GamePlayViewModel by viewModels()
 
     private lateinit var rollDiceAnimation: AnimationDrawable
 
-    private lateinit var audioAttributes: AudioAttributes
-    private lateinit var soundPool :SoundPool
-    private var rollSound : Int = 0
-    private var boardConfirmSound : Int = 0
-    private var keepSound : Int = 0
-    private var myTurnSound: Int = 0
+
+//    private lateinit var audioAttributes: AudioAttributes
+//    private lateinit var soundPool :SoundPool
+//    private var rollSound : Int = 0
+//    private var boardConfirmSound : Int = 0
+//    private var keepSound : Int = 0
+//    private var myTurnSound: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,30 +61,14 @@ class GamePlayFragment() : Fragment() {
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
-        audioAttributes = AudioAttributes.Builder()
-            .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
-            .setContentType( AudioAttributes.CONTENT_TYPE_SONIFICATION)
-            .build()
-
-        soundPool = SoundPool.Builder()
-            .setMaxStreams(4)
-            .setAudioAttributes(audioAttributes)
-            .build()
-
-        rollSound = soundPool.load(
-            requireActivity(), R.raw.roll_dice, 1)
-
-        boardConfirmSound = soundPool.load(
-            requireActivity(), R.raw.click_sound, 1)
-
-        keepSound = soundPool.load(
-            requireActivity(), R.raw.keep_sound,1)
-
-        myTurnSound = soundPool.load(
-            requireActivity(), R.raw.my_turn_sound,1)
+        yachtSound.initSound(requireContext())
 
     }
 
+    override fun onStart() {
+        super.onStart()
+
+    }
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreateView(
@@ -92,7 +81,7 @@ class GamePlayFragment() : Fragment() {
         binding.viewModel = gamePlayViewModel
         binding.lifecycleOwner = viewLifecycleOwner
         binding.onClickListener = OnBoardClickListener { boardTag ->
-            playSound(boardConfirmSound, 1f,1f,0,0,1.0f)
+            yachtSound.play(YachtSound.BOARD_CONFIRM_SOUND)
             //보드판의 점수를 사용자가 클릭하면 해당 점수가 확정되고, 상대턴으로 넘어가는 과정
             //1.getScore() : 점수 확정한 뒤, 확정된 점수판을 database에 기록
             gamePlayViewModel.getScore(boardTag)
@@ -124,7 +113,7 @@ class GamePlayFragment() : Fragment() {
     @RequiresApi(Build.VERSION_CODES.N)
     private fun setBtnRollDiceClickListener() {
         binding.btnRoll.setOnClickListener {
-            playSound(rollSound, 1f,1f,0,0,1.0f)
+            yachtSound.play(YachtSound.ROLL_DICE_SOUND)
 //            rollDiceAnimation.start()
             gamePlayViewModel.rollDices()
 
@@ -170,8 +159,7 @@ class GamePlayFragment() : Fragment() {
      */
     private fun rollDiceSelected(idx: Int) = { imageview: View ->
         if (gamePlayViewModel.chance < GamePlayViewModel.CHANCE) {
-
-            playSound(keepSound, 1f,1f,0,0,1.0f)
+            yachtSound.play(YachtSound.KEEP_SOUND)
             gamePlayViewModel.keepDice(idx)
             imageview.isSelected = !imageview.isSelected
             
@@ -234,7 +222,7 @@ class GamePlayFragment() : Fragment() {
             it?.let { myTurn ->
                 if (myTurn) {
                     if (gamePlayViewModel.chance == GamePlayViewModel.INIT_CHANCE) {
-                        playSound(myTurnSound, 1f,1f,0,0,1.0f)
+                        yachtSound.play(YachtSound.MY_TURN_SOUND)
                         log(TAG, "myTurnObserver : chance = ${gamePlayViewModel.chance}", LogTag.I)
                         gamePlayViewModel.reloadBeforeRollDice()
                         log(TAG, "myTurnObserver : 현재 나의 턴 입니다.", LogTag.I)
@@ -283,12 +271,16 @@ class GamePlayFragment() : Fragment() {
     private fun rollDiceObserver() =
         Observer<RollDice> {
             it?.let { rollDice ->
+
                 gamePlayViewModel.myTurn.value?.let { myTurn ->
                     if (!myTurn) {
-                        playSound(rollSound,1f,1f,0,0,1.0f)
+                        val prev = gamePlayViewModel.prevRollDice
+                        if(prev != null && rollDice.checkKeepChange(prev)) yachtSound.play(YachtSound.KEEP_SOUND)
+                        else yachtSound.play(YachtSound.ROLL_DICE_SOUND)
                         gamePlayViewModel.checkOpponentDiceState(rollDice)
                         setRollDiceSelected(rollDice)
                         log(TAG, "rollDiceObserver() : Not My Turn  ${rollDice}", LogTag.I)
+                        gamePlayViewModel.prevRollDice = rollDice
                     } else {
                         log(TAG, "rollDiceObserver() : my Turn  ${rollDice}", LogTag.I)
                     }
@@ -347,22 +339,22 @@ class GamePlayFragment() : Fragment() {
         requireActivity().finish()
     }
 
-    private fun playSound(sound:Int, leftVolume:Float, rightVolume:Float, priority:Int, loop:Int, rate:Float) {
-        soundPool.play(
-            sound,
-            leftVolume,
-            rightVolume,
-            priority,
-            loop,
-            rate
-        )
-    }
+//    private fun playSound(sound:Int, leftVolume:Float, rightVolume:Float, priority:Int, loop:Int, rate:Float) {
+//        soundPool.play(
+//            sound,
+//            leftVolume,
+//            rightVolume,
+//            priority,
+//            loop,
+//            rate
+//        )
+//    }
 
     override fun onDestroy() {
         super.onDestroy()
         gamePlayViewModel.removeListener()
 //        gamePlayViewModel.releaseResource()
-        soundPool.release()
+        yachtSound.release()
     }
 
     companion object {

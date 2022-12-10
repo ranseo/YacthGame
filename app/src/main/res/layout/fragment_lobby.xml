@@ -14,14 +14,14 @@
         android:layout_height="match_parent"
         tools:context=".ui.lobby.LobbyFragment">
 
-        <ImageView
-            android:id="@+id/iv_tmp_animation"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_gravity="top|center"
+<!--        <ImageView-->
+<!--            android:id="@+id/iv_tmp_animation"-->
+<!--            android:layout_width="36dp"-->
+<!--            android:layout_height="36dp"-->
+<!--            android:layout_gravity="top|center"-->
 
-            android:layout_marginTop="?attr/actionBarSize"
-            />
+<!--            android:layout_marginTop="?attr/actionBarSize"-->
+<!--            />-->
 
         <TextView
             android:text="@string/yacth_dice_room_list"
@@ -50,7 +50,7 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_make_room"
-            android:onClick="@{()->viewModel.onRoomMakeBtn()}"
+
             android:text="방 만들기"
             android:textColor="@color/white"
             android:background="@color/black"

@@ -1,6 +1,9 @@
 package com.ranseo.yatchgame.ui.lobby
 
 import android.graphics.drawable.AnimationDrawable
+import android.media.AudioAttributes
+import android.media.MediaPlayer
+import android.media.SoundPool
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -17,7 +20,10 @@ import com.ranseo.yatchgame.data.model.LobbyRoom
 import com.ranseo.yatchgame.databinding.FragmentLobbyBinding
 import com.ranseo.yatchgame.log
 import com.ranseo.yatchgame.ui.dialog.EditTextDialog
+import com.ranseo.yatchgame.util.YachtGame
+import com.ranseo.yatchgame.util.YachtSound
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -28,8 +34,13 @@ class LobbyFragment : Fragment() {
 
     private val viewModel : LobbyViewModel by viewModels()
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+    }
+
+    override fun onStart() {
+        super.onStart()
 
     }
 
@@ -54,12 +65,17 @@ class LobbyFragment : Fragment() {
         viewModel.accessWaitRoom.observe(viewLifecycleOwner, accessWaitRoomObserver())
 
         //임시
-        binding.ivTmpAnimation.setBackgroundResource(R.drawable.animation_roll_dice)
-        val animation = binding.ivTmpAnimation.background as AnimationDrawable
+//        binding.ivTmpAnimation.setBackgroundResource(R.drawable.animation_roll_dice)
+//        val animation = binding.ivTmpAnimation.background as AnimationDrawable
+//
+//        binding.ivTmpAnimation.setOnClickListener {
+//            animation.stop()
+//            animation.start()
+//        }
 
-        binding.ivTmpAnimation.setOnClickListener {
-            animation.stop()
-            animation.start()
+
+        binding.btnMakeRoom.setOnClickListener {
+            viewModel.onRoomMakeBtn()
         }
 
         return binding.root
