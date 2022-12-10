@@ -1,6 +1,7 @@
 package com.ranseo.yatchgame.ui.game
 
 import android.content.Intent
+import android.graphics.drawable.AnimationDrawable
 import android.media.AudioAttributes
 import android.media.SoundPool
 import android.os.Build
@@ -35,9 +36,15 @@ class GamePlayFragment() : Fragment() {
 
     private val gamePlayViewModel: GamePlayViewModel by viewModels()
 
+    private lateinit var rollDiceAnimation: AnimationDrawable
+
     private lateinit var audioAttributes: AudioAttributes
     private lateinit var soundPool :SoundPool
-    private var upSound : Int = 0
+    private var rollSound : Int = 0
+    private var boardConfirmSound : Int = 0
+    private var keepSound : Int = 0
+    private var myTurnSound: Int = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val onBackPressedCallback = object : OnBackPressedCallback(true) {
@@ -55,13 +62,22 @@ class GamePlayFragment() : Fragment() {
             .build()
 
         soundPool = SoundPool.Builder()
-            .setMaxStreams(1)
+            .setMaxStreams(4)
             .setAudioAttributes(audioAttributes)
             .build()
-        
-        upSound = soundPool.load(
+
+        rollSound = soundPool.load(
             requireActivity(), R.raw.roll_dice, 1)
-        
+
+        boardConfirmSound = soundPool.load(
+            requireActivity(), R.raw.click_sound, 1)
+
+        keepSound = soundPool.load(
+            requireActivity(), R.raw.keep_sound,1)
+
+        myTurnSound = soundPool.load(
+            requireActivity(), R.raw.my_turn_sound,1)
+
     }
 
 
@@ -76,6 +92,7 @@ class GamePlayFragment() : Fragment() {
         binding.viewModel = gamePlayViewModel
         binding.lifecycleOwner = viewLifecycleOwner
         binding.onClickListener = OnBoardClickListener { boardTag ->
+            playSound(boardConfirmSound, 1f,1f,0,0,1.0f)
             //보드판의 점수를 사용자가 클릭하면 해당 점수가 확정되고, 상대턴으로 넘어가는 과정
             //1.getScore() : 점수 확정한 뒤, 확정된 점수판을 database에 기록
             gamePlayViewModel.getScore(boardTag)
@@ -97,9 +114,21 @@ class GamePlayFragment() : Fragment() {
             secondBoardRecord.observe(viewLifecycleOwner, secondBoardRecordObserver())
             turnCount.observe(viewLifecycleOwner, turnCountObserver())
         }
+
         setRollDiceImageViewClickListener()
+        setBtnRollDiceClickListener()
 
         return binding.root
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    private fun setBtnRollDiceClickListener() {
+        binding.btnRoll.setOnClickListener {
+            playSound(rollSound, 1f,1f,0,0,1.0f)
+//            rollDiceAnimation.start()
+            gamePlayViewModel.rollDices()
+
+        }
     }
 
 
@@ -108,6 +137,10 @@ class GamePlayFragment() : Fragment() {
      * Selected 되도록 만드는 ClickListener를 등록.
      * */
     private fun setRollDiceImageViewClickListener() {
+
+//        binding.ivRollFirst.setBackgroundResource(R.drawable.animation_roll_dice)
+//        rollDiceAnimation = binding.ivRollFirst.background as AnimationDrawable
+
         binding.ivRollFirst.setOnClickListener(rollDiceSelected(0))
         binding.ivRollSecond.setOnClickListener(rollDiceSelected(1))
         binding.ivRollThird.setOnClickListener(rollDiceSelected(2))
@@ -137,14 +170,8 @@ class GamePlayFragment() : Fragment() {
      */
     private fun rollDiceSelected(idx: Int) = { imageview: View ->
         if (gamePlayViewModel.chance < GamePlayViewModel.CHANCE) {
-            soundPool.play(
-                upSound,
-                1f,
-                1f,
-                0,
-                0,
-                1.0f
-            )
+
+            playSound(keepSound, 1f,1f,0,0,1.0f)
             gamePlayViewModel.keepDice(idx)
             imageview.isSelected = !imageview.isSelected
             
@@ -207,12 +234,12 @@ class GamePlayFragment() : Fragment() {
             it?.let { myTurn ->
                 if (myTurn) {
                     if (gamePlayViewModel.chance == GamePlayViewModel.INIT_CHANCE) {
+                        playSound(myTurnSound, 1f,1f,0,0,1.0f)
                         log(TAG, "myTurnObserver : chance = ${gamePlayViewModel.chance}", LogTag.I)
                         gamePlayViewModel.reloadBeforeRollDice()
                         log(TAG, "myTurnObserver : 현재 나의 턴 입니다.", LogTag.I)
                         if (gamePlayViewModel.isFirstPlayer()) gamePlayViewModel.implementTurnCount()
-                        val toast =
-                            Toast.makeText(requireContext(), "내 턴 입니다.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "내 턴 입니다.", Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     log(TAG, "myTurnObserver : 현재 나의 턴이 아닙니다.", LogTag.I)
@@ -230,6 +257,7 @@ class GamePlayFragment() : Fragment() {
         Observer<Any?> {
             it?.let {
                 setRollDiceUnSelected()
+
             }
         }
 
@@ -257,6 +285,7 @@ class GamePlayFragment() : Fragment() {
             it?.let { rollDice ->
                 gamePlayViewModel.myTurn.value?.let { myTurn ->
                     if (!myTurn) {
+                        playSound(rollSound,1f,1f,0,0,1.0f)
                         gamePlayViewModel.checkOpponentDiceState(rollDice)
                         setRollDiceSelected(rollDice)
                         log(TAG, "rollDiceObserver() : Not My Turn  ${rollDice}", LogTag.I)
@@ -318,9 +347,21 @@ class GamePlayFragment() : Fragment() {
         requireActivity().finish()
     }
 
+    private fun playSound(sound:Int, leftVolume:Float, rightVolume:Float, priority:Int, loop:Int, rate:Float) {
+        soundPool.play(
+            sound,
+            leftVolume,
+            rightVolume,
+            priority,
+            loop,
+            rate
+        )
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         gamePlayViewModel.removeListener()
+//        gamePlayViewModel.releaseResource()
         soundPool.release()
     }
 
