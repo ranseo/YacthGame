@@ -70,7 +70,7 @@ class GamePlayViewModel @Inject constructor(
     val turnFlag = Transformations.map(rollDice) {
         it.turn
     }
-    var prevRollDice : RollDice? = null
+    var prevRollDice: RollDice? = null
 
     private val _boardInfo = MutableLiveData<BoardInfo>()
     val boardInfo: LiveData<BoardInfo>
@@ -80,6 +80,27 @@ class GamePlayViewModel @Inject constructor(
     val myTurn: LiveData<Boolean>
         get() = _myTurn
 
+    /**
+     * MediatorLiveData 타입의 MyTurn 프로퍼티값을 초기화하는 함수.
+     * */
+    private fun setMyTurn(
+        player: LiveData<Player>,
+        firstPlayer: LiveData<Player>,
+        secondPlayer: LiveData<Player>,
+        turnFlag: LiveData<Boolean>
+    ) {
+        if (player.value != null && turnFlag.value != null) {
+            _myTurn.value = if (player.value == firstPlayer.value && turnFlag.value!!) {
+                true
+            } else if (player.value == secondPlayer.value && !turnFlag.value!!) {
+                true
+            } else {
+                initChance()
+                getChanceStr()
+                false
+            }
+        }
+    }
 
     private val _turnCount = MutableLiveData<Int>(1)
     val turnCount: LiveData<Int>
@@ -155,6 +176,27 @@ class GamePlayViewModel @Inject constructor(
 
     var earlyFinishGame: Boolean = false
 
+    private val _isFirstPlayer = MediatorLiveData<Boolean>()
+    val isFirstPlayer: LiveData<Boolean>
+        get() = _isFirstPlayer
+
+    private fun setIsFirstPlayer(
+        player: LiveData<Player>,
+        firstPlayer: LiveData<Player>
+    ) {
+        if (player.value != null && firstPlayer.value != null) {
+            _isFirstPlayer.value = (player.value == firstPlayer.value)
+        }
+    }
+
+    private val _clickProfile = MutableLiveData<Event<Boolean>>()
+    val clickProfile: LiveData<Event<Boolean>>
+        get() = _clickProfile
+
+    fun onClickProfile(player:Boolean) {
+        _clickProfile.value = Event(player)
+    }
+
     init {
 
         //refreshSoundPool()
@@ -164,52 +206,13 @@ class GamePlayViewModel @Inject constructor(
         refreshPlayer()
         refreshGameId()
         refreshMyTurn()
+        refreshIsFirstPlayer()
 
         setRollDiceImage(START_LIST)
 
 
     }
 
-    /**
-     * sound
-     * */
-//    private fun refreshSoundPool() {
-//        audioAttributes = AudioAttributes.Builder()
-//            .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
-//            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-//            .build()
-//
-//        soundPool = SoundPool.Builder()
-//            .setMaxStreams(1)
-//            .setAudioAttributes(audioAttributes)
-//            .build()
-//
-//        upSound = soundPool!!.load(
-//            getApplication(), R.raw.roll_dice, 1
-//        )
-//    }
-
-    /**
-     * MediatorLiveData 타입의 MyTurn 프로퍼티값을 초기화하는 함수.
-     * */
-    private fun setMyTurn(
-        player: LiveData<Player>,
-        firstPlayer: LiveData<Player>,
-        secondPlayer: LiveData<Player>,
-        turnFlag: LiveData<Boolean>
-    ) {
-        if (player.value != null && turnFlag.value != null) {
-            _myTurn.value = if (player.value == firstPlayer.value && turnFlag.value!!) {
-                true
-            } else if (player.value == secondPlayer.value && !turnFlag.value!!) {
-                true
-            } else {
-                initChance()
-                getChanceStr()
-                false
-            }
-        }
-    }
 
     /**
      * myTurn - MediatorLiveData를
@@ -224,6 +227,20 @@ class GamePlayViewModel @Inject constructor(
             }
             addSource(firstPlayer) {
                 setMyTurn(myPlayer, firstPlayer, secondPlayer, turnFlag)
+            }
+        }
+    }
+
+    /**
+     * 내가 첫번째 플레이어인지 아닌지 구분
+     * */
+    private fun refreshIsFirstPlayer() {
+        with(_isFirstPlayer) {
+            addSource(myPlayer) {
+                setIsFirstPlayer(myPlayer, firstPlayer)
+            }
+            addSource(firstPlayer) {
+                setIsFirstPlayer(myPlayer, firstPlayer)
             }
         }
     }
@@ -410,22 +427,22 @@ class GamePlayViewModel @Inject constructor(
      * */
     @SuppressLint("UseCompatLoadingForDrawables")
     fun setRollDiceImage(diceList: Array<Int>) {
-            var list = mutableListOf<Drawable>()
-            for (dice in diceList) {
-                val drawable = when (dice) {
-                    1 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_first)!!
-                    2 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_second)!!
-                    3 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_third)!!
-                    4 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_fourth)!!
-                    5 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_fifth)!!
-                    6 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_sixth)!!
-                    else -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_first)!!
-                }
-                list.add(drawable)
-
+        var list = mutableListOf<Drawable>()
+        for (dice in diceList) {
+            val drawable = when (dice) {
+                1 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_first)!!
+                2 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_second)!!
+                3 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_third)!!
+                4 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_fourth)!!
+                5 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_fifth)!!
+                6 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_sixth)!!
+                else -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_first)!!
             }
-            log(TAG, "setRollDiceImage : ${list}", LogTag.I)
-            _rollDiceImages.value = list
+            list.add(drawable)
+
+        }
+        log(TAG, "setRollDiceImage : ${list}", LogTag.I)
+        _rollDiceImages.value = list
 
     }
 
@@ -495,7 +512,7 @@ class GamePlayViewModel @Inject constructor(
         writeRollDice(diceList, INIT_KEEP_LIST.clone(), player != firstPlayer.value)
         log(TAG, "finishTurn()  : chance = ${chance}", LogTag.I)
         _initRollDiceKeep.value = Event(Unit)
-        if (!isFirstPlayer()) implementTurnCount()
+        if (isFirstPlayer.value!=true) implementTurnCount() // Second Player인 경우 턴을 넘길 때 turn이 증가.
         //getChanceStr()
     }
 
@@ -583,7 +600,7 @@ class GamePlayViewModel @Inject constructor(
     /**
      *
      * */
-    fun isFirstPlayer() = firstPlayer.value == player
+    //fun isFirstPlayer() = firstPlayer.value == player
 
 
     /**

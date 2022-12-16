@@ -20,6 +20,7 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_game_play"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white">
@@ -27,7 +28,10 @@
         <include
             android:id="@+id/layout_first_profile"
             layout="@layout/layout_player_profile"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{()->viewModel.onClickProfile(true)}"
+            android:clickable="@{viewModel.isFirstPlayer ? true : false}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             bind:player="@{viewModel.firstPlayer}"
@@ -37,9 +41,12 @@
 
         <include
             android:id="@+id/layout_second_profile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             layout="@layout/layout_player_profile_reverse"
+            android:onClick="@{()->viewModel.onClickProfile(false)}"
+            android:clickable="@{viewModel.isFirstPlayer ? false : true}"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             bind:player="@{viewModel.secondPlayer}"
             bind:viewModel="@{viewModel}"

@@ -19,6 +19,7 @@ import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.ranseo.yatchgame.Event
 import com.ranseo.yatchgame.LogTag
 import com.ranseo.yatchgame.R
 import com.ranseo.yatchgame.data.model.*
@@ -26,6 +27,7 @@ import com.ranseo.yatchgame.databinding.FragmentGamePlayBinding
 import com.ranseo.yatchgame.log
 import com.ranseo.yatchgame.ui.dialog.GameResultDialog
 import com.ranseo.yatchgame.ui.lobby.LobbyActivity
+import com.ranseo.yatchgame.ui.popup.EmojiPopup
 import com.ranseo.yatchgame.util.YachtSound
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -35,7 +37,9 @@ import javax.inject.Inject
 class GamePlayFragment() : Fragment() {
     private val TAG = "GamePlayFragment"
     private lateinit var binding: FragmentGamePlayBinding
-    @Inject lateinit var yachtSound : YachtSound
+
+    @Inject
+    lateinit var yachtSound: YachtSound
 
 
     private val gamePlayViewModel: GamePlayViewModel by viewModels()
@@ -78,17 +82,20 @@ class GamePlayFragment() : Fragment() {
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_game_play, container, false)
 
-        binding.viewModel = gamePlayViewModel
-        binding.lifecycleOwner = viewLifecycleOwner
-        binding.onClickListener = OnBoardClickListener { boardTag ->
-            yachtSound.play(YachtSound.BOARD_CONFIRM_SOUND)
-            //보드판의 점수를 사용자가 클릭하면 해당 점수가 확정되고, 상대턴으로 넘어가는 과정
-            //1.getScore() : 점수 확정한 뒤, 확정된 점수판을 database에 기록
-            gamePlayViewModel.getScore(boardTag)
-            //2.confirmBoardRecord() : 점수를 확정하면 확정 점수가 사용자에게 보이도록 boardRecord를 변경하고, database에 기록
-            gamePlayViewModel.confirmBoardRecord(boardTag)
-            //3.finishTurn() : 현재 턴을 넘기고 주사위를 초기화.
-            gamePlayViewModel.finishTurn()
+        with(binding) {
+            viewModel = gamePlayViewModel
+            lifecycleOwner = viewLifecycleOwner
+            onClickListener = OnBoardClickListener { boardTag ->
+                yachtSound.play(YachtSound.BOARD_CONFIRM_SOUND)
+                //보드판의 점수를 사용자가 클릭하면 해당 점수가 확정되고, 상대턴으로 넘어가는 과정
+                //1.getScore() : 점수 확정한 뒤, 확정된 점수판을 database에 기록
+                gamePlayViewModel.getScore(boardTag)
+                //2.confirmBoardRecord() : 점수를 확정하면 확정 점수가 사용자에게 보이도록 boardRecord를 변경하고, database에 기록
+                gamePlayViewModel.confirmBoardRecord(boardTag)
+                //3.finishTurn() : 현재 턴을 넘기고 주사위를 초기화.
+                gamePlayViewModel.finishTurn()
+
+            }
 
         }
 
@@ -102,6 +109,7 @@ class GamePlayFragment() : Fragment() {
             firstBoardRecord.observe(viewLifecycleOwner, firstBoardRecordObserver())
             secondBoardRecord.observe(viewLifecycleOwner, secondBoardRecordObserver())
             turnCount.observe(viewLifecycleOwner, turnCountObserver())
+            clickProfile.observe(viewLifecycleOwner, clickProfileObserver())
         }
 
         setRollDiceImageViewClickListener()
@@ -162,7 +170,7 @@ class GamePlayFragment() : Fragment() {
             yachtSound.play(YachtSound.KEEP_SOUND)
             gamePlayViewModel.keepDice(idx)
             imageview.isSelected = !imageview.isSelected
-            
+
         }
     }
 
@@ -205,7 +213,7 @@ class GamePlayFragment() : Fragment() {
                     gamePlayViewModel.gameId.value?.let { gameId ->
                         gamePlayViewModel.writeRollDiceAtFirst(gameId)
                         gamePlayViewModel.rollDiceFirstFlag = false
-                        if (gamePlayViewModel.isFirstPlayer()) gamePlayViewModel.refreshTurnCount()
+                        if (gamePlayViewModel.isFirstPlayer.value==true) gamePlayViewModel.refreshTurnCount()
 
                     }
                 }
@@ -226,7 +234,7 @@ class GamePlayFragment() : Fragment() {
                         log(TAG, "myTurnObserver : chance = ${gamePlayViewModel.chance}", LogTag.I)
                         gamePlayViewModel.reloadBeforeRollDice()
                         log(TAG, "myTurnObserver : 현재 나의 턴 입니다.", LogTag.I)
-                        if (gamePlayViewModel.isFirstPlayer()) gamePlayViewModel.implementTurnCount()
+                        if (gamePlayViewModel.isFirstPlayer.value == true) gamePlayViewModel.implementTurnCount() //First Player인 경우
                         Toast.makeText(requireContext(), "내 턴 입니다.", Toast.LENGTH_SHORT).show()
                     }
                 } else {
@@ -275,7 +283,9 @@ class GamePlayFragment() : Fragment() {
                 gamePlayViewModel.myTurn.value?.let { myTurn ->
                     if (!myTurn) {
                         val prev = gamePlayViewModel.prevRollDice
-                        if(prev != null && rollDice.checkKeepChange(prev)) yachtSound.play(YachtSound.KEEP_SOUND)
+                        if (prev != null && rollDice.checkKeepChange(prev)) yachtSound.play(
+                            YachtSound.KEEP_SOUND
+                        )
                         else yachtSound.play(YachtSound.ROLL_DICE_SOUND)
                         gamePlayViewModel.checkOpponentDiceState(rollDice)
                         setRollDiceSelected(rollDice)
@@ -301,6 +311,16 @@ class GamePlayFragment() : Fragment() {
             }
         }
 
+    /**
+     *
+     * */
+    private fun clickProfileObserver() =
+        Observer<Event<Boolean>> {
+            it.getContentIfNotHandled()?.let{ player->
+                val view = if(player)  binding.layoutFirstProfile.root else binding.layoutSecondProfile.root
+                showEmojiPopup(view)
+            }
+        }
     /**
      * 게임이 끝났을 때, 띄우는 Dialog
      * */
@@ -349,6 +369,27 @@ class GamePlayFragment() : Fragment() {
 //            rate
 //        )
 //    }
+
+    /**
+     * PopupEmoji Fragment 를 display
+     * */
+    fun showEmojiPopup(view:View) {
+        val emoji = EmojiPopup(requireContext(), object: EmojiPopup.OnEmojiPopupClickListener {
+            override fun onEmojiClick(emoji: Int) {
+                when(emoji) {
+                    EmojiPopup.LAUGHING -> {}
+                    EmojiPopup.LOVE -> {}
+                    EmojiPopup.ANGRY -> {}
+                    EmojiPopup.CRYING -> {}
+                    EmojiPopup.SURPRISED -> {}
+                    EmojiPopup.THINKING -> {}
+                }
+            }
+
+        })
+
+        emoji.showPopupWindow(binding.layoutGamePlay, view)
+    }
 
     override fun onDestroy() {
         super.onDestroy()

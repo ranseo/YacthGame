@@ -1,84 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:alignmentMode="alignBounds"
-    android:columnCount="2"
-    android:orientation="horizontal">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <FrameLayout
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:background="@drawable/profile_emoji_border_line"
-        >
+    <data>
 
-        <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@drawable/emoji_laughing"
-            android:layout_gravity="center"/>
-    </FrameLayout>
+    </data>
+
+    <GridLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alignmentMode="alignBounds"
+        android:columnCount="2"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:id="@+id/layout_laughing"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/profile_emoji_border_line">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/emoji_laughing"
+                android:layout_gravity="center" />
+        </FrameLayout>
 
 
-    <FrameLayout
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:background="@drawable/profile_emoji_border_line"
-        >
+        <FrameLayout
+            android:id="@+id/layout_love"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/profile_emoji_border_line">
 
-        <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@drawable/emoji_love"
-            android:layout_gravity="center"/>
-    </FrameLayout>
-    <FrameLayout
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:background="@drawable/profile_emoji_border_line"
-        >
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/emoji_love"
+                android:layout_gravity="center" />
+        </FrameLayout>
 
-        <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@drawable/emoji_angry"
-            android:layout_gravity="center"/>
-    </FrameLayout>
-    <FrameLayout
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:background="@drawable/profile_emoji_border_line"
-        >
+        <FrameLayout
+            android:id="@+id/layout_angry"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/profile_emoji_border_line">
 
-        <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@drawable/emoji_crying"
-            android:layout_gravity="center"/>
-    </FrameLayout>
-    <FrameLayout
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:background="@drawable/profile_emoji_border_line"
-        >
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/emoji_angry"
+                android:layout_gravity="center" />
+        </FrameLayout>
 
-        <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@drawable/emoji_surprised"
-            android:layout_gravity="center"/>
-    </FrameLayout>
-    <FrameLayout
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:background="@drawable/profile_emoji_border_line"
-        >
+        <FrameLayout
+            android:id="@+id/layout_crying"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/profile_emoji_border_line">
 
-        <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@drawable/emoji_thinking"
-            android:layout_gravity="center"/>
-    </FrameLayout>
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/emoji_crying"
+                android:layout_gravity="center" />
+        </FrameLayout>
 
-</GridLayout>
+        <FrameLayout
+            android:id="@+id/layout_surprised"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/profile_emoji_border_line">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/emoji_surprised"
+                android:layout_gravity="center" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/layout_thinking"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/profile_emoji_border_line">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/emoji_thinking"
+                android:layout_gravity="center" />
+        </FrameLayout>
+
+    </GridLayout>
+</layout>
