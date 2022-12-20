@@ -67,5 +67,40 @@
             app:layout_constraintTop_toBottomOf="@id/tv_player_name"/>
 
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/name_tag"
+
+            >
+
+            <ImageView
+                android:id="@+id/iv_chat_dialog"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:src="@drawable/chat_dialog_reverse"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                />
+
+            <ImageView
+                android:id="@+id/iv_emoji"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                tools:src="@drawable/emoji_surprised"
+                android:layout_marginTop="12dp"
+                app:layout_constraintStart_toStartOf="@id/iv_chat_dialog"
+                app:layout_constraintEnd_toEndOf="@id/iv_chat_dialog"
+                app:layout_constraintTop_toTopOf="@id/iv_chat_dialog"
+                app:layout_constraintBottom_toBottomOf="@id/iv_chat_dialog"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
