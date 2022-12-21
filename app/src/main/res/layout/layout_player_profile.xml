@@ -16,6 +16,12 @@
             name="board"
             type="com.ranseo.yatchgame.data.model.Board" />
 
+        <variable
+            name="emoji"
+            type="int" />
+
+        <import type="android.view.View"/>
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -59,6 +65,7 @@
         <TextView
             android:id="@+id/tv_total_under_first_profile"
             android:text="@{Integer.toString(board.total)}"
+            android:visibility="@{emoji > 0 ? View.GONE : View.VISIBLE}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/board_first_score"
@@ -75,13 +82,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/name_tag"
-
+            android:visibility="@{emoji > 0 ? View.VISIBLE : View.GONE}"
             >
 
             <ImageView
                 android:id="@+id/iv_chat_dialog"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
                 android:src="@drawable/chat_dialog"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -92,6 +99,7 @@
                 android:id="@+id/iv_emoji"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
+                setEmoji="@{emoji}"
                 tools:src="@drawable/emoji_surprised"
                 android:layout_marginTop="12dp"
                 app:layout_constraintStart_toStartOf="@id/iv_chat_dialog"

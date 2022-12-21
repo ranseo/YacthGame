@@ -19,6 +19,8 @@ import com.ranseo.yatchgame.util.DateTime
 import com.ranseo.yatchgame.util.YachtGame
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.lang.Error
@@ -80,6 +82,7 @@ class GamePlayViewModel @Inject constructor(
     private val _myTurn = MediatorLiveData<Boolean>()
     val myTurn: LiveData<Boolean>
         get() = _myTurn
+
 
     /**
      * MediatorLiveData 타입의 MyTurn 프로퍼티값을 초기화하는 함수.
@@ -202,9 +205,19 @@ class GamePlayViewModel @Inject constructor(
     val emojiInfo: LiveData<EmojiInfo?>
         get() = _emojiInfo
 
-    val emoji = Transformations.map(emojiInfo) {
-        it?.let { Event(it.emoji) }
+    val opponentEmoji = Transformations.map(emojiInfo) {
+        it?.let { it.emoji }
     }
+
+    private var opponentEmojiJob : Job = Job()
+
+    private val _myEmoji = MutableLiveData<Int>()
+    val myEmoji : LiveData<Int>
+        get() = _myEmoji
+
+    private var myEmojiJob : Job = Job()
+
+
     init {
 
         //refreshSoundPool()
@@ -229,8 +242,13 @@ class GamePlayViewModel @Inject constructor(
             try {
                 gamePlayRepositery.getEmojiInfo(gameId, myPlayer.value!!.playerId).collect{ emojiInfo ->
                     if (emojiInfo.isSuccess) {
+                        opponentEmojiJob.cancel()
                         _emojiInfo.value = emojiInfo.getOrNull()
                         log(TAG, "refreshEmojiInfo : emojiInfo Success : $emojiInfo", LogTag.I)
+                        opponentEmojiJob = launch {
+                            delay(1500)
+                            _emojiInfo.value = EmojiInfo(0)
+                        }
                     } else {
                         log(TAG, "refreshEmojiInfo : emojiInfo Failure", LogTag.D)
                     }
@@ -726,13 +744,28 @@ class GamePlayViewModel @Inject constructor(
     /**
      * 상대편 uid에 나의 emojiInfo Write
      * */
-    fun writeEmoji(emoji:Int) {
+    fun writeOpponentEmoji(emoji:Int) {
         viewModelScope.launch {
             val new = EmojiInfo(emoji)
             gamePlayRepositery.setEmojiInfo(gameId.value!!, if(isFirstPlayer.value==true) secondPlayer.value!!.playerId else firstPlayer.value!!.playerId, new)
         }
     }
 
+    /**
+     * 내 profile layout 에 emoji쓰기
+     * */
+    fun setMyEmoji(emoji: Int) {
+
+        viewModelScope.launch {
+            myEmojiJob.cancel()
+            _myEmoji.value = emoji
+
+            myEmojiJob = launch {
+                delay(1500)
+                _myEmoji.value = 0
+            }
+        }
+    }
 
     companion object {
         private const val TAG = "GamePlayViewModel"

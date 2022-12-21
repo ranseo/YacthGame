@@ -97,6 +97,7 @@ class GamePlayFragment() : Fragment() {
 
             }
 
+
         }
 
         with(gamePlayViewModel) {
@@ -110,7 +111,8 @@ class GamePlayFragment() : Fragment() {
             secondBoardRecord.observe(viewLifecycleOwner, secondBoardRecordObserver())
             turnCount.observe(viewLifecycleOwner, turnCountObserver())
             clickProfile.observe(viewLifecycleOwner, clickProfileObserver())
-
+            opponentEmoji.observe(viewLifecycleOwner, opponentEmojiObserver())
+            myEmoji.observe(viewLifecycleOwner, myEmojiObserver())
         }
 
         setRollDiceImageViewClickListener()
@@ -323,6 +325,27 @@ class GamePlayFragment() : Fragment() {
                 showEmojiPopup(view)
             }
         }
+
+    /**
+     *
+     * */
+    private fun opponentEmojiObserver() =
+        Observer<Int> {
+            it?.let {
+                if(gamePlayViewModel.isFirstPlayer.value == true) binding.layoutSecondProfile.emoji = it else binding.layoutFirstProfile.emoji = it
+            }
+        }
+
+    /**
+     *
+     * */
+    private fun myEmojiObserver() =
+        Observer<Int> {
+            it?.let {
+                if(gamePlayViewModel.isFirstPlayer.value != true) binding.layoutSecondProfile.emoji = it else binding.layoutFirstProfile.emoji = it
+            }
+        }
+
     /**
      * 게임이 끝났을 때, 띄우는 Dialog
      * */
@@ -378,7 +401,8 @@ class GamePlayFragment() : Fragment() {
     fun showEmojiPopup(view:View) {
         val emoji = EmojiPopup(requireContext(), object: EmojiPopup.OnEmojiPopupClickListener {
             override fun onEmojiClick(emoji: Int) {
-                gamePlayViewModel.writeEmoji(emoji)
+                gamePlayViewModel.writeOpponentEmoji(emoji)
+                gamePlayViewModel.setMyEmoji(emoji)
             }
         })
 

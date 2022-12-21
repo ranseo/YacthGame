@@ -17,12 +17,12 @@
         <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/layout/activity_login.xml" value="0.2" />
         <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/layout/dialog_edit_text.xml" value="0.33" />
         <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/layout/dialog_game_result.xml" value="0.25" />
-        <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/layout/fragment_game_play.xml" value="0.75" />
+        <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/layout/fragment_game_play.xml" value="0.33" />
         <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/layout/fragment_lobby.xml" value="0.1" />
         <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/layout/layout_game_play_board.xml" value="0.1" />
         <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/layout/layout_number_board_first.xml" value="0.1" />
         <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/layout/layout_number_board_second.xml" value="0.33" />
-        <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/layout/layout_player_profile.xml" value="0.33" />
+        <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/layout/layout_player_profile.xml" value="0.22" />
         <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/layout/layout_player_profile_reverse.xml" value="0.33" />
         <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/layout/layout_rank_board_tag.xml" value="0.22" />
         <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/layout/layout_ranks_up_board_first.xml" value="0.1" />
@@ -53,7 +53,7 @@
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/activity_main.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/activity_splash.xml" value="0.22" />
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/dialog_edit_text.xml" value="0.13333333333333333" />
-        <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/fragment_game_play.xml" value="0.22" />
+        <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/fragment_game_play.xml" value="0.25" />
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/fragment_lobby.xml" value="0.21" />
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/fragment_waiting.xml" value="0.1" />
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/layout_game_play_board.xml" value="0.33" />
@@ -62,8 +62,8 @@
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/layout_number_up_board.xml" value="0.33" />
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/layout_number_up_board_second.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/layout_number_up_board_tag.xml" value="0.33" />
-        <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/layout_player_profile.xml" value="0.21822916666666667" />
-        <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/layout_player_profile_reverse.xml" value="0.2" />
+        <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/layout_player_profile.xml" value="0.1" />
+        <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/layout_player_profile_reverse.xml" value="0.1" />
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/layout_ranks_up_board_first.xml" value="0.1" />
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/layout_ranks_up_board_second.xml" value="0.1" />
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/list_item_room_robby.xml" value="0.33" />
