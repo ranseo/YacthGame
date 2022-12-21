@@ -110,6 +110,7 @@ class GamePlayFragment() : Fragment() {
             secondBoardRecord.observe(viewLifecycleOwner, secondBoardRecordObserver())
             turnCount.observe(viewLifecycleOwner, turnCountObserver())
             clickProfile.observe(viewLifecycleOwner, clickProfileObserver())
+
         }
 
         setRollDiceImageViewClickListener()
@@ -201,6 +202,7 @@ class GamePlayFragment() : Fragment() {
                 gamePlayViewModel.refreshGameInfo(gameId)
                 gamePlayViewModel.refreshRollDice(gameId)
                 gamePlayViewModel.refreshBoardInfo(gameId)
+                gamePlayViewModel.refreshEmojiInfo(gameId)
                 //gamePlayViewModel.refreshTurnCount()
                 //gamePlayViewModel.writeRollDiceAtFirst(gameId)
             }
@@ -376,16 +378,8 @@ class GamePlayFragment() : Fragment() {
     fun showEmojiPopup(view:View) {
         val emoji = EmojiPopup(requireContext(), object: EmojiPopup.OnEmojiPopupClickListener {
             override fun onEmojiClick(emoji: Int) {
-                when(emoji) {
-                    EmojiPopup.LAUGHING -> {}
-                    EmojiPopup.LOVE -> {}
-                    EmojiPopup.ANGRY -> {}
-                    EmojiPopup.CRYING -> {}
-                    EmojiPopup.SURPRISED -> {}
-                    EmojiPopup.THINKING -> {}
-                }
+                gamePlayViewModel.writeEmoji(emoji)
             }
-
         })
 
         emoji.showPopupWindow(binding.layoutGamePlay, view)

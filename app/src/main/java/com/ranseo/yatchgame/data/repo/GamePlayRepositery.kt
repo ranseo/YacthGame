@@ -1,10 +1,12 @@
 package com.ranseo.yatchgame.data.repo
 
 import com.ranseo.yatchgame.data.model.BoardInfo
+import com.ranseo.yatchgame.data.model.EmojiInfo
 import com.ranseo.yatchgame.data.model.GameInfo
 import com.ranseo.yatchgame.data.model.RollDice
 import com.ranseo.yatchgame.data.source.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -13,7 +15,8 @@ class GamePlayRepositery @Inject constructor(
     private val gameInfoRoomDataSource: GameInfoRoomDataSource,
     private val playerDataSource: PlayerDataSource,
     private val rollDiceDataSource: RollDiceDataSource,
-    private val boardInfoDataSource: BoardInfoDataSource
+    private val boardInfoDataSource: BoardInfoDataSource,
+    private val emojiInfoRepositery: EmojiInfoRepositery
 ) {
 
     val player = playerDataSource.getMyPlayer()
@@ -71,5 +74,11 @@ class GamePlayRepositery @Inject constructor(
 
 
     //Emoji
+    suspend fun getEmojiInfo(gameId: String, playerId:String) : Flow<Result<EmojiInfo>> = withContext(Dispatchers.IO) {
+        emojiInfoRepositery.getEmojiInfo(gameId, playerId)
+    }
 
+    suspend fun setEmojiInfo(gameId:String, playerId:String, emojiInfo: EmojiInfo) {
+        emojiInfoRepositery.setEmojiInfo(gameId, playerId, emojiInfo)
+    }
 }

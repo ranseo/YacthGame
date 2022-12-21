@@ -38,6 +38,15 @@
         ".read" : "auth!=null",
         ".write" : "auth!=null"
       }
+    },
+
+    "emoji": {
+      "$gameId" : {
+        "$uid" : {
+          ".read" : "auth != null",
+          ".write": "auth != null"
+        }
+      }
     }
   }
 }

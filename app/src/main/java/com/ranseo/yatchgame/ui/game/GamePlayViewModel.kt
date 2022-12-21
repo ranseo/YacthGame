@@ -19,6 +19,7 @@ import com.ranseo.yatchgame.util.DateTime
 import com.ranseo.yatchgame.util.YachtGame
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.lang.Error
 import java.lang.NullPointerException
@@ -193,10 +194,17 @@ class GamePlayViewModel @Inject constructor(
     val clickProfile: LiveData<Event<Boolean>>
         get() = _clickProfile
 
-    fun onClickProfile(player:Boolean) {
+    fun onClickProfile(player: Boolean) {
         _clickProfile.value = Event(player)
     }
 
+    private val _emojiInfo = MutableLiveData<EmojiInfo?>()
+    val emojiInfo: LiveData<EmojiInfo?>
+        get() = _emojiInfo
+
+    val emoji = Transformations.map(emojiInfo) {
+        it?.let { Event(it.emoji) }
+    }
     init {
 
         //refreshSoundPool()
@@ -213,6 +221,25 @@ class GamePlayViewModel @Inject constructor(
 
     }
 
+    /**
+     * Firebase Database, emojiInfo Flow -> Collect -> 'emojiInfo'
+     * */
+    fun refreshEmojiInfo(gameId: String) {
+        viewModelScope.launch {
+            try {
+                gamePlayRepositery.getEmojiInfo(gameId, myPlayer.value!!.playerId).collect{ emojiInfo ->
+                    if (emojiInfo.isSuccess) {
+                        _emojiInfo.value = emojiInfo.getOrNull()
+                        log(TAG, "refreshEmojiInfo : emojiInfo Success : $emojiInfo", LogTag.I)
+                    } else {
+                        log(TAG, "refreshEmojiInfo : emojiInfo Failure", LogTag.D)
+                    }
+                }
+            } catch (error:NullPointerException) {
+                log(TAG,"refreshEmojiInfo : ${error.message}", LogTag.D)
+            }
+        }
+    }
 
     /**
      * myTurn - MediatorLiveData를
@@ -512,7 +539,7 @@ class GamePlayViewModel @Inject constructor(
         writeRollDice(diceList, INIT_KEEP_LIST.clone(), player != firstPlayer.value)
         log(TAG, "finishTurn()  : chance = ${chance}", LogTag.I)
         _initRollDiceKeep.value = Event(Unit)
-        if (isFirstPlayer.value!=true) implementTurnCount() // Second Player인 경우 턴을 넘길 때 turn이 증가.
+        if (isFirstPlayer.value != true) implementTurnCount() // Second Player인 경우 턴을 넘길 때 turn이 증가.
         //getChanceStr()
     }
 
@@ -694,6 +721,18 @@ class GamePlayViewModel @Inject constructor(
             gamePlayRepositery.updateGameInfo(gameInfo)
         }
     }
+
+
+    /**
+     * 상대편 uid에 나의 emojiInfo Write
+     * */
+    fun writeEmoji(emoji:Int) {
+        viewModelScope.launch {
+            val new = EmojiInfo(emoji)
+            gamePlayRepositery.setEmojiInfo(gameId.value!!, if(isFirstPlayer.value==true) secondPlayer.value!!.playerId else firstPlayer.value!!.playerId, new)
+        }
+    }
+
 
     companion object {
         private const val TAG = "GamePlayViewModel"
