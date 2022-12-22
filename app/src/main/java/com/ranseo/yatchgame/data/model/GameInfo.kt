@@ -44,7 +44,7 @@ data class GameInfo(
         boards = boards
     )
 
-    constructor(gameInfo:GameInfo, gameScore: String, gameFinishTime: String, result:String) : this(
+    constructor(gameInfo:GameInfo, gameScore: String, gameFinishTime: String, result:String, boards:List<Board>) : this(
         gameId = gameInfo.gameId,
         gameScore = gameScore,
         gameStartTime = gameInfo.gameStartTime,
@@ -52,7 +52,7 @@ data class GameInfo(
         first = gameInfo.first,
         second = gameInfo.second,
         result = result,
-        boards = gameInfo.boards
+        boards = boards
     )
 }
 

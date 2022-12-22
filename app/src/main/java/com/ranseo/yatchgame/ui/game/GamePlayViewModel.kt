@@ -14,6 +14,7 @@ import com.ranseo.yatchgame.LogTag
 import com.ranseo.yatchgame.R
 import com.ranseo.yatchgame.data.model.*
 import com.ranseo.yatchgame.data.repo.GamePlayRepositery
+import com.ranseo.yatchgame.domain.usecase.WriteTurnCountInfoUseCase
 import com.ranseo.yatchgame.log
 import com.ranseo.yatchgame.util.DateTime
 import com.ranseo.yatchgame.util.YachtGame
@@ -31,6 +32,7 @@ import javax.inject.Inject
 class GamePlayViewModel @Inject constructor(
     private val gamePlayRepositery: GamePlayRepositery,
     private val yachtGame: YachtGame,
+    private val writeTurnCountInfoUseCase: WriteTurnCountInfoUseCase,
     application: Application
 ) : AndroidViewModel(application) {
 
@@ -41,22 +43,8 @@ class GamePlayViewModel @Inject constructor(
     private lateinit var player: Player
     private var myPlayer = gamePlayRepositery.player
 
-    private val nameTag = listOf(
-        R.drawable.name_tag_cat,
-        R.drawable.name_tag_bear,
-        R.drawable.name_tag_deer,
-        R.drawable.name_tag_frog,
-        R.drawable.name_tag_rabbit
-    )
-    private val nameTagReversed = listOf(
-        R.drawable.name_tag_cat_reverse,
-        R.drawable.name_tag_bear_reverse,
-        R.drawable.name_tag_deer_reverse,
-        R.drawable.name_tag_frog_reverse,
-        R.drawable.name_tag_rabbit_reverse
-    )
-    private val _nameTagImages = MutableLiveData<List<Drawable>>()
-    val nameTagImages: LiveData<List<Drawable>>
+    private val _nameTagImages = MutableLiveData<List<Int>>()
+    val nameTagImages: LiveData<List<Int>>
         get() = _nameTagImages
 
     private val _gameId = MutableLiveData<String>()
@@ -106,12 +94,14 @@ class GamePlayViewModel @Inject constructor(
         }
     }
 
-    private val _turnCount = MutableLiveData<Int>(1)
+    private val _turnCount = MutableLiveData<Int>()
     val turnCount: LiveData<Int>
         get() = _turnCount
+
     val turnCountStr = Transformations.map(turnCount) {
         if (it < 13) "$it/12" else "종료"
     }
+
 
     private val _initRollDiceKeep = MutableLiveData<Event<Any?>>()
     val initRollDiceKeep: LiveData<Event<Any?>>
@@ -145,21 +135,24 @@ class GamePlayViewModel @Inject constructor(
         it.second
     }
 
-    val firstRealBoard = Transformations.map(gameInfo) {
-        it.boards[0]
+    @RequiresApi(Build.VERSION_CODES.N)
+    val firstRealBoard = Transformations.map(boardInfo) {
+        it.returnRealBoard(0)
     }
-    val secondRealBoard = Transformations.map(gameInfo) {
-        it.boards[1]
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    val secondRealBoard = Transformations.map(boardInfo) {
+        it.returnRealBoard(1)
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
     val firstFakeBoard = Transformations.map(boardInfo) {
-        it.returnBoard(0)
+        it.returnFakeBoard(0)
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
     val secondFakeBoard = Transformations.map(boardInfo) {
-        it.returnBoard(1)
+        it.returnFakeBoard(1)
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -173,8 +166,8 @@ class GamePlayViewModel @Inject constructor(
     }
 
     //
-    private val _rollDiceImages = MutableLiveData<List<Drawable>>()
-    val rollDiceImages: LiveData<List<Drawable>>
+    private val _rollDiceImages = MutableLiveData<List<Int>>()
+    val rollDiceImages: LiveData<List<Int>>
         get() = _rollDiceImages
 
 
@@ -209,14 +202,21 @@ class GamePlayViewModel @Inject constructor(
         it?.let { it.emoji }
     }
 
-    private var opponentEmojiJob : Job = Job()
+    private var opponentEmojiJob: Job = Job()
 
     private val _myEmoji = MutableLiveData<Int>()
-    val myEmoji : LiveData<Int>
+    val myEmoji: LiveData<Int>
         get() = _myEmoji
 
-    private var myEmojiJob : Job = Job()
+    private var myEmojiJob: Job = Job()
 
+    private val _yachtSound = MutableLiveData<Event<Any?>>()
+    val yachtSound: LiveData<Event<Any?>>
+        get() = _yachtSound
+
+    private val _diceAnim = MutableLiveData<List<Boolean>>()
+    val diceAnim: LiveData<List<Boolean>>
+        get() = _diceAnim
 
     init {
 
@@ -235,26 +235,43 @@ class GamePlayViewModel @Inject constructor(
     }
 
     /**
+     * turnCountInfo refresh
+     * */
+    fun refreshTurnCountInfo(gameId: String) {
+        viewModelScope.launch {
+
+            writeTurnCountInfoUseCase(gameId, TurnCountInfo(1))
+
+            gamePlayRepositery.getTurnCountInfo(gameId).collect {
+                if (it.isSuccess) {
+                    _turnCount.value = it.getOrDefault(TurnCountInfo(1)).turnCount
+                }
+            }
+        }
+    }
+
+    /**
      * Firebase Database, emojiInfo Flow -> Collect -> 'emojiInfo'
      * */
     fun refreshEmojiInfo(gameId: String) {
         viewModelScope.launch {
             try {
-                gamePlayRepositery.getEmojiInfo(gameId, myPlayer.value!!.playerId).collect{ emojiInfo ->
-                    if (emojiInfo.isSuccess) {
-                        opponentEmojiJob.cancel()
-                        _emojiInfo.value = emojiInfo.getOrNull()
-                        log(TAG, "refreshEmojiInfo : emojiInfo Success : $emojiInfo", LogTag.I)
-                        opponentEmojiJob = launch {
-                            delay(1500)
-                            _emojiInfo.value = EmojiInfo(0)
+                gamePlayRepositery.getEmojiInfo(gameId, myPlayer.value!!.playerId)
+                    .collect { emojiInfo ->
+                        if (emojiInfo.isSuccess) {
+                            opponentEmojiJob.cancel()
+                            _emojiInfo.value = emojiInfo.getOrNull()
+                            log(TAG, "refreshEmojiInfo : emojiInfo Success : $emojiInfo", LogTag.I)
+                            opponentEmojiJob = launch {
+                                delay(1500)
+                                _emojiInfo.value = EmojiInfo(0)
+                            }
+                        } else {
+                            log(TAG, "refreshEmojiInfo : emojiInfo Failure", LogTag.D)
                         }
-                    } else {
-                        log(TAG, "refreshEmojiInfo : emojiInfo Failure", LogTag.D)
                     }
-                }
-            } catch (error:NullPointerException) {
-                log(TAG,"refreshEmojiInfo : ${error.message}", LogTag.D)
+            } catch (error: NullPointerException) {
+                log(TAG, "refreshEmojiInfo : ${error.message}", LogTag.D)
             }
         }
     }
@@ -295,15 +312,12 @@ class GamePlayViewModel @Inject constructor(
      * */
     private fun refreshNameTag() {
         try {
-            val first = nameTag.shuffled().first()
-            val second = nameTagReversed.shuffled().first()
+            val first = listOf(1, 2, 3, 4, 5).shuffled().first()
+            val second = listOf(1, 2, 3, 4, 5).shuffled().first()
 
-            val list = listOf(
-                getApplication<Application>().getDrawable(first)!!,
-                getApplication<Application>().getDrawable(second)!!
-            )
+            val list = listOf(first, second)
+
             _nameTagImages.value = list
-
         } catch (error: NullPointerException) {
             log(TAG, "refreshNameTag : error ${error.message}", LogTag.D)
         }
@@ -347,7 +361,6 @@ class GamePlayViewModel @Inject constructor(
         viewModelScope.launch {
             gamePlayRepositery.getGameInfo(gameInfoId) { gameInfo ->
                 _gameInfo.postValue(gameInfo)
-                //updateGameInfo(gameInfo)
             }
         }
     }
@@ -370,24 +383,20 @@ class GamePlayViewModel @Inject constructor(
     fun refreshBoardInfo(gameId: String) {
         viewModelScope.launch {
             val boardInfo =
-                BoardInfo(listOf(Board(), Board()), listOf(BoardRecord(), BoardRecord()))
+                BoardInfo(
+                    listOf(Board(), Board()),
+                    listOf(Board(), Board()),
+                    listOf(BoardRecord(), BoardRecord())
+                )
 
             writeBoardInfo(gameId, boardInfo)
 
-            gamePlayRepositery.getBoardInfo(gameId) { boardInfo ->
-                _boardInfo.postValue(boardInfo)
+            gamePlayRepositery.getBoardInfo(gameId).collect { result ->
+                if (result.isSuccess) {
+                    _boardInfo.value = result.getOrDefault(boardInfo)
+                }
             }
-
-
         }
-    }
-
-    /**
-     *
-     * */
-    fun refreshTurnCount() {
-        _turnCount.value = 0
-        log(TAG, "turnCount.value : ${turnCount.value}", LogTag.I)
     }
 
     /**
@@ -459,12 +468,18 @@ class GamePlayViewModel @Inject constructor(
 
 
         getChanceStr()
-
         setRollDiceImage(diceList)
-
         showScore(diceList)
-
         writeRollDice(diceList.clone(), keepList.clone(), rollDice.value!!.turn)
+    }
+
+    /**
+     * 야추일 경우, 사운드
+     * */
+    private fun isYacht(board: Board) {
+        if (board.yacht > 0) {
+            _yachtSound.value = Event(Unit)
+        }
     }
 
     /**
@@ -472,22 +487,28 @@ class GamePlayViewModel @Inject constructor(
      * */
     @SuppressLint("UseCompatLoadingForDrawables")
     fun setRollDiceImage(diceList: Array<Int>) {
-        var list = mutableListOf<Drawable>()
-        for (dice in diceList) {
-            val drawable = when (dice) {
-                1 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_first)!!
-                2 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_second)!!
-                3 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_third)!!
-                4 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_fourth)!!
-                5 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_fifth)!!
-                6 -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_sixth)!!
-                else -> getApplication<Application?>().getDrawable(R.drawable.selector_roll_dice_first)!!
-            }
-            list.add(drawable)
 
+        viewModelScope.launch(Dispatchers.Main) {
+            launch {
+                _diceAnim.value = mutableListOf<Boolean>().apply {
+                    addAll(keepList.map { !it })
+                }
+                delay(400)
+            }.join()
+
+
+            launch {
+                _diceAnim.value = INIT_DICE_ANIM
+
+                var list = mutableListOf<Int>().apply {
+                    addAll(diceList.toList())
+                }
+
+                log(TAG, "setRollDiceImage : ${list}", LogTag.I)
+                _rollDiceImages.value = list
+            }
         }
-        log(TAG, "setRollDiceImage : ${list}", LogTag.I)
-        _rollDiceImages.value = list
+
 
     }
 
@@ -501,15 +522,19 @@ class GamePlayViewModel @Inject constructor(
         try {
 
             val score: Board = yachtGame.getScore(dices)
-            val boards =
+            isYacht(score)
+            val fakeBoards =
                 if (firstPlayer.value == player) listOf(score, Board()) else listOf(Board(), score)
 
             val boardInfo =
-                BoardInfo(boards, listOf(firstBoardRecord.value!!, secondBoardRecord.value!!))
+                BoardInfo(
+                    listOf(firstRealBoard.value!!, secondRealBoard.value!!),
+                    fakeBoards,
+                    listOf(firstBoardRecord.value!!, secondBoardRecord.value!!),
+                )
 
-            viewModelScope.launch {
-                gamePlayRepositery.writeBoardInfo(gameId.value!!, boardInfo)
-            }
+
+            writeBoardInfo(gameId.value!!, boardInfo)
 
             log(TAG, "showScore Success : ${boardInfo}", LogTag.I)
         } catch (error: Error) {
@@ -519,36 +544,6 @@ class GamePlayViewModel @Inject constructor(
         }
     }
 
-    /**
-     * 보드판의 점수를 사용자가 클릭하면 해당 점수가 확정된다. 이 때 boardTag 매개변수가 전달된다.
-     * boardTag매개변수 값과 "first(또는 second)FakeBoard" 의 value를 이용하여  (fakeBoard는 항상 사용자의 가장 최근 굴린 주사위로 얻을 수 있는 점수들이 board객체로 업데이트)
-     * "first(혹은second)RealBoard"값을 구성한다. realBoard는 점수가 확정되면 사용자에게 보여질 점수를 담은 board 인스턴스이다.
-     * realBoard를 만든 뒤 새로운 gameInfo 인스터스에 전달하여 Firebase Database에 wrtie하는 함수.
-     * */
-    @RequiresApi(Build.VERSION_CODES.N)
-    fun getScore(boardTag: BoardTag) {
-        try {
-            val score: Board =
-                if (firstPlayer.value == player) firstFakeBoard.value!! else secondFakeBoard.value!!
-            val newBoard: Board = if (firstPlayer.value == player) firstRealBoard.value!!.plusScore(
-                score,
-                boardTag
-            ) else secondRealBoard.value!!.plusScore(score, boardTag)
-
-            val newBoards: List<Board> = if (firstPlayer.value == player) listOf(
-                newBoard,
-                secondRealBoard.value!!
-            ) else listOf(firstRealBoard.value!!, newBoard)
-            val newGameInfo = GameInfo(gameInfo.value!!, newBoards)
-
-            viewModelScope.launch {
-                gamePlayRepositery.writeGameInfo(newGameInfo)
-            }
-            log(TAG, "getScore() score : $newBoard", LogTag.I)
-        } catch (error: Exception) {
-            log(TAG, "getScore() error : ${error.message}", LogTag.D)
-        }
-    }
 
     /**
      * 임시
@@ -582,14 +577,51 @@ class GamePlayViewModel @Inject constructor(
         }
     }
 
+
     /**
-     * SoundPool을 비롯한 여러 Resource Release
+     *
      * */
-//    fun releaseResource() {
-//        soundPool?.let {
-//            it.release()
-//        }
-//    }
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun confirmScore(boardTag: BoardTag) {
+        val newRealBoard = getScore(boardTag)
+        val newFakeBoard = listOf(Board(), Board())
+        val newBoardRecords = getBoardRecord(boardTag)
+
+        val boardInfo = BoardInfo(newRealBoard, newFakeBoard, newBoardRecords)
+
+        writeBoardInfo(gameId.value!!, boardInfo)
+    }
+
+    /**
+     * 보드판의 점수를 사용자가 클릭하면 해당 점수가 확정된다. 이 때 boardTag 매개변수가 전달된다.
+     * boardTag매개변수 값과 "first(또는 second)FakeBoard" 의 value를 이용하여  (fakeBoard는 항상 사용자의 가장 최근 굴린 주사위로 얻을 수 있는 점수들이 board객체로 업데이트)
+     * "first(혹은second)RealBoard"값을 구성한다. realBoard는 점수가 확정되면 사용자에게 보여질 점수를 담은 board 인스턴스이다.
+     * realBoard를 만든 뒤 새로운 gameInfo 인스터스에 전달하여 Firebase Database에 wrtie하는 함수.
+     * */
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun getScore(boardTag: BoardTag): List<Board> {
+        try {
+            val score: Board =
+                if (firstPlayer.value == player) firstFakeBoard.value!! else secondFakeBoard.value!!
+            val newBoard: Board = if (firstPlayer.value == player) firstRealBoard.value!!.plusScore(
+                score,
+                boardTag
+            ) else secondRealBoard.value!!.plusScore(score, boardTag)
+
+            log(TAG, "getScore() score : $newBoard", LogTag.I)
+
+            return if (firstPlayer.value == player) listOf(
+                newBoard,
+                secondRealBoard.value!!
+            ) else listOf(firstRealBoard.value!!, newBoard)
+
+
+        } catch (error: Exception) {
+            log(TAG, "getScore() error : ${error.message}", LogTag.D)
+            return emptyList()
+        }
+    }
+
 
     /**
      * Board를 클릭할 때, 클릭한 곳의 수를 확정하고 사용자에게 display 위해
@@ -597,10 +629,10 @@ class GamePlayViewModel @Inject constructor(
      * 해당 값이 변경되면 이와 binding 된 fakeBoard와 realBoard가 사라지고 나타난다.
      * */
     @RequiresApi(Build.VERSION_CODES.N)
-    fun confirmBoardRecord(boardTag: BoardTag) {
+    fun getBoardRecord(boardTag: BoardTag): List<BoardRecord> {
         try {
             val boardRecord =
-                if (firstPlayer.value == player) firstBoardRecord.value else secondBoardRecord.value
+                if (firstPlayer.value == player) firstBoardRecord.value!! else secondBoardRecord.value!!
 
             boardRecord?.let {
                 when (boardTag) {
@@ -618,35 +650,31 @@ class GamePlayViewModel @Inject constructor(
                     BoardTag.YACHT -> it.isYacht = true
                 }
 
-                val boardRecords = if (firstPlayer.value == player) listOf(
-                    boardRecord,
-                    secondBoardRecord.value!!
-                ) else listOf(firstBoardRecord.value!!, boardRecord)
-                val boardInfo = BoardInfo(listOf(Board(), Board()), boardRecords)
-
-                viewModelScope.launch {
-                    gamePlayRepositery.writeBoardInfo(gameId.value!!, boardInfo)
-                }
             }
-
             log(TAG, "confirmBoardRecord Success : ${boardInfo}", LogTag.I)
+
+            return if (firstPlayer.value == player) listOf(
+                boardRecord,
+                secondBoardRecord.value!!
+            ) else listOf(firstBoardRecord.value!!, boardRecord)
+
+
         } catch (error: Exception) {
             log(TAG, "confirmBoardRecord Failure: ${error.message}", LogTag.D)
+            return emptyList()
         }
     }
 
     /**
-     * 내 턴이 올때마다 'turnCount' 를 1씩 증가
+     * 내 턴이 올때마다 'turnCount' 를 1씩 증가시키고
+     * writeTurnCountInfoUserCase를 이용하여
+     * turnCount를 FirebaseDatabase에 write.
      * */
     fun implementTurnCount() {
-        _turnCount.value = _turnCount.value?.plus(1) ?: 0
+        viewModelScope.launch {
+            writeTurnCountInfoUseCase(gameId.value!!, TurnCountInfo(turnCount.value!! + 1))
+        }
     }
-
-    /**
-     *
-     * */
-    //fun isFirstPlayer() = firstPlayer.value == player
-
 
     /**
      * 게임이 끝나고, 승패여부=Resulut 를 알려주는 문자열 및 custom dialog
@@ -655,8 +683,10 @@ class GamePlayViewModel @Inject constructor(
      * 누군가가 나갔을 때, 해당 플레이어의 패배로 게임을 끝내고 = early : Boolean -> true일 경우
      * 이에 맞게 GameResult:String을 생성
      * */
+    @RequiresApi(Build.VERSION_CODES.N)
     fun getGameResult(early: Boolean): List<String> {
         val result = mutableListOf<String>()
+
 
         val first = firstRealBoard.value!!
         val second = secondRealBoard.value!!
@@ -671,6 +701,7 @@ class GamePlayViewModel @Inject constructor(
             isDraw = true
             "무승부"
         }
+
         result.addAll(
             listOf(
                 first.total.toString(),
@@ -680,12 +711,11 @@ class GamePlayViewModel @Inject constructor(
             )
         )
 
-
         if (early) {
             result.add(
                 getApplication<Application?>().getString(
                     R.string.game_result_early,
-                    player,
+                    player.name,
                     if (firstPlayer.value == player) secondPlayer.value!!.name else firstPlayer.value!!.name
                 )
             )
@@ -705,20 +735,29 @@ class GamePlayViewModel @Inject constructor(
     /**
      * 게임이 끝나면 완성된 GameInfo 인스턴스를 만들어서 Firebase 및 Room Database에 write, insert
      * */
+    @RequiresApi(Build.VERSION_CODES.N)
     fun finishGame(gameResult: List<String>) {
 
-        val gameInfo = gameInfo.value!!
-        val gameScore = getApplication<Application?>().getString(
-            R.string.game_score,
-            gameResult[0],
-            gameResult[2]
-        )
-        val finishTime = DateTime.getNowDate(System.currentTimeMillis())
-        val result = gameResult[4]
+        try {
+            val gameInfo = gameInfo.value!!
+            val gameScore = getApplication<Application?>().getString(
+                R.string.game_score,
+                gameResult[0],
+                gameResult[2]
+            )
+            val finishTime = DateTime.getNowDate(System.currentTimeMillis())
+            val result = gameResult[4]
+            val finalBoards = listOf(firstRealBoard.value!!, secondRealBoard.value!!)
+            val new = GameInfo(gameInfo, gameScore, finishTime, result, finalBoards)
 
-        val new = GameInfo(gameInfo, gameScore, finishTime, result)
-        writeGameInfo(new)
-        updateGameInfo(new)
+            writeGameInfo(new)
+            updateGameInfo(new)
+            log(TAG, "finishGame Success : ${new}", LogTag.I)
+        } catch (error: Exception) {
+            log(TAG, "finishGame error : ${error.message}", LogTag.D)
+        } catch (error: NullPointerException) {
+            log(TAG, "finishGame error : ${error.message}", LogTag.D)
+        }
     }
 
 
@@ -740,14 +779,26 @@ class GamePlayViewModel @Inject constructor(
         }
     }
 
+    /**
+     *
+     * */
+    private fun writeEmoji(emojiInfo: EmojiInfo) {
+        viewModelScope.launch {
+            gamePlayRepositery.writeEmojiInfo(
+                gameId.value!!,
+                if (isFirstPlayer.value == true) secondPlayer.value!!.playerId else firstPlayer.value!!.playerId,
+                emojiInfo
+            )
+        }
+    }
 
     /**
      * 상대편 uid에 나의 emojiInfo Write
      * */
-    fun writeOpponentEmoji(emoji:Int) {
+    fun writeOpponentEmoji(emoji: Int) {
         viewModelScope.launch {
             val new = EmojiInfo(emoji)
-            gamePlayRepositery.setEmojiInfo(gameId.value!!, if(isFirstPlayer.value==true) secondPlayer.value!!.playerId else firstPlayer.value!!.playerId, new)
+            writeEmoji(new)
         }
     }
 
@@ -774,7 +825,7 @@ class GamePlayViewModel @Inject constructor(
         private val START_LIST = arrayOf(1, 2, 3, 4, 5)
         private val INIT_DICE_LIST = Array<Int>(5) { 0 }
         private val INIT_KEEP_LIST = Array<Boolean>(6) { false }
-        private val INIT_RECORDS = Array<Boolean>(12) { false }
+        private val INIT_DICE_ANIM = List(5) { false }
     }
 
 }

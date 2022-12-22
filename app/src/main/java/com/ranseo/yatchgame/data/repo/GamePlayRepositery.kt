@@ -1,9 +1,6 @@
 package com.ranseo.yatchgame.data.repo
 
-import com.ranseo.yatchgame.data.model.BoardInfo
-import com.ranseo.yatchgame.data.model.EmojiInfo
-import com.ranseo.yatchgame.data.model.GameInfo
-import com.ranseo.yatchgame.data.model.RollDice
+import com.ranseo.yatchgame.data.model.*
 import com.ranseo.yatchgame.data.source.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -16,7 +13,8 @@ class GamePlayRepositery @Inject constructor(
     private val playerDataSource: PlayerDataSource,
     private val rollDiceDataSource: RollDiceDataSource,
     private val boardInfoDataSource: BoardInfoDataSource,
-    private val emojiInfoRepositery: EmojiInfoRepositery
+    private val emojiInfoRepositery: EmojiInfoRepositery,
+    private val turnCountInfoRepositery: TurnCountInfoRepositery
 ) {
 
     val player = playerDataSource.getMyPlayer()
@@ -61,15 +59,14 @@ class GamePlayRepositery @Inject constructor(
         boardInfoDataSource.writeBoardInfo(gameId, boardInfo)
     }
 
-    suspend fun getBoardInfo(gameId: String, callback: (boardInfo:BoardInfo)->Unit) = withContext(Dispatchers.IO) {
-        boardInfoDataSource.getBoardInfo(gameId, callback)
+    suspend fun getBoardInfo(gameId: String) : Flow<Result<BoardInfo>> = withContext(Dispatchers.IO) {
+        boardInfoDataSource.getBoardInfo(gameId)
     }
 
 
     suspend fun removeListener(gameId:String) = withContext(Dispatchers.IO){
         rollDiceDataSource.removeValueEventListener(gameId)
         gameInfoFirebaseDataSource.removeValueEventListener(gameId)
-        boardInfoDataSource.removeBoardInfoValueEventListener(gameId)
     }
 
 
@@ -78,7 +75,17 @@ class GamePlayRepositery @Inject constructor(
         emojiInfoRepositery.getEmojiInfo(gameId, playerId)
     }
 
-    suspend fun setEmojiInfo(gameId:String, playerId:String, emojiInfo: EmojiInfo) {
+    suspend fun writeEmojiInfo(gameId:String, playerId:String, emojiInfo: EmojiInfo) {
         emojiInfoRepositery.setEmojiInfo(gameId, playerId, emojiInfo)
     }
+
+    //TurnCount
+    suspend fun getTurnCountInfo(gameId:String) : Flow<Result<TurnCountInfo>> = withContext(Dispatchers.IO){
+        turnCountInfoRepositery.getTurnCountInfo(gameId)
+    }
+
+    suspend fun writeTurnCountInfo(gameId: String, turnCountInfo: TurnCountInfo) = withContext(Dispatchers.IO) {
+        turnCountInfoRepositery.writeTurnCountInfo(gameId,turnCountInfo)
+    }
+
 }

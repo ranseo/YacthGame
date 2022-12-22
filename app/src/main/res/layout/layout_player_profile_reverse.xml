@@ -34,7 +34,7 @@
             android:layout_height="50dp"
             android:scaleType="fitXY"
             tools:src="@drawable/name_tag_rabbit_reverse"
-            setProfileSrc="@{viewModel.nameTagImages[1]}"
+            setProfileSrcReverse="@{viewModel.nameTagImages[1]}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             />

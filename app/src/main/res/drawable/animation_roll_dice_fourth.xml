@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:oneshot="false">
+    <item android:drawable="@drawable/roll_dice_three" android:duration="50"/>
+    <item android:drawable="@drawable/roll_dice_four" android:duration="50"/>
+    <item android:drawable="@drawable/roll_dice_six" android:duration="50"/>
+    <item android:drawable="@drawable/roll_dice_two" android:duration="50"/>
+    <item android:drawable="@drawable/roll_dice_three" android:duration="50"/>
+    <item android:drawable="@drawable/roll_dice_two" android:duration="50"/>
+    <item android:drawable="@drawable/roll_dice_five" android:duration="50"/>
+</animation-list>

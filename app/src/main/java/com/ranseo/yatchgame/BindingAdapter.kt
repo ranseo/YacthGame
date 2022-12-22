@@ -9,15 +9,42 @@ import androidx.databinding.BindingAdapter
 private val TAG = "BindingAdapter"
 
 @BindingAdapter("setSelector")
-fun bindRollDice(imageView: ImageView, dice:Drawable) {
+fun bindRollDice(imageView: ImageView, dice:Int) {
     log(TAG,"bindRollDice() : ${dice}", LogTag.I)
-    imageView.setImageDrawable(dice)
+    when(dice) {
+        1 -> {imageView.setImageResource(R.drawable.selector_roll_dice_first)}
+        2 -> {imageView.setImageResource(R.drawable.selector_roll_dice_second)}
+        3 -> {imageView.setImageResource(R.drawable.selector_roll_dice_third)}
+        4 -> {imageView.setImageResource(R.drawable.selector_roll_dice_fourth)}
+        5 -> {imageView.setImageResource(R.drawable.selector_roll_dice_fifth)}
+        6 -> {imageView.setImageResource(R.drawable.selector_roll_dice_sixth)}
+    }
 }
 
 @BindingAdapter("setProfileSrc")
-fun bindProfile(imageView: ImageView, nameTag:Drawable) {
-    log(TAG,"bindRollDice() : ${nameTag}", LogTag.I)
-    imageView.setImageDrawable(nameTag)
+fun bindProfile(imageView: ImageView, nameTag:Int) {
+    log(TAG,"bindProfile() : ${nameTag}", LogTag.I)
+    when(nameTag) {
+        1 -> {imageView.setImageResource(R.drawable.name_tag_cat)}
+        2 -> {imageView.setImageResource(R.drawable.name_tag_bear)}
+        3 -> {imageView.setImageResource(R.drawable.name_tag_deer)}
+        4 -> {imageView.setImageResource(R.drawable.name_tag_frog)}
+        5 -> {imageView.setImageResource(R.drawable.name_tag_rabbit)}
+        else -> {imageView.setImageResource(R.drawable.name_tag_rabbit)}
+    }
+}
+
+@BindingAdapter("setProfileSrcReverse")
+fun bindProfileReverse(imageView: ImageView, nameTag:Int) {
+    log(TAG,"bindProfileReverse() : ${nameTag}", LogTag.I)
+    when(nameTag) {
+        1 -> {imageView.setImageResource(R.drawable.name_tag_cat_reverse)}
+        2 -> {imageView.setImageResource(R.drawable.name_tag_bear_reverse)}
+        3 -> {imageView.setImageResource(R.drawable.name_tag_deer_reverse)}
+        4 -> {imageView.setImageResource(R.drawable.name_tag_frog_reverse)}
+        5 -> {imageView.setImageResource(R.drawable.name_tag_rabbit_reverse)}
+        else -> {imageView.setImageResource(R.drawable.name_tag_rabbit_reverse)}
+    }
 }
 
 @BindingAdapter("setEmoji")

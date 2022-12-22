@@ -33,6 +33,14 @@
       }
     },
 
+    "turnCount" : {
+      "$gameId" : {
+        ".read" : "auth!=null",
+        ".write" : "auth!=null"
+
+      }
+    },
+
     "boardInfo": {
       "$gameId" : {
         ".read" : "auth!=null",
@@ -42,10 +50,8 @@
 
     "emoji": {
       "$gameId" : {
-        "$uid" : {
-          ".read" : "auth != null",
-          ".write": "auth != null"
-        }
+        ".read" : "auth != null",
+        ".write": "auth != null"
       }
     }
   }

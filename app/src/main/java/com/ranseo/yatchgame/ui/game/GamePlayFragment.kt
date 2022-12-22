@@ -2,17 +2,12 @@ package com.ranseo.yatchgame.ui.game
 
 import android.content.Intent
 import android.graphics.drawable.AnimationDrawable
-import android.media.AudioAttributes
-import android.media.SoundPool
 import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
-import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
@@ -41,22 +36,18 @@ class GamePlayFragment() : Fragment() {
     @Inject
     lateinit var yachtSound: YachtSound
 
-
     private val gamePlayViewModel: GamePlayViewModel by viewModels()
 
-    private lateinit var rollDiceAnimation: AnimationDrawable
-
-
-//    private lateinit var audioAttributes: AudioAttributes
-//    private lateinit var soundPool :SoundPool
-//    private var rollSound : Int = 0
-//    private var boardConfirmSound : Int = 0
-//    private var keepSound : Int = 0
-//    private var myTurnSound: Int = 0
+    private lateinit var rollDiceFirstAnimation: AnimationDrawable
+    private lateinit var rollDiceSecondAnimation: AnimationDrawable
+    private lateinit var rollDiceThirdAnimation: AnimationDrawable
+    private lateinit var rollDiceFourthAnimation: AnimationDrawable
+    private lateinit var rollDiceFifthAnimation: AnimationDrawable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val onBackPressedCallback = object : OnBackPressedCallback(true) {
+            @RequiresApi(Build.VERSION_CODES.N)
             override fun handleOnBackPressed() {
                 val gameResult = gamePlayViewModel.getGameResult(true)
                 gamePlayViewModel.finishGame(gameResult)
@@ -71,7 +62,7 @@ class GamePlayFragment() : Fragment() {
 
     override fun onStart() {
         super.onStart()
-
+        startBgm()
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -88,17 +79,36 @@ class GamePlayFragment() : Fragment() {
             onClickListener = OnBoardClickListener { boardTag ->
                 yachtSound.play(YachtSound.BOARD_CONFIRM_SOUND)
                 //보드판의 점수를 사용자가 클릭하면 해당 점수가 확정되고, 상대턴으로 넘어가는 과정
-                //1.getScore() : 점수 확정한 뒤, 확정된 점수판을 database에 기록
-                gamePlayViewModel.getScore(boardTag)
-                //2.confirmBoardRecord() : 점수를 확정하면 확정 점수가 사용자에게 보이도록 boardRecord를 변경하고, database에 기록
-                gamePlayViewModel.confirmBoardRecord(boardTag)
+                gamePlayViewModel.confirmScore(boardTag)
                 //3.finishTurn() : 현재 턴을 넘기고 주사위를 초기화.
                 gamePlayViewModel.finishTurn()
-
             }
+            btnVolume.setOnClickListener {
+                controlBgm(it)
+            }
+            binding.ivRollFirstAnim.setBackgroundResource(R.drawable.animation_roll_dice_first)
+            rollDiceFirstAnimation = binding.ivRollFirstAnim.background as AnimationDrawable
+            rollDiceFirstAnimation.stop()
 
+            binding.ivRollSecondAnim.setBackgroundResource(R.drawable.animation_roll_dice_second)
+            rollDiceSecondAnimation = binding.ivRollSecondAnim.background as AnimationDrawable
+            rollDiceSecondAnimation.stop()
+
+            binding.ivRollThirdAnim.setBackgroundResource(R.drawable.animation_roll_dice_third)
+            rollDiceThirdAnimation = binding.ivRollThirdAnim.background as AnimationDrawable
+            rollDiceThirdAnimation.stop()
+
+            binding.ivRollFourthAnim.setBackgroundResource(R.drawable.animation_roll_dice_fourth)
+            rollDiceFourthAnimation = binding.ivRollFourthAnim.background as AnimationDrawable
+            rollDiceFourthAnimation.stop()
+
+            binding.ivRollFifthAnim.setBackgroundResource(R.drawable.animation_roll_dice_fifth)
+            rollDiceFifthAnimation = binding.ivRollFifthAnim.background as AnimationDrawable
+            rollDiceFifthAnimation.stop()
 
         }
+
+
 
         with(gamePlayViewModel) {
             gameId.observe(viewLifecycleOwner, gameIdObserver())
@@ -113,6 +123,8 @@ class GamePlayFragment() : Fragment() {
             clickProfile.observe(viewLifecycleOwner, clickProfileObserver())
             opponentEmoji.observe(viewLifecycleOwner, opponentEmojiObserver())
             myEmoji.observe(viewLifecycleOwner, myEmojiObserver())
+            yachtSound.observe(viewLifecycleOwner, yachtSoundObserver())
+            diceAnim.observe(viewLifecycleOwner, diceAnimObserver())
         }
 
         setRollDiceImageViewClickListener()
@@ -177,6 +189,7 @@ class GamePlayFragment() : Fragment() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     private fun gameInfoObserver() =
         Observer<GameInfo> {
             it?.let { gameInfo ->
@@ -184,7 +197,7 @@ class GamePlayFragment() : Fragment() {
                 if (gameInfo.result.isNotEmpty() && gameInfo.gameFinishTime.isNotEmpty()) {
                     if (gamePlayViewModel.earlyFinishGame) startLobbyActivity()
                     else {
-                        if (EARLY_FLAG.matches(gameInfo.result)) {
+                        if (EARLY_FLAG.containsMatchIn(gameInfo.result)) {
                             val gameResult = gamePlayViewModel.getGameResult(true)
                             showGameResultDialog(gameResult, false)
                         } else {
@@ -205,6 +218,7 @@ class GamePlayFragment() : Fragment() {
                 gamePlayViewModel.refreshRollDice(gameId)
                 gamePlayViewModel.refreshBoardInfo(gameId)
                 gamePlayViewModel.refreshEmojiInfo(gameId)
+                gamePlayViewModel.refreshTurnCountInfo(gameId)
                 //gamePlayViewModel.refreshTurnCount()
                 //gamePlayViewModel.writeRollDiceAtFirst(gameId)
             }
@@ -217,7 +231,6 @@ class GamePlayFragment() : Fragment() {
                     gamePlayViewModel.gameId.value?.let { gameId ->
                         gamePlayViewModel.writeRollDiceAtFirst(gameId)
                         gamePlayViewModel.rollDiceFirstFlag = false
-                        if (gamePlayViewModel.isFirstPlayer.value==true) gamePlayViewModel.refreshTurnCount()
 
                     }
                 }
@@ -238,7 +251,6 @@ class GamePlayFragment() : Fragment() {
                         log(TAG, "myTurnObserver : chance = ${gamePlayViewModel.chance}", LogTag.I)
                         gamePlayViewModel.reloadBeforeRollDice()
                         log(TAG, "myTurnObserver : 현재 나의 턴 입니다.", LogTag.I)
-                        if (gamePlayViewModel.isFirstPlayer.value == true) gamePlayViewModel.implementTurnCount() //First Player인 경우
                         Toast.makeText(requireContext(), "내 턴 입니다.", Toast.LENGTH_SHORT).show()
                     }
                 } else {
@@ -283,34 +295,43 @@ class GamePlayFragment() : Fragment() {
     private fun rollDiceObserver() =
         Observer<RollDice> {
             it?.let { rollDice ->
-
-                gamePlayViewModel.myTurn.value?.let { myTurn ->
-                    if (!myTurn) {
-                        val prev = gamePlayViewModel.prevRollDice
-                        if (prev != null && rollDice.checkKeepChange(prev)) yachtSound.play(
-                            YachtSound.KEEP_SOUND
-                        )
-                        else yachtSound.play(YachtSound.ROLL_DICE_SOUND)
-                        gamePlayViewModel.checkOpponentDiceState(rollDice)
-                        setRollDiceSelected(rollDice)
-                        log(TAG, "rollDiceObserver() : Not My Turn  ${rollDice}", LogTag.I)
-                        gamePlayViewModel.prevRollDice = rollDice
+                //First Player의 경우 -> true!=false
+                //Secopnd Player의 경우 -> flase != true
+                if (gamePlayViewModel.isFirstPlayer.value != rollDice.turn) {
+                    val prev = gamePlayViewModel.prevRollDice
+                    if (prev != null && rollDice.checkDiceChange(prev)) {
+                        log(TAG, "rollDiceObserver() : KEEP_SOUND", LogTag.I)
+                        yachtSound.play(YachtSound.KEEP_SOUND)
                     } else {
-                        log(TAG, "rollDiceObserver() : my Turn  ${rollDice}", LogTag.I)
+                        log(TAG, "rollDiceObserver() : ROLL_DICE_SOUND", LogTag.I)
+                        yachtSound.play(YachtSound.ROLL_DICE_SOUND)
                     }
+
+                    gamePlayViewModel.checkOpponentDiceState(rollDice)
+                    setRollDiceSelected(rollDice)
+                    log(TAG, "rollDiceObserver() : Not My Turn  ${rollDice}", LogTag.I)
+                    gamePlayViewModel.prevRollDice = rollDice
+                } else {
+                    log(TAG, "rollDiceObserver() : my Turn  ${rollDice}", LogTag.I)
                 }
+
             }
         }
 
     /**
      *
      * */
+    @RequiresApi(Build.VERSION_CODES.N)
     private fun turnCountObserver() =
         Observer<Int> {
             it?.let { turnCount ->
+                log(TAG, "turnCountObserver() turnCount : $turnCount", LogTag.I)
                 if (turnCount > 12) {
                     val gameResult = gamePlayViewModel.getGameResult(false)
-                    gamePlayViewModel.finishGame(gameResult)
+                    //마지막 턴일 때, 게임은 second Player가 끝낼 수 있다.
+                    if (gamePlayViewModel.isFirstPlayer.value != true) gamePlayViewModel.finishGame(
+                        gameResult
+                    )
                 }
             }
         }
@@ -320,8 +341,9 @@ class GamePlayFragment() : Fragment() {
      * */
     private fun clickProfileObserver() =
         Observer<Event<Boolean>> {
-            it.getContentIfNotHandled()?.let{ player->
-                val view = if(player)  binding.layoutFirstProfile.root else binding.layoutSecondProfile.root
+            it.getContentIfNotHandled()?.let { player ->
+                val view =
+                    if (player) binding.layoutFirstProfile.root else binding.layoutSecondProfile.root
                 showEmojiPopup(view)
             }
         }
@@ -332,7 +354,8 @@ class GamePlayFragment() : Fragment() {
     private fun opponentEmojiObserver() =
         Observer<Int> {
             it?.let {
-                if(gamePlayViewModel.isFirstPlayer.value == true) binding.layoutSecondProfile.emoji = it else binding.layoutFirstProfile.emoji = it
+                if (gamePlayViewModel.isFirstPlayer.value == true) binding.layoutSecondProfile.emoji =
+                    it else binding.layoutFirstProfile.emoji = it
             }
         }
 
@@ -342,7 +365,55 @@ class GamePlayFragment() : Fragment() {
     private fun myEmojiObserver() =
         Observer<Int> {
             it?.let {
-                if(gamePlayViewModel.isFirstPlayer.value != true) binding.layoutSecondProfile.emoji = it else binding.layoutFirstProfile.emoji = it
+                if (gamePlayViewModel.isFirstPlayer.value != true) binding.layoutSecondProfile.emoji =
+                    it else binding.layoutFirstProfile.emoji = it
+            }
+        }
+
+
+    /**
+     * yachtSound~
+     * */
+    private fun yachtSoundObserver() =
+        Observer<Event<Any?>> {
+            it.getContentIfNotHandled()?.let {
+                yachtSound.play(YachtSound.YACHT_SOUND)
+            }
+        }
+
+    /**
+     *
+     * */
+    private fun diceAnimObserver() =
+        Observer<List<Boolean>> {
+            it?.let { diceAnims ->
+                for ((idx, diceAnim) in diceAnims.withIndex()) {
+                    val animation = when (idx) {
+                        0 -> {
+                            rollDiceFirstAnimation
+                        }
+                        1 -> {
+                            rollDiceSecondAnimation
+                        }
+                        2 -> {
+                            rollDiceThirdAnimation
+                        }
+                        3 -> {
+                            rollDiceFourthAnimation
+                        }
+                        4 -> {
+                            rollDiceFifthAnimation
+                        }
+                        else -> {
+                            rollDiceFifthAnimation
+                        }
+                    }
+                    if (diceAnim) {
+                        animation.start()
+                    } else {
+                        animation.stop()
+                    }
+                }
             }
         }
 
@@ -398,8 +469,8 @@ class GamePlayFragment() : Fragment() {
     /**
      * PopupEmoji Fragment 를 display
      * */
-    fun showEmojiPopup(view:View) {
-        val emoji = EmojiPopup(requireContext(), object: EmojiPopup.OnEmojiPopupClickListener {
+    fun showEmojiPopup(view: View) {
+        val emoji = EmojiPopup(requireContext(), object : EmojiPopup.OnEmojiPopupClickListener {
             override fun onEmojiClick(emoji: Int) {
                 gamePlayViewModel.writeOpponentEmoji(emoji)
                 gamePlayViewModel.setMyEmoji(emoji)
@@ -407,6 +478,30 @@ class GamePlayFragment() : Fragment() {
         })
 
         emoji.showPopupWindow(binding.layoutGamePlay, view)
+    }
+
+    fun startBgm() {
+        yachtSound.play(YachtSound.BGM_CHRISMAS)
+
+    }
+
+    private fun controlBgm(view: View) {
+        view.isSelected = !view.isSelected
+        if (view.isSelected) {
+            muteBgm()
+        } else {
+            startBgm()
+        }
+    }
+
+
+    private fun muteBgm() {
+        yachtSound.muteBgm(YachtSound.BGM_CHRISMAS)
+    }
+
+    override fun onStop() {
+        yachtSound.muteBgm(YachtSound.BGM_CHRISMAS)
+        super.onStop()
     }
 
     override fun onDestroy() {
@@ -419,5 +514,4 @@ class GamePlayFragment() : Fragment() {
     companion object {
         private val EARLY_FLAG = Regex("님이 게임에서 나가셨습니다.")
     }
-
 }

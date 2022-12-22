@@ -4,17 +4,27 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 
 data class BoardInfo(
-    val boards: MutableMap<String, List<Board>>,
+    val realBoards: MutableMap<String, List<Board>>,
+    val fakeBoards: MutableMap<String, List<Board>>,
     val boardRecords : MutableMap<String, List<BoardRecord>>
 ) {
-    constructor(boards:List<Board>, boardRecords:List<BoardRecord>) : this (
-        boards = mutableMapOf("boards" to boards),
+
+    constructor(realBoards:List<Board>, fakeBoards:List<Board>, boardRecords:List<BoardRecord>) : this (
+        realBoards = mutableMapOf("realBoards" to realBoards),
+        fakeBoards = mutableMapOf("fakeBoards" to fakeBoards),
         boardRecords = mutableMapOf("boardRecords" to boardRecords)
     )
 
+
     @RequiresApi(Build.VERSION_CODES.N)
-    fun returnBoard(idx:Int) : Board? {
-        val boards = this.boards.getOrDefault("boards", listOf())
+    fun returnRealBoard(idx:Int) : Board? {
+        val boards = this.realBoards.getOrDefault("realBoards", listOf())
+        return if(boards.isEmpty()) null else boards[idx]
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun returnFakeBoard(idx:Int) : Board? {
+        val boards = this.fakeBoards.getOrDefault("fakeBoards", listOf())
         return if(boards.isEmpty()) null else boards[idx]
     }
 
