@@ -149,10 +149,6 @@ class GamePlayFragment() : Fragment() {
      * Selected 되도록 만드는 ClickListener를 등록.
      * */
     private fun setRollDiceImageViewClickListener() {
-
-//        binding.ivRollFirst.setBackgroundResource(R.drawable.animation_roll_dice)
-//        rollDiceAnimation = binding.ivRollFirst.background as AnimationDrawable
-
         binding.ivRollFirst.setOnClickListener(rollDiceSelected(0))
         binding.ivRollSecond.setOnClickListener(rollDiceSelected(1))
         binding.ivRollThird.setOnClickListener(rollDiceSelected(2))
@@ -269,7 +265,6 @@ class GamePlayFragment() : Fragment() {
         Observer<Any?> {
             it?.let {
                 setRollDiceUnSelected()
-
             }
         }
 
@@ -312,6 +307,7 @@ class GamePlayFragment() : Fragment() {
                     log(TAG, "rollDiceObserver() : Not My Turn  ${rollDice}", LogTag.I)
                     gamePlayViewModel.prevRollDice = rollDice
                 } else {
+                    setRollDiceSelected(rollDice)
                     log(TAG, "rollDiceObserver() : my Turn  ${rollDice}", LogTag.I)
                 }
 
@@ -416,6 +412,7 @@ class GamePlayFragment() : Fragment() {
                 }
             }
         }
+
 
     /**
      * 게임이 끝났을 때, 띄우는 Dialog

@@ -216,9 +216,8 @@ class GamePlayViewModel @Inject constructor(
     val diceAnim: LiveData<List<Boolean>>
         get() = _diceAnim
 
-    init {
 
-        //refreshSoundPool()
+    init {
 
         refreshNameTag()
 
@@ -480,7 +479,6 @@ class GamePlayViewModel @Inject constructor(
 
             launch {
                 _diceAnim.value = INIT_DICE_ANIM
-
                 var list = mutableListOf<Int>().apply {
                     addAll(diceList.toList())
                 }
@@ -546,6 +544,7 @@ class GamePlayViewModel @Inject constructor(
      * rollDice의 변수 값에 따라 현재 주사위 이미지를 바꾸고, keep의 현황을 확인.
      * */
     fun checkOpponentDiceState(dices: RollDice) {
+        if(chance < 3) return
         val tmpDices = arrayOf(dices.first, dices.second, dices.third, dices.fourth, dices.fifth)
         setRollDiceImage(tmpDices)
     }
