@@ -7,12 +7,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class EmojiInfoRepositery @Inject constructor(private val emojiInfoDataSource: EmojiInfoDataSource) {
+class EmojiInfoRepository @Inject constructor(private val emojiInfoDataSource: EmojiInfoDataSource) {
     suspend fun getEmojiInfo(gameId:String, playerId:String) : Flow<Result<EmojiInfo>> = withContext(Dispatchers.IO) {
         emojiInfoDataSource.getEmojiInfo(gameId, playerId)
     }
 
-    suspend fun setEmojiInfo(gameId: String, playerId:String, emojiInfo: EmojiInfo) = withContext(Dispatchers.IO) {
+    suspend fun writeEmojiInfo(gameId: String, playerId:String, emojiInfo: EmojiInfo) = withContext(Dispatchers.IO) {
         emojiInfoDataSource.setEmojiInfo(gameId, playerId, emojiInfo)
     }
 }

@@ -8,25 +8,26 @@ import com.ranseo.yatchgame.Event
 import com.ranseo.yatchgame.LogTag
 import com.ranseo.yatchgame.R
 import com.ranseo.yatchgame.data.model.*
-import com.ranseo.yatchgame.data.repo.WaitingRepositery
+import com.ranseo.yatchgame.data.repo.WaitingRepository
+import com.ranseo.yatchgame.domain.usecase.GetPlayerUseCase
 import com.ranseo.yatchgame.log
-import com.ranseo.yatchgame.util.DateTime
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.lang.Exception
-import kotlin.reflect.typeOf
 
 
 class WaitingViewModel @AssistedInject constructor(
-    private val waitingRepositery: WaitingRepositery,
+    private val waitingRepository: WaitingRepository,
+    private val getPlayerUseCase: GetPlayerUseCase,
     @Assisted private val waitingRoomId: String,
     application: Application
 ) : AndroidViewModel(application) {
     private val TAG = "WaitingViewModel"
     private var updateFlag: Boolean = true
 
-    private lateinit var player: Player
+    val player: LiveData<Player> = getPlayerUseCase()
 
     private val _waitingRoom = MutableLiveData<WaitingRoom>()
     val waitingRoom: LiveData<WaitingRoom>
@@ -43,17 +44,15 @@ class WaitingViewModel @AssistedInject constructor(
     val gameInfo: LiveData<Event<Boolean>>
         get() = _gameInfo
 
-    init {
 
+    fun makeWaitingRoom(player: Player) {
         viewModelScope.launch {
-            launch {
-                player = waitingRepositery.refreshHostPlayer()
-            }.join()
-
             if (waitingRoomId.substringBefore(getApplication<Application?>().getString(R.string.border_string_for_parsing))
-                == getApplication<Application?>().getString(R.string.make_wait_room)) {
+                == getApplication<Application?>().getString(R.string.make_wait_room)
+            ) {
                 //roomId가 R.string.make_wait_room과 같다면 Host가 방을 생성한다.
-                val waitingRoomId = waitingRoomId.substringAfter(getApplication<Application?>().getString(R.string.border_string_for_parsing))
+                val waitingRoomId =
+                    waitingRoomId.substringAfter(getApplication<Application?>().getString(R.string.border_string_for_parsing))
                 launch {
 
                     val new = WaitingRoom(
@@ -66,7 +65,6 @@ class WaitingViewModel @AssistedInject constructor(
                 }.join()
 
                 refreshWaitingRoom(waitingRoomId)
-
             } else {
                 launch {
                     refreshWaitingRoom(waitingRoomId)
@@ -80,9 +78,13 @@ class WaitingViewModel @AssistedInject constructor(
      * */
     private suspend fun refreshWaitingRoom(roomId: String) {
 
-        waitingRepositery.getWaitingRoom(roomId) { waitingRoom ->
+        waitingRepository.getWaitingRoom(roomId) { waitingRoom ->
             viewModelScope.launch {
-                log(TAG, "refreshWaitingRoom : ${waitingRoom} , ${waitingRoom.roomId}, ${waitingRoom.host}, ${waitingRoom.guest}, ${waitingRoom.guest["guest"]}", LogTag.I)
+                log(
+                    TAG,
+                    "refreshWaitingRoom : ${waitingRoom} , ${waitingRoom.roomId}, ${waitingRoom.host}, ${waitingRoom.guest}, ${waitingRoom.guest["guest"]}",
+                    LogTag.I
+                )
                 _waitingRoom.postValue(waitingRoom)
             }
         }
@@ -93,7 +95,7 @@ class WaitingViewModel @AssistedInject constructor(
      * Host인 경우 WaitingRoom 객체 Write
      * */
     private suspend fun writeWaitingRoom(waitingRoom: WaitingRoom) {
-        waitingRepositery.writeWaitingRoom(waitingRoom)
+        waitingRepository.writeWaitingRoom(waitingRoom)
     }
 
     /**
@@ -107,12 +109,15 @@ class WaitingViewModel @AssistedInject constructor(
 
                 val new = WaitingRoom(
                     waitingRoom,
-                    mutableMapOf("guest" to player)
+                    mutableMapOf("guest" to player.value!!)
                 )
 
-                waitingRepositery.updateWaitingRoom(new)
+                waitingRepository.updateWaitingRoom(new)
                 log(TAG, "updateWaitingRoom : ${new}", LogTag.I)
             } catch (error: Exception) {
+                updateFlag = true
+                log(TAG, "updateWaitingRoom Error : ${error.message}", LogTag.D)
+            }catch (error:Exception) {
                 updateFlag = true
                 log(TAG, "updateWaitingRoom Error : ${error.message}", LogTag.D)
             }
@@ -126,7 +131,7 @@ class WaitingViewModel @AssistedInject constructor(
     fun removeWaitingRoomValue() {
         viewModelScope.launch {
             val roomId = waitingRoom.value?.roomId ?: return@launch
-            waitingRepositery.removeWaitingRoomValue(roomId)
+            waitingRepository.removeWaitingRoomValue(roomId)
         }
     }
 
@@ -138,7 +143,7 @@ class WaitingViewModel @AssistedInject constructor(
     fun removeListener() {
         viewModelScope.launch {
             val roomId: String = waitingRoom.value?.roomId ?: return@launch
-            waitingRepositery.removeWaitingRoomValueEventListener(roomId)
+            waitingRepository.removeWaitingRoomValueEventListener(roomId)
         }
     }
 
@@ -154,16 +159,19 @@ class WaitingViewModel @AssistedInject constructor(
     fun writeGameInfo() {
         viewModelScope.launch {
             val wr = waitingRoom.value
-            if (wr?.guest?.getOrDefault("guest", null) == null || wr.host.getOrDefault("host", null) == null) return@launch
-            waitingRepositery.writeGameInfoAtFirst(wr) { flag, gameInfo ->
+            if (wr?.guest?.getOrDefault("guest", null) == null || wr.host.getOrDefault(
+                    "host",
+                    null
+                ) == null
+            ) return@launch
+            waitingRepository.writeGameInfoAtFirst(wr) { flag, gameInfo ->
                 viewModelScope.launch {
-                    if(flag) waitingRepositery.insertGameInfoAtFirst(gameInfo)
+                    if (flag) waitingRepository.insertGameInfoAtFirst(gameInfo)
                     _gameInfo.postValue(Event(flag))
                 }
             }
         }
     }
-
 
 
     @dagger.assisted.AssistedFactory

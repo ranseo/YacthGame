@@ -16,6 +16,7 @@ import com.ranseo.yatchgame.Event
 import com.ranseo.yatchgame.LogTag
 import com.ranseo.yatchgame.R
 import com.ranseo.yatchgame.data.model.GameInfoFirebaseModel
+import com.ranseo.yatchgame.data.model.Player
 import com.ranseo.yatchgame.data.model.WaitingRoom
 import com.ranseo.yatchgame.databinding.FragmentWaitingBinding
 import com.ranseo.yatchgame.log
@@ -27,18 +28,19 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class WaitingFragment : Fragment() {
     private val TAG = "WaitingFragment"
-    private lateinit var binding : FragmentWaitingBinding
+    private lateinit var binding: FragmentWaitingBinding
 
     private val navArgs by navArgs<WaitingFragmentArgs>()
 
-    @Inject lateinit var waitingViewModelFactory: WaitingViewModel.AssistedFactory
-    private val waitingViewModel : WaitingViewModel by viewModels {
+    @Inject
+    lateinit var waitingViewModelFactory: WaitingViewModel.AssistedFactory
+    private val waitingViewModel: WaitingViewModel by viewModels {
         WaitingViewModel.provideFactory(waitingViewModelFactory, navArgs.roomKey)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        log(TAG,"onViewCreated", LogTag.I)
+        log(TAG, "onViewCreated", LogTag.I)
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -48,35 +50,44 @@ class WaitingFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_waiting, container, false)
-        binding.viewModel = waitingViewModel
-        binding.lifecycleOwner = viewLifecycleOwner
 
-        waitingViewModel.waitingRoom.observe(viewLifecycleOwner, waitingRoomObserver())
-        waitingViewModel.waiting.observe(viewLifecycleOwner, waitingObserver())
-        waitingViewModel.gameInfo.observe(viewLifecycleOwner, gameInfoObserver())
+        with(binding) {
+            viewModel = waitingViewModel
+            lifecycleOwner = viewLifecycleOwner
+        }
+
+        with(waitingViewModel) {
+            player.observe(viewLifecycleOwner, playerObserver())
+            waitingRoom.observe(viewLifecycleOwner, waitingRoomObserver())
+            waiting.observe(viewLifecycleOwner, waitingObserver())
+            gameInfo.observe(viewLifecycleOwner, gameInfoObserver())
+
+        }
         return binding.root
     }
 
     private fun gameInfoObserver() =
         Observer<Event<Boolean>> {
-            it.getContentIfNotHandled()?.let{ flag ->
-                if(flag) {
-                    log(TAG,"gameInfoObserver 게임룸 이동 성공", LogTag.I)
+            it.getContentIfNotHandled()?.let { flag ->
+                if (flag) {
+                    log(TAG, "gameInfoObserver 게임룸 이동 성공", LogTag.I)
                     startGameActivity()
                 } else {
-                    log(TAG,"gameInfoObserver 게임룸 이동 실패", LogTag.I)
+                    log(TAG, "gameInfoObserver 게임룸 이동 실패", LogTag.I)
                 }
 
             }
         }
 
 
-
     private fun waitingRoomObserver() =
-        Observer<WaitingRoom>{
+        Observer<WaitingRoom> {
             it?.let { waitingRoom ->
-                if(navArgs.roomKey.substringBefore(getString(R.string.border_string_for_parsing)) != requireContext().getString(R.string.make_wait_room)) {
-                    log(TAG,"waitingRoomObserver() Guest의 update 시작", LogTag.I)
+                if (navArgs.roomKey.substringBefore(getString(R.string.border_string_for_parsing)) != requireContext().getString(
+                        R.string.make_wait_room
+                    )
+                ) {
+                    log(TAG, "waitingRoomObserver() Guest의 update 시작", LogTag.I)
                     waitingViewModel.updateWaitingRoom(waitingRoom)
                 }
             }
@@ -91,11 +102,21 @@ class WaitingFragment : Fragment() {
      * */
     @RequiresApi(Build.VERSION_CODES.N)
     private fun waitingObserver() =
-        Observer<Boolean>{
-            if(it) {
+        Observer<Boolean> {
+            if (it) {
                 waitingViewModel.removeWaitingRoomValue()
                 waitingViewModel.writeGameInfo()
 
+            }
+        }
+
+    /**
+     *
+     * */
+    private fun playerObserver() =
+        Observer<Player> {
+            it?.let{ player->
+                waitingViewModel.makeWaitingRoom(player)
             }
         }
 
@@ -104,7 +125,7 @@ class WaitingFragment : Fragment() {
      * GameActivity 로 이동
      * */
     private fun startGameActivity() {
-        val intent = Intent(requireActivity(), GameActivity::class.java )
+        val intent = Intent(requireActivity(), GameActivity::class.java)
         startActivity(intent)
         requireActivity().finish()
     }

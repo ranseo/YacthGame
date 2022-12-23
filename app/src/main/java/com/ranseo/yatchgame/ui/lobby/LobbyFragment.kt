@@ -17,6 +17,7 @@ import com.ranseo.yatchgame.Event
 import com.ranseo.yatchgame.LogTag
 import com.ranseo.yatchgame.R
 import com.ranseo.yatchgame.data.model.LobbyRoom
+import com.ranseo.yatchgame.data.model.Player
 import com.ranseo.yatchgame.databinding.FragmentLobbyBinding
 import com.ranseo.yatchgame.log
 import com.ranseo.yatchgame.ui.dialog.EditTextDialog
@@ -30,9 +31,9 @@ import javax.inject.Inject
 class LobbyFragment : Fragment() {
 
     private val TAG = "LobbyFragment"
-    private lateinit var binding : FragmentLobbyBinding
+    private lateinit var binding: FragmentLobbyBinding
 
-    private val viewModel : LobbyViewModel by viewModels()
+    private val viewModel: LobbyViewModel by viewModels()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,16 +54,19 @@ class LobbyFragment : Fragment() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
-        val lobbyRoomAdapter =  LobbyRoomAdapter(LobbyRoomClickListener { lobbyRoom ->
+        val lobbyRoomAdapter = LobbyRoomAdapter(LobbyRoomClickListener { lobbyRoom ->
             viewModel.accessWaitingFragment(lobbyRoom)
         })
 
         binding.lobbyRoomRec.adapter = lobbyRoomAdapter
 
-        viewModel.lobbyRooms.observe(viewLifecycleOwner, lobbyRoomsObserver(lobbyRoomAdapter))
-        viewModel.makingRoom.observe(viewLifecycleOwner, makingRoomObserver())
-        viewModel.makeWaitRoom.observe(viewLifecycleOwner, makeWaitRoomObserver())
-        viewModel.accessWaitRoom.observe(viewLifecycleOwner, accessWaitRoomObserver())
+        with(viewModel) {
+            host.observe(viewLifecycleOwner, hostObserver())
+            lobbyRooms.observe(viewLifecycleOwner, lobbyRoomsObserver(lobbyRoomAdapter))
+            makingRoom.observe(viewLifecycleOwner, makingRoomObserver())
+            makeWaitRoom.observe(viewLifecycleOwner, makeWaitRoomObserver())
+            accessWaitRoom.observe(viewLifecycleOwner, accessWaitRoomObserver())
+        }
 
         //임시
 //        binding.ivTmpAnimation.setBackgroundResource(R.drawable.animation_roll_dice)
@@ -86,9 +90,9 @@ class LobbyFragment : Fragment() {
      *
      * lobbyRooms가 null 아닐 시, adapter.submitList() 로 전달된다.
      * */
-    private fun lobbyRoomsObserver(adapter:LobbyRoomAdapter) =
+    private fun lobbyRoomsObserver(adapter: LobbyRoomAdapter) =
         Observer<List<LobbyRoom>> { list ->
-            list?.let{
+            list?.let {
                 log(TAG, "lobbyRoomsObserver : ${list}", LogTag.I)
                 adapter.submitList(list)
             }
@@ -101,7 +105,7 @@ class LobbyFragment : Fragment() {
      * */
     private fun makingRoomObserver() =
         Observer<Event<Any?>> {
-            it.getContentIfNotHandled()?.let{
+            it.getContentIfNotHandled()?.let {
                 showRoomSetDialog()
             }
         }
@@ -113,7 +117,10 @@ class LobbyFragment : Fragment() {
         Observer<Event<String>> {
             it.getContentIfNotHandled()?.let { roomKey ->
                 log(TAG, "makeWaitRoomObserver : ${roomKey}", LogTag.I)
-                val newKeyForHost =  requireContext().getString(R.string.make_wait_room) + requireContext().getString(R.string.border_string_for_parsing) + roomKey
+                val newKeyForHost =
+                    requireContext().getString(R.string.make_wait_room) + requireContext().getString(
+                        R.string.border_string_for_parsing
+                    ) + roomKey
                 findNavController().navigate(
                     LobbyFragmentDirections.actionLobbyToWaiting(newKeyForHost)
                 )
@@ -125,7 +132,7 @@ class LobbyFragment : Fragment() {
      * */
     private fun accessWaitRoomObserver() =
         Observer<Event<LobbyRoom>> {
-            it.getContentIfNotHandled()?.let{ lobbyRoom->
+            it.getContentIfNotHandled()?.let { lobbyRoom ->
                 viewModel.removeLobbyRoomValue(lobbyRoom.roomKey)
 
                 findNavController().navigate(
@@ -135,14 +142,24 @@ class LobbyFragment : Fragment() {
         }
 
     /**
+     *
+     * */
+    private fun hostObserver() =
+        Observer<Player> {
+            it?.let{ player ->
+                log(TAG,"hostObserver : ${player}", LogTag.I)
+            }
+        }
+
+    /**
      * 방의 이름을 설정한 뒤, 방을 만드는 대화상자를 호출
      * */
     private fun showRoomSetDialog() {
         val dialog = EditTextDialog(requireContext())
         dialog.setOnClickListener(
-            object  : EditTextDialog.OnEditTextClickListener {
+            object : EditTextDialog.OnEditTextClickListener {
                 override fun onPositiveBtn(text: String) {
-                    log(TAG,"onPositiveBtn : ${text}", LogTag.I)
+                    log(TAG, "onPositiveBtn : ${text}", LogTag.I)
                     viewModel.makeRoom(text)
                 }
             }

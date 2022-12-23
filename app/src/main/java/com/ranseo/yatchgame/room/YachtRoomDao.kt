@@ -16,11 +16,11 @@ interface YachtRoomDao {
     @Query("DELETE FROM player_table WHERE playerId = :playerId")
     suspend fun deletePlayer(playerId:Int)
 
-    @Query("SELECT * FROM player_table WHERE playerId = :playerId")
-    suspend fun getPlayer(playerId:String) : Player
+//    @Query("SELECT * FROM player_table WHERE playerId = :playerId")
+//    suspend fun getPlayer(playerId:String) : Player
 
     @Query("SELECT * FROM player_table WHERE playerId = :playerId")
-    fun getHostPlayer(playerId:String) : LiveData<Player>
+    fun getPlayer(playerId:String) : LiveData<Player>
 
     //
 

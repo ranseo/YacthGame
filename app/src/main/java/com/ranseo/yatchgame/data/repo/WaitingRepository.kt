@@ -1,24 +1,18 @@
 package com.ranseo.yatchgame.data.repo
 
-import com.google.firebase.auth.FirebaseAuth
 import com.ranseo.yatchgame.data.model.GameInfo
-import com.ranseo.yatchgame.data.model.GameInfoFirebaseModel
-import com.ranseo.yatchgame.data.model.Player
 import com.ranseo.yatchgame.data.model.WaitingRoom
 import com.ranseo.yatchgame.data.source.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class WaitingRepositery @Inject constructor(
+class WaitingRepository @Inject constructor(
     private val waitingRoomDataSource: WaitingRoomDataSource,
-    private val playerDataSource: PlayerDataSource,
+    private val playerDataSource: PlayerRemoteDataSource,
     private val gameInfoFirebaseDataSource: GameInfoFirebaseDataSource,
     private val gameInfoRoomDataSource: GameInfoRoomDataSource
 ) {
-    suspend fun refreshHostPlayer() =
-        withContext(Dispatchers.IO) { playerDataSource.getHostPlayer() }
-
     suspend fun getWaitingRoom(roomId: String, callback: (waitingRoom: WaitingRoom) -> Unit) {
         waitingRoomDataSource.getWaitingRoom(roomId, callback)
     }
@@ -46,9 +40,4 @@ class WaitingRepositery @Inject constructor(
     suspend fun insertGameInfoAtFirst(gameInfo: GameInfo) {
         gameInfoRoomDataSource.insertGameInfo(gameInfo)
     }
-
-    suspend fun writeRollDice() {
-
-    }
-
 }

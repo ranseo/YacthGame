@@ -13,24 +13,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class PlayerDataSource @Inject constructor(private val yachtRoomDao: YachtRoomDao, private val firebaseDatabase: FirebaseDatabase, private val firebaseAuth: FirebaseAuth) {
-    private val TAG = "PlayerDataSource"
-
-
-    suspend fun getPlayer(playerId:String) : Player {
-        log(TAG,"getPlayer : ${playerId}", LogTag.I)
-        val player= yachtRoomDao.getPlayer(playerId)
-        log(TAG,"getPlayer : ${player}", LogTag.I)
-        return player
-    }
-
-    suspend fun getHostPlayer() = getPlayer(firebaseAuth.currentUser!!.uid)
-
-    fun getMyPlayer() = yachtRoomDao.getHostPlayer(firebaseAuth.currentUser!!.uid)
-    suspend fun insert(player: Player) = withContext(Dispatchers.IO){
-
-        yachtRoomDao.insertPlayer(player)
-    }
+class PlayerRemoteDataSource @Inject constructor(private val yachtRoomDao: YachtRoomDao, private val firebaseDatabase: FirebaseDatabase, private val firebaseAuth: FirebaseAuth) {
+    private val TAG = "PlayerRemoteDataSource"
 
     suspend fun write(player:Player, callBack:(isWrite:Boolean)->Unit) = withContext(Dispatchers.IO){
         val path = firebaseDatabase.reference.child("player").child(player.playerId)

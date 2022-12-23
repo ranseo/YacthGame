@@ -11,6 +11,8 @@ import com.ranseo.yatchgame.data.Result
 
 import com.ranseo.yatchgame.R
 import com.ranseo.yatchgame.data.model.Player
+import com.ranseo.yatchgame.domain.usecase.InsertPlayerUseCase
+import com.ranseo.yatchgame.domain.usecase.WritePlayerUseCase
 import com.ranseo.yatchgame.log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -18,7 +20,11 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(private val loginRepository: LoginRepository) :
+class LoginViewModel @Inject constructor(
+        private val loginRepository: LoginRepository,
+        private val insertPlayerUseCase: InsertPlayerUseCase,
+        private val writePlayerUseCase: WritePlayerUseCase
+    ) :
     ViewModel() {
     private val TAG = "LoginViewModel"
 
@@ -44,7 +50,8 @@ class LoginViewModel @Inject constructor(private val loginRepository: LoginRepos
                                 uid,
                                 nickName
                             )
-                            loginRepository.insertPlayer(player) { isWrite ->
+                            insertPlayerUseCase(player)
+                            writePlayerUseCase(player) { isWrite ->
                                 viewModelScope.launch {
                                     if (isWrite) {
                                         if (result is Result.Success) {

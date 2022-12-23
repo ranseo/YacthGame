@@ -469,7 +469,7 @@ class GamePlayFragment() : Fragment() {
     /**
      * PopupEmoji Fragment 를 display
      * */
-    fun showEmojiPopup(view: View) {
+    private fun showEmojiPopup(view: View) {
         val emoji = EmojiPopup(requireContext(), object : EmojiPopup.OnEmojiPopupClickListener {
             override fun onEmojiClick(emoji: Int) {
                 gamePlayViewModel.writeOpponentEmoji(emoji)

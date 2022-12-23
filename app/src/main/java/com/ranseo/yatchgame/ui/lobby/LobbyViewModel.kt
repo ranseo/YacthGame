@@ -8,46 +8,41 @@ import com.ranseo.yatchgame.Event
 import com.ranseo.yatchgame.LogTag
 import com.ranseo.yatchgame.data.model.LobbyRoom
 import com.ranseo.yatchgame.data.model.Player
-import com.ranseo.yatchgame.data.repo.LobbyRepositery
+import com.ranseo.yatchgame.data.repo.LobbyRepository
+import com.ranseo.yatchgame.domain.usecase.GetPlayerUseCase
 import com.ranseo.yatchgame.log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import javax.inject.Inject
 
 @HiltViewModel
-class LobbyViewModel @Inject constructor(private val lobbyRepositery: LobbyRepositery) :
+class LobbyViewModel @Inject constructor(
+    private val lobbyRepository: LobbyRepository,
+    getPlayerUseCase: GetPlayerUseCase
+) :
     ViewModel() {
     private val TAG = "LobbyViewModel"
-    private lateinit var host : Player
+    val host: LiveData<Player> = getPlayerUseCase()
 
     private val _lobbyRooms = MutableLiveData<List<LobbyRoom>>()
     val lobbyRooms: LiveData<List<LobbyRoom>>
         get() = _lobbyRooms
 
-    private val _makingRoom= MutableLiveData<Event<Any?>>()
-    val makingRoom : LiveData<Event<Any?>>
+    private val _makingRoom = MutableLiveData<Event<Any?>>()
+    val makingRoom: LiveData<Event<Any?>>
         get() = _makingRoom
 
     private val _makeWaitRoom = MutableLiveData<Event<String>>()
-    val makeWaitRoom : LiveData<Event<String>>
+    val makeWaitRoom: LiveData<Event<String>>
         get() = _makeWaitRoom
 
     private val _accessWaitRoom = MutableLiveData<Event<LobbyRoom>>()
-    val accessWaitRoom : LiveData<Event<LobbyRoom>>
+    val accessWaitRoom: LiveData<Event<LobbyRoom>>
         get() = _accessWaitRoom
 
     init {
-        refreshHostPlayer()
         refreshLobbyRooms()
-    }
-
-    /**
-     * 사용자(=Host)의 Player객체 정보를 set
-     * */
-    private fun refreshHostPlayer() {
-        viewModelScope.launch {
-            host = lobbyRepositery.refreshHostPlayer()
-        }
     }
 
     /**
@@ -57,7 +52,7 @@ class LobbyViewModel @Inject constructor(private val lobbyRepositery: LobbyRepos
      * */
     private fun refreshLobbyRooms() {
         viewModelScope.launch {
-            lobbyRepositery.getLobbyRooms { list ->
+            lobbyRepository.getLobbyRooms { list ->
                 _lobbyRooms.postValue(list)
             }
         }
@@ -68,7 +63,7 @@ class LobbyViewModel @Inject constructor(private val lobbyRepositery: LobbyRepos
      * */
     fun removeEventListener() {
         viewModelScope.launch {
-            lobbyRepositery.removeEventListener()
+            lobbyRepository.removeEventListener()
         }
     }
 
@@ -78,7 +73,7 @@ class LobbyViewModel @Inject constructor(private val lobbyRepositery: LobbyRepos
     private fun writeLobbyRoom(lobbyRoom: LobbyRoom) {
         viewModelScope.launch {
             launch {
-                lobbyRepositery.writeLobbyRoom(lobbyRoom) { roomKey ->
+                lobbyRepository.writeLobbyRoom(lobbyRoom) { roomKey ->
                     makeWaitingFragment(roomKey)
                 }
             }
@@ -88,9 +83,9 @@ class LobbyViewModel @Inject constructor(private val lobbyRepositery: LobbyRepos
     /**
      * Guest가 생성된 대기실에 들어갈 때(accessWaitingRoom), 해당 LobbyRoom 객체를 Firebase Database에서 제거.
      * */
-    fun removeLobbyRoomValue(roomKey:String) {
+    fun removeLobbyRoomValue(roomKey: String) {
         viewModelScope.launch {
-            lobbyRepositery.removeLobbyRoomValue(roomKey)
+            lobbyRepository.removeLobbyRoomValue(roomKey)
         }
     }
 
@@ -109,16 +104,24 @@ class LobbyViewModel @Inject constructor(private val lobbyRepositery: LobbyRepos
      *
      * lobbyRoom객체를 생성하고 writeLobbyRoom()을 호출하는 함수
      * */
-    fun makeRoom(name:String) {
-        val roomName = name.takeIf { it.isNotEmpty() } ?: "${host.name.substringBefore('@')}(이)랑 야추 한판!"
-        val new = LobbyRoom(
-            host.playerId,
-            roomName,
-            mutableMapOf("host" to host),
-            ""
-        )
+    fun makeRoom(name: String) {
+        try {
+            val roomName =
+                name.takeIf { it.isNotEmpty() }
+                    ?: "${host.value!!.name.substringBefore('@')}(이)랑 야추 한판!"
+            val new = LobbyRoom(
+                host.value!!.playerId,
+                roomName,
+                mutableMapOf("host" to host.value!!),
+                ""
+            )
 
-        writeLobbyRoom(new)
+            writeLobbyRoom(new)
+        } catch (error: Exception) {
+            log(TAG,"makeRoom Error : ${error.message}", LogTag.D)
+        } catch (error: NullPointerException) {
+            log(TAG,"makeRoom Error : ${error.message}",LogTag.D)
+        }
     }
 
 

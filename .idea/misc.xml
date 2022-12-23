@@ -70,7 +70,7 @@
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/layout_number_up_board_second.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/layout_number_up_board_tag.xml" value="0.33" />
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/layout_player_profile.xml" value="0.1" />
-        <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/layout_player_profile_reverse.xml" value="0.1" />
+        <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/layout_player_profile_reverse.xml" value="0.18" />
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/layout_ranks_up_board_first.xml" value="0.1" />
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/layout_ranks_up_board_second.xml" value="0.1" />
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/list_item_room_robby.xml" value="0.33" />
@@ -80,7 +80,7 @@
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

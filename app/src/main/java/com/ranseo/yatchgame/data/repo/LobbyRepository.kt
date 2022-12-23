@@ -1,26 +1,18 @@
 package com.ranseo.yatchgame.data.repo
 
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.ValueEventListener
-import com.ranseo.yatchgame.LogTag
 import com.ranseo.yatchgame.data.model.LobbyRoom
-import com.ranseo.yatchgame.data.model.Player
 import com.ranseo.yatchgame.data.source.LobbyRoomDataSource
-import com.ranseo.yatchgame.data.source.PlayerDataSource
-import com.ranseo.yatchgame.log
+import com.ranseo.yatchgame.data.source.PlayerRemoteDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
-class LobbyRepositery @Inject constructor(
+class LobbyRepository @Inject constructor(
     private val lobbyRoomDataSource: LobbyRoomDataSource,
-    private val playerDataSource: PlayerDataSource,
-    private val firebaseAuth: FirebaseAuth
 ) {
     private val TAG = "LobbyRepositery"
-
-    suspend fun refreshHostPlayer() = withContext(Dispatchers.IO) {playerDataSource.getHostPlayer()}
 
     suspend fun getLobbyRooms(callback: (list: List<LobbyRoom>) -> Unit) =
         withContext(Dispatchers.IO) {
