@@ -21,35 +21,35 @@ enum class BoardTag {
 @JsonClass(generateAdapter = true)
 data class Board(
     @field:Json(name = "ones")
-    var ones: Int = -1,
+    val ones: Int = -1,
     @field:Json(name = "twos")
-    var twos: Int = -1,
+    val twos: Int = -1,
     @field:Json(name = "threes")
-    var threes: Int = -1,
+    val threes: Int = -1,
     @field:Json(name = "fours")
-    var fours: Int = -1,
+    val fours: Int = -1,
     @field:Json(name = "fives")
-    var fives: Int = -1,
+    val fives: Int = -1,
     @field:Json(name = "sixes")
-    var sixes: Int = -1,
+    val sixes: Int = -1,
     @field:Json(name = "sum")
-    var sum: Int = 0,
+    val sum: Int = 0,
     @field:Json(name = "bonus")
-    var bonus: Int = -1,
+    val bonus: Int = -1,
     @field:Json(name = "choice")
-    var choice: Int = -1,
+    val choice: Int = -1,
     @field:Json(name = "fourCard")
-    var fourCard: Int = -1,
+    val fourCard: Int = -1,
     @field:Json(name = "fullHouse")
-    var fullHouse: Int = -1,
+    val fullHouse: Int = -1,
     @field:Json(name = "smallStraight")
-    var smallStraight: Int = -1,
+    val smallStraight: Int = -1,
     @field:Json(name = "largeStraight")
-    var largeStraight: Int = -1,
+    val largeStraight: Int = -1,
     @field:Json(name = "yacht")
-    var yacht: Int = -1,
+    val yacht: Int = -1,
     @field:Json(name = "total")
-    var total: Int = 0
+    val total: Int = 0
 ) {
 
     constructor(values: IntArray) : this(
@@ -95,6 +95,7 @@ data class Board(
         var choice = if(this.choice >-1) this.choice else 0; var fourCard = if(this.fourCard >-1) this.fourCard else 0;
         var fullHouse = if(this.fullHouse >-1) this.fullHouse else 0; var smallStraight = if(this.smallStraight >-1) this.smallStraight else 0;
         var largeStraight = if(this.largeStraight >-1) this.largeStraight else 0; var yacht = if(this.yacht >-1) this.yacht else 0;
+        var sum = this.sum ; var bonus = this.bonus ; var total = this.total
 
         when (boardTag) {
             BoardTag.ONES -> ones += board.ones
@@ -112,10 +113,10 @@ data class Board(
         }
 
 
-        this.sum = ones + twos + threes + fours + fives + sixes
-        this.bonus = if (sum < 63) 0 else 35
+        sum = ones + twos + threes + fours + fives + sixes
+        bonus = if (sum < 63) 0 else 35
 
-        this.total =
+        total =
             sum + bonus + (choice + fourCard + fullHouse + smallStraight + largeStraight + yacht)
 
 
