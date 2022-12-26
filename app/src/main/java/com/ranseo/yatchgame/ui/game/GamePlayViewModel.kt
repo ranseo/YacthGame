@@ -9,7 +9,7 @@ import com.ranseo.yatchgame.Event
 import com.ranseo.yatchgame.LogTag
 import com.ranseo.yatchgame.R
 import com.ranseo.yatchgame.data.model.*
-import com.ranseo.yatchgame.data.repo.GamePlayRepositery
+import com.ranseo.yatchgame.data.repo.GameInfoRepository
 import com.ranseo.yatchgame.domain.usecase.*
 import com.ranseo.yatchgame.log
 import com.ranseo.yatchgame.util.DateTime
@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class GamePlayViewModel @Inject constructor(
-    private val gamePlayRepositery: GamePlayRepositery,
+    private val gameInfoRepository: GameInfoRepository,
     private val yachtGame: YachtGame,
     private val writeTurnCountInfoUseCase: WriteTurnCountInfoUseCase,
     private val getFlowTurnCountInfoUseCase: GetFlowTurnCountInfoUseCase,
@@ -30,7 +30,7 @@ class GamePlayViewModel @Inject constructor(
     private val getFlowEmojiInfoUseCase: GetFlowEmojiInfoUseCase,
     private val writeBoardInfoUseCase: WriteBoardInfoUseCase,
     private val getFlowBoardInfoUseCase: GetFlowBoardInfoUseCase,
-    private val getPlayerUseCase: GetPlayerUseCase,
+    getPlayerUseCase: GetPlayerUseCase,
     application: Application
 ) : AndroidViewModel(application) {
 
@@ -108,7 +108,18 @@ class GamePlayViewModel @Inject constructor(
     var rollDiceFirstFlag: Boolean = true
 
     private var diceList = INIT_DICE_LIST.clone()
-    private var keepList = INIT_KEEP_LIST.clone()
+    private var _keepList = INIT_KEEP_LIST.clone()
+    val keepList = MutableLiveData<Array<Boolean>>()
+
+    fun initKeepList() {
+        _keepList = INIT_KEEP_LIST.clone()
+        keepList.value = _keepList
+    }
+    fun setKeepList(dices:RollDice) {
+        _keepList = arrayOf(dices.firstFix , dices.secondFix, dices.thirdFix, dices.fourthFix, dices.fifthFix)
+        keepList.value = _keepList
+    }
+
     private var _chance: Int = INIT_CHANCE
     val chance: Int
         get() = _chance
@@ -334,11 +345,11 @@ class GamePlayViewModel @Inject constructor(
      * */
     private fun refreshGameId() {
         viewModelScope.launch {
-            _gameId.postValue(gamePlayRepositery.getGameId())
+            _gameId.postValue(gameInfoRepository.getGameId())
         }
 
         viewModelScope.launch {
-            gamePlayRepositery.getGameStartTime()
+            gameInfoRepository.getGameStartTime()
         }
     }
 
@@ -348,8 +359,14 @@ class GamePlayViewModel @Inject constructor(
      * */
     fun refreshGameInfo(gameInfoId: String) {
         viewModelScope.launch {
-            gamePlayRepositery.getGameInfo(gameInfoId) { gameInfo ->
-                _gameInfo.postValue(gameInfo)
+            gameInfoRepository.getGameInfo(gameInfoId).collect{
+                if(it.isSuccess) {
+                    _gameInfo.value = it.getOrNull()
+                    log(TAG, "refreshGameInfo Success : ${it.getOrNull()}", LogTag.I)
+                } else {
+                    log(TAG, "refreshGameInfo Error : ${it.exceptionOrNull()}", LogTag.D)
+                }
+
             }
         }
     }
@@ -418,9 +435,9 @@ class GamePlayViewModel @Inject constructor(
      * 매개변수로 받은 idx 값을 이용하여 'keepList'배열의 값을 true or false로 할당.
      * */
     fun keepDice(idx: Int) {
-        keepList[idx] = !keepList[idx]
+        _keepList[idx] = !_keepList[idx]
         viewModelScope.launch {
-            writeRollDice(diceList.clone(), keepList.clone(), rollDice.value!!.turn)
+            writeRollDice(diceList.clone(), _keepList.clone(), rollDice.value!!.turn)
         }
     }
 
@@ -429,7 +446,7 @@ class GamePlayViewModel @Inject constructor(
      * */
     fun reloadBeforeRollDice() {
         diceList = INIT_DICE_LIST.clone()
-        keepList = INIT_KEEP_LIST.clone()
+        _keepList = INIT_KEEP_LIST.clone()
         _chance = CHANCE
         getChanceStr()
     }
@@ -442,7 +459,7 @@ class GamePlayViewModel @Inject constructor(
     fun rollDices() {
         if (chance <= 0) return
 
-        yachtGame.rollDice(diceList, keepList)
+        yachtGame.rollDice(diceList, _keepList)
         _chance--
         log(TAG, "rollDice() : ${diceList.toList()}", LogTag.I)
 
@@ -450,7 +467,7 @@ class GamePlayViewModel @Inject constructor(
         getChanceStr()
         setRollDiceImage(diceList)
         showScore(diceList)
-        writeRollDice(diceList.clone(), keepList.clone(), rollDice.value!!.turn)
+        writeRollDice(diceList.clone(), _keepList.clone(), rollDice.value!!.turn)
     }
 
     /**
@@ -471,7 +488,7 @@ class GamePlayViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.Main) {
             launch {
                 _diceAnim.value = mutableListOf<Boolean>().apply {
-                    addAll(keepList.map { !it })
+                    addAll(_keepList.map { !it })
                 }
                 delay(400)
             }.join()
@@ -550,16 +567,6 @@ class GamePlayViewModel @Inject constructor(
     }
 
 
-    /**
-     * Firebase Database Reference에 연결된 ValueEventListener 제거
-     * */
-    fun removeListener() {
-        viewModelScope.launch {
-            gameId.value?.let {
-                gamePlayRepositery.removeListener(it)
-            }
-        }
-    }
 
 
     /**
@@ -757,7 +764,7 @@ class GamePlayViewModel @Inject constructor(
      * */
     private fun writeGameInfo(gameInfo: GameInfo) {
         viewModelScope.launch {
-            gamePlayRepositery.writeGameInfo(gameInfo)
+            gameInfoRepository.writeGameInfo(gameInfo)
         }
     }
 
@@ -766,7 +773,7 @@ class GamePlayViewModel @Inject constructor(
      * */
     private fun updateGameInfo(gameInfo: GameInfo) {
         viewModelScope.launch {
-            gamePlayRepositery.updateGameInfo(gameInfo)
+            gameInfoRepository.updateGameInfo(gameInfo)
         }
     }
 

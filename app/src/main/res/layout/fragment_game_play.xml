@@ -133,7 +133,8 @@
 
             <ImageView
                 android:id="@+id/iv_roll_first"
-                setSelector="@{viewModel.rollDiceImages[0]}"
+                app:diceSrc="@{viewModel.rollDiceImages[0]}"
+                app:diceFix="@{viewModel.keepList[0]}"
                 android:visibility="@{viewModel.diceAnim[0] ? View.GONE : View.VISIBLE}"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
@@ -152,7 +153,8 @@
 
             <ImageView
                 android:id="@+id/iv_roll_second"
-                setSelector="@{viewModel.rollDiceImages[1]}"
+                app:diceSrc="@{viewModel.rollDiceImages[1]}"
+                app:diceFix="@{viewModel.keepList[1]}"
                 android:visibility="@{viewModel.diceAnim[1] ? View.GONE : View.VISIBLE}"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
@@ -170,7 +172,8 @@
 
             <ImageView
                 android:id="@+id/iv_roll_third"
-                setSelector="@{viewModel.rollDiceImages[2]}"
+                app:diceSrc="@{viewModel.rollDiceImages[2]}"
+                app:diceFix="@{viewModel.keepList[2]}"
                 android:visibility="@{viewModel.diceAnim[2] ? View.GONE : View.VISIBLE}"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
@@ -189,7 +192,8 @@
 
             <ImageView
                 android:id="@+id/iv_roll_fourth"
-                setSelector="@{viewModel.rollDiceImages[3]}"
+                app:diceSrc="@{viewModel.rollDiceImages[3]}"
+                app:diceFix="@{viewModel.keepList[3]}"
                 android:visibility="@{viewModel.diceAnim[3] ? View.GONE : View.VISIBLE}"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
@@ -207,7 +211,8 @@
 
             <ImageView
                 android:id="@+id/iv_roll_fifth"
-                setSelector="@{viewModel.rollDiceImages[4]}"
+                app:diceSrc="@{viewModel.rollDiceImages[4]}"
+                app:diceFix="@{viewModel.keepList[4]}"
                 android:visibility="@{viewModel.diceAnim[4] ? View.GONE : View.VISIBLE}"
                 android:layout_width="48dp"
                 android:layout_height="48dp"

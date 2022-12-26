@@ -15,10 +15,8 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
-class GameInfoRoomDataSource @Inject constructor(private val yachtRoomDao: YachtRoomDao) {
+class GameInfoLocalDataSource @Inject constructor(private val yachtRoomDao: YachtRoomDao) {
     private val TAG = "GameInfoRoomDataSource"
-    private var gameInfoValueEventListener : ValueEventListener? = null
-
 
     /**
      * Room Database에서 가장 최근 GameInfo의 GameId를 반환

@@ -156,21 +156,21 @@ class GamePlayFragment() : Fragment() {
         binding.ivRollFifth.setOnClickListener(rollDiceSelected(4))
     }
 
-    private fun setRollDiceUnSelected() {
-        binding.ivRollFirst.isSelected = false
-        binding.ivRollSecond.isSelected = false
-        binding.ivRollThird.isSelected = false
-        binding.ivRollFourth.isSelected = false
-        binding.ivRollFifth.isSelected = false
-    }
+//    private fun setRollDiceUnSelected() {
+//        binding.ivRollFirst.isSelected = false
+//        binding.ivRollSecond.isSelected = false
+//        binding.ivRollThird.isSelected = false
+//        binding.ivRollFourth.isSelected = false
+//        binding.ivRollFifth.isSelected = false
+//    }
 
-    private fun setRollDiceSelected(keeps: RollDice) {
-        binding.ivRollFirst.isSelected = keeps.firstFix
-        binding.ivRollSecond.isSelected = keeps.secondFix
-        binding.ivRollThird.isSelected = keeps.thirdFix
-        binding.ivRollFourth.isSelected = keeps.fourthFix
-        binding.ivRollFifth.isSelected = keeps.fifthFix
-    }
+//    private fun setRollDiceSelected(keeps: RollDice) {
+//        binding.ivRollFirst.isSelected = keeps.firstFix
+//        binding.ivRollSecond.isSelected = keeps.secondFix
+//        binding.ivRollThird.isSelected = keeps.thirdFix
+//        binding.ivRollFourth.isSelected = keeps.fourthFix
+//        binding.ivRollFifth.isSelected = keeps.fifthFix
+//    }
 
     /**
      * fragment_game_play.xml의 ImageView (iv_roll_dice_first..sixth)에 대해서 해당 iv를 클릭했을 때
@@ -264,7 +264,7 @@ class GamePlayFragment() : Fragment() {
     private fun initRollDiceKeepObserver() =
         Observer<Any?> {
             it?.let {
-                setRollDiceUnSelected()
+                gamePlayViewModel.initKeepList()
             }
         }
 
@@ -291,23 +291,25 @@ class GamePlayFragment() : Fragment() {
         Observer<RollDice> {
             it?.let { rollDice ->
                 //First Player의 경우 -> true!=false
-                //Secopnd Player의 경우 -> flase != true
+                //Secopnd Player의 경우 -> false != true
                 if (gamePlayViewModel.isFirstPlayer.value != rollDice.turn) {
                     val prev = gamePlayViewModel.prevRollDice
                     if (prev != null && rollDice.checkDiceChange(prev)) {
                         log(TAG, "rollDiceObserver() : KEEP_SOUND", LogTag.I)
                         yachtSound.play(YachtSound.KEEP_SOUND)
+                        gamePlayViewModel.setKeepList(rollDice)
                     } else {
                         log(TAG, "rollDiceObserver() : ROLL_DICE_SOUND", LogTag.I)
                         yachtSound.play(YachtSound.ROLL_DICE_SOUND)
+                        gamePlayViewModel.checkOpponentDiceState(rollDice)
                     }
 
-                    gamePlayViewModel.checkOpponentDiceState(rollDice)
-                    setRollDiceSelected(rollDice)
+
+
                     log(TAG, "rollDiceObserver() : Not My Turn  ${rollDice}", LogTag.I)
                     gamePlayViewModel.prevRollDice = rollDice
                 } else {
-                    setRollDiceSelected(rollDice)
+                    gamePlayViewModel.setKeepList(rollDice)
                     log(TAG, "rollDiceObserver() : my Turn  ${rollDice}", LogTag.I)
                 }
 
@@ -503,8 +505,6 @@ class GamePlayFragment() : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        gamePlayViewModel.removeListener()
-//        gamePlayViewModel.releaseResource()
         yachtSound.release()
     }
 

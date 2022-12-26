@@ -8,10 +8,10 @@ import androidx.databinding.BindingAdapter
 
 private val TAG = "BindingAdapter"
 
-@BindingAdapter("setSelector")
-fun bindRollDice(imageView: ImageView, dice:Int) {
-    log(TAG,"bindRollDice() : ${dice}", LogTag.I)
-    when(dice) {
+@BindingAdapter("diceSrc")
+fun bindRollDice(imageView: ImageView, diceSrc:Int) {
+    log(TAG,"bindRollDice() : ${diceSrc}", LogTag.I)
+    when(diceSrc) {
         1 -> {imageView.setImageResource(R.drawable.selector_roll_dice_first)}
         2 -> {imageView.setImageResource(R.drawable.selector_roll_dice_second)}
         3 -> {imageView.setImageResource(R.drawable.selector_roll_dice_third)}
@@ -19,6 +19,11 @@ fun bindRollDice(imageView: ImageView, dice:Int) {
         5 -> {imageView.setImageResource(R.drawable.selector_roll_dice_fifth)}
         6 -> {imageView.setImageResource(R.drawable.selector_roll_dice_sixth)}
     }
+}
+
+@BindingAdapter("diceFix")
+fun bindFixDice(imageView:ImageView, diceFix:Boolean) {
+    imageView.isSelected = diceFix
 }
 
 @BindingAdapter("setProfileSrc")

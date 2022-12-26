@@ -10,8 +10,8 @@ import javax.inject.Inject
 class WaitingRepository @Inject constructor(
     private val waitingRoomDataSource: WaitingRoomDataSource,
     private val playerDataSource: PlayerRemoteDataSource,
-    private val gameInfoFirebaseDataSource: GameInfoFirebaseDataSource,
-    private val gameInfoRoomDataSource: GameInfoRoomDataSource
+    private val gameInfoRemoteDataSource: GameInfoRemoteDataSource,
+    private val gameInfoLocalDataSource: GameInfoLocalDataSource
 ) {
     suspend fun getWaitingRoom(roomId: String, callback: (waitingRoom: WaitingRoom) -> Unit) {
         waitingRoomDataSource.getWaitingRoom(roomId, callback)
@@ -34,10 +34,10 @@ class WaitingRepository @Inject constructor(
     }
 
     suspend fun writeGameInfoAtFirst(waitingRoom: WaitingRoom, callback: (flag:Boolean, gameInfo:GameInfo)->Unit) = withContext(Dispatchers.IO){
-        gameInfoFirebaseDataSource.writeGameInfoAtFirst(waitingRoom, callback)
+        gameInfoRemoteDataSource.writeGameInfoAtFirst(waitingRoom, callback)
     }
 
     suspend fun insertGameInfoAtFirst(gameInfo: GameInfo) {
-        gameInfoRoomDataSource.insertGameInfo(gameInfo)
+        gameInfoLocalDataSource.insertGameInfo(gameInfo)
     }
 }

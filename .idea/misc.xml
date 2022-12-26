@@ -5,7 +5,6 @@
       <map>
         <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/drawable/animation_roll_dice.xml" value="0.1" />
         <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/drawable/animation_roll_dice_fifth.xml" value="0.155" />
-        <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/drawable/animation_roll_dice_first.xml" value="0.1105" />
         <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/drawable/animation_roll_dice_fourth.xml" value="0.155" />
         <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/drawable/animation_roll_dice_second.xml" value="0.155" />
         <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/drawable/animation_roll_dice_third.xml" value="0.155" />
@@ -52,6 +51,7 @@
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/drawable/ic_yacht_board.xml" value="0.2455" />
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/drawable/room_list_border_line.xml" value="0.2475" />
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/drawable/room_list_item_border_line.xml" value="0.2485" />
+        <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/drawable/selector_roll_dice_first.xml" value="0.1565" />
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout-w1240dp/activity_login.xml" value="0.156640625" />
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout-w936dp/activity_login.xml" value="0.2714285714285714" />
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/activity_game.xml" value="0.20208333333333334" />
@@ -71,7 +71,7 @@
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/layout_number_up_board_second.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/layout_number_up_board_tag.xml" value="0.33" />
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/layout_player_profile.xml" value="0.1" />
-        <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/layout_player_profile_reverse.xml" value="0.1" />
+        <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/layout_player_profile_reverse.xml" value="0.18" />
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/layout_ranks_up_board_first.xml" value="0.1" />
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/layout_ranks_up_board_second.xml" value="0.1" />
         <entry key="..\:/Users/aa/Downloads/YatchGame-master/app/src/main/res/layout/list_item_room_robby.xml" value="0.33" />
@@ -81,7 +81,7 @@
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
