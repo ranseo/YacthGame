@@ -14,12 +14,14 @@ import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.ranseo.yatchgame.Event
 import com.ranseo.yatchgame.LogTag
 import com.ranseo.yatchgame.R
 import com.ranseo.yatchgame.data.model.*
 import com.ranseo.yatchgame.databinding.FragmentGamePlayBinding
 import com.ranseo.yatchgame.log
+import com.ranseo.yatchgame.ui.dialog.GameRematchDialog
 import com.ranseo.yatchgame.ui.dialog.GameResultDialog
 import com.ranseo.yatchgame.ui.lobby.LobbyActivity
 import com.ranseo.yatchgame.ui.popup.EmojiPopup
@@ -125,6 +127,8 @@ class GamePlayFragment() : Fragment() {
             myEmoji.observe(viewLifecycleOwner, myEmojiObserver())
             yachtSound.observe(viewLifecycleOwner, yachtSoundObserver())
             diceAnim.observe(viewLifecycleOwner, diceAnimObserver())
+            rematch.observe(viewLifecycleOwner, rematchObserver())
+            makeWaitRoom.observe(viewLifecycleOwner, makeWaitRoomObserver())
         }
 
         setRollDiceImageViewClickListener()
@@ -399,6 +403,35 @@ class GamePlayFragment() : Fragment() {
             }
         }
 
+    /**
+     * 재대결 신청 (rematch observe) 에 대한 데이터가 들어올 때 구현할 코드.
+     * 재대결 신청을 수락 또는 거절 할지 결정하는 dialog (= GameRematchDialog) 를 띄운다.
+     * */
+    private fun rematchObserver() =
+        Observer<Rematch> {
+            it?.let { rematch ->
+                if(rematch.rematch) {
+                    showGameRematchDialog(rematch)
+                }
+            }
+        }
+
+    /**
+     *
+     * */
+    private fun makeWaitRoomObserver() =
+        Observer<Event<String>> {
+            it.getContentIfNotHandled()?.let { roomKey ->
+                log(TAG,"makeWaitRoomObserver() : ${roomKey}", LogTag.I)
+                val newKeyForHost =
+                    requireContext().getString(R.string.make_wait_room) + requireContext().getString(
+                        R.string.border_string_for_parsing
+                    ) + roomKey
+                findNavController().navigate(
+                    GamePlayFragmentDirections.actionPlayToWaiting(newKeyForHost)
+                )
+            }
+        }
 
     /**
      * 게임이 끝났을 때, 띄우는 Dialog
@@ -421,10 +454,36 @@ class GamePlayFragment() : Fragment() {
                 }
 
                 override fun onRematchBtn() {
-                    //gamePlayViewModel.requestRematch()
+                    gamePlayViewModel.requestRematch()
                 }
             }
         )
+
+        dialog.showDialog()
+    }
+
+    /**
+     * 재대결 신청 dialog (= GameRematchDialog)를 띄운다.
+     * */
+    private fun showGameRematchDialog(gameRematch: Rematch) {
+        val dialog = GameRematchDialog(requireContext(), gameRematch.message)
+
+        dialog.setOnClickListener(
+            object  : GameRematchDialog.OnGameRematchDialogClickListener {
+                override fun onAccept() {
+                    //accept 시, Host Player가 만든 waiting Room 으로 이동.
+                    findNavController().navigate(
+                        GamePlayFragmentDirections.actionPlayToWaiting(gameRematch.roomKey)
+                    )
+                }
+
+                override fun onDecline() {
+                    //거절 시, lobby로 이동.
+                    startLobbyActivity()
+                }
+            }
+        )
+
         dialog.showDialog()
     }
 

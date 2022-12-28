@@ -11,6 +11,21 @@
         tools:layout="@layout/fragment_game_play"
         >
 
+        <action
+            android:id="@+id/action_play_to_waiting"
+            app:destination="@+id/waiting_fragment"/>
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/waiting_fragment"
+        android:name="com.ranseo.yatchgame.ui.lobby.waiting.WaitingFragment"
+        tools:layout="@layout/fragment_waiting">
+
+        <argument
+            android:name="roomKey"
+            app:argType="string"/>
+
     </fragment>
 
 </navigation>

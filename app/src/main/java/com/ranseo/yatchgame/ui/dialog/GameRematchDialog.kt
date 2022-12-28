@@ -9,8 +9,9 @@ import com.ranseo.yatchgame.R
 
 class GameRematchDialog(
     context: Context,
-    private val gameRematch:String
+    private val rematchText:String
 ) {
+
     interface OnGameRematchDialogClickListener {
         fun onAccept()
         fun onDecline()
@@ -35,7 +36,7 @@ class GameRematchDialog(
 
         dialog.setCancelable(true)
 
-        gameRematchView.text = gameRematch
+        gameRematchView.text = rematchText
 
 
         acceptBtn.setOnClickListener {
@@ -54,5 +55,4 @@ class GameRematchDialog(
     fun setOnClickListener(listener : OnGameRematchDialogClickListener) {
         onClickListener = listener
     }
-
 }

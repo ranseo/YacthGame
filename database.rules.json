@@ -60,6 +60,13 @@
         ".read" : "auth != null && $uid == auth.uid",
         ".write" : "auth != null"
       }
+    },
+
+    "rematchResult" : {
+      "$uid" : {
+        ".read" : "auth != null && $uid == auth.uid",
+        ".write" : "auth != null"
+      }
     }
   }
 }

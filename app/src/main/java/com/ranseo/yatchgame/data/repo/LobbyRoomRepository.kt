@@ -9,7 +9,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
-class LobbyRepository @Inject constructor(
+class LobbyRoomRepository @Inject constructor(
     private val lobbyRoomDataSource: LobbyRoomDataSource,
 ) {
     private val TAG = "LobbyRepositery"

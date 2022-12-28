@@ -8,8 +8,9 @@ import com.ranseo.yatchgame.Event
 import com.ranseo.yatchgame.LogTag
 import com.ranseo.yatchgame.data.model.LobbyRoom
 import com.ranseo.yatchgame.data.model.Player
-import com.ranseo.yatchgame.data.repo.LobbyRepository
+import com.ranseo.yatchgame.data.repo.LobbyRoomRepository
 import com.ranseo.yatchgame.domain.usecase.GetPlayerUseCase
+import com.ranseo.yatchgame.domain.usecase.WriteLobbyRoomUseCase
 import com.ranseo.yatchgame.log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -18,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LobbyViewModel @Inject constructor(
-    private val lobbyRepository: LobbyRepository,
+    private val lobbyRoomRepository: LobbyRoomRepository,
+    private val writeLobbyRoomUseCase: WriteLobbyRoomUseCase,
     getPlayerUseCase: GetPlayerUseCase
 ) :
     ViewModel() {
@@ -52,7 +54,7 @@ class LobbyViewModel @Inject constructor(
      * */
     private fun refreshLobbyRooms() {
         viewModelScope.launch {
-            lobbyRepository.getLobbyRooms { list ->
+            lobbyRoomRepository.getLobbyRooms { list ->
                 _lobbyRooms.postValue(list)
             }
         }
@@ -63,7 +65,7 @@ class LobbyViewModel @Inject constructor(
      * */
     fun removeEventListener() {
         viewModelScope.launch {
-            lobbyRepository.removeEventListener()
+            lobbyRoomRepository.removeEventListener()
         }
     }
 
@@ -72,10 +74,8 @@ class LobbyViewModel @Inject constructor(
      * */
     private fun writeLobbyRoom(lobbyRoom: LobbyRoom) {
         viewModelScope.launch {
-            launch {
-                lobbyRepository.writeLobbyRoom(lobbyRoom) { roomKey ->
-                    makeWaitingFragment(roomKey)
-                }
+            writeLobbyRoomUseCase(lobbyRoom) { roomKey ->
+                makeWaitingFragment(roomKey)
             }
         }
     }
@@ -85,7 +85,7 @@ class LobbyViewModel @Inject constructor(
      * */
     fun removeLobbyRoomValue(roomKey: String) {
         viewModelScope.launch {
-            lobbyRepository.removeLobbyRoomValue(roomKey)
+            lobbyRoomRepository.removeLobbyRoomValue(roomKey)
         }
     }
 
@@ -128,7 +128,7 @@ class LobbyViewModel @Inject constructor(
     /**
      * navigate 'WaitingFragment' making waitRoom by Host
      * */
-    fun makeWaitingFragment(roomKey: String) {
+    private fun makeWaitingFragment(roomKey: String) {
         _makeWaitRoom.value = Event(roomKey)
     }
 

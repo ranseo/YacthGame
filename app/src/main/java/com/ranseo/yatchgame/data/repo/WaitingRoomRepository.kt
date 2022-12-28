@@ -7,9 +7,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class WaitingRepository @Inject constructor(
+class WaitingRoomRepository @Inject constructor(
     private val waitingRoomDataSource: WaitingRoomDataSource,
-    private val playerDataSource: PlayerRemoteDataSource,
     private val gameInfoRemoteDataSource: GameInfoRemoteDataSource,
     private val gameInfoLocalDataSource: GameInfoLocalDataSource
 ) {
