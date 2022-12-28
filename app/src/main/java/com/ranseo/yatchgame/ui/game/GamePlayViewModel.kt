@@ -30,6 +30,8 @@ class GamePlayViewModel @Inject constructor(
     private val getFlowEmojiInfoUseCase: GetFlowEmojiInfoUseCase,
     private val writeBoardInfoUseCase: WriteBoardInfoUseCase,
     private val getFlowBoardInfoUseCase: GetFlowBoardInfoUseCase,
+    private val writeRematchUseCase: WriteRematchUseCase,
+    private val getFlowRematchUseCase: GetFlowRematchUseCase,
     getPlayerUseCase: GetPlayerUseCase,
     application: Application
 ) : AndroidViewModel(application) {
@@ -115,8 +117,15 @@ class GamePlayViewModel @Inject constructor(
         _keepList = INIT_KEEP_LIST.clone()
         keepList.value = _keepList
     }
-    fun setKeepList(dices:RollDice) {
-        _keepList = arrayOf(dices.firstFix , dices.secondFix, dices.thirdFix, dices.fourthFix, dices.fifthFix)
+
+    fun setKeepList(dices: RollDice) {
+        _keepList = arrayOf(
+            dices.firstFix,
+            dices.secondFix,
+            dices.thirdFix,
+            dices.fourthFix,
+            dices.fifthFix
+        )
         keepList.value = _keepList
     }
 
@@ -228,10 +237,16 @@ class GamePlayViewModel @Inject constructor(
         get() = _diceAnim
 
 
+    private val _rematch = MutableLiveData<Rematch>()
+    val rematch: LiveData<Rematch>
+        get() = _rematch
+
+
     init {
 
         refreshNameTag()
 
+        refreshRematch()
         refreshGameId()
         refreshMyTurn()
         refreshIsFirstPlayer()
@@ -359,8 +374,8 @@ class GamePlayViewModel @Inject constructor(
      * */
     fun refreshGameInfo(gameInfoId: String) {
         viewModelScope.launch {
-            gameInfoRepository.getGameInfo(gameInfoId).collect{
-                if(it.isSuccess) {
+            gameInfoRepository.getGameInfo(gameInfoId).collect {
+                if (it.isSuccess) {
                     _gameInfo.value = it.getOrNull()
                     log(TAG, "refreshGameInfo Success : ${it.getOrNull()}", LogTag.I)
                 } else {
@@ -402,6 +417,22 @@ class GamePlayViewModel @Inject constructor(
             getFlowBoardInfoUseCase(gameId).collect { result ->
                 if (result.isSuccess) {
                     _boardInfo.value = result.getOrDefault(boardInfo)
+                }
+            }
+        }
+    }
+
+    /**
+     * rematch refresh
+     * */
+    private fun refreshRematch() {
+        viewModelScope.launch {
+            getFlowRematchUseCase().collect {
+                if (it.isSuccess) {
+                    _rematch.value = it.getOrNull()
+                    log(TAG, "refreshMatch Success : ${it.getOrNull()}", LogTag.I)
+                } else {
+                    log(TAG, "refreshMatch Failure : ${it.exceptionOrNull()}", LogTag.D)
                 }
             }
         }
@@ -561,12 +592,10 @@ class GamePlayViewModel @Inject constructor(
      * rollDice의 변수 값에 따라 현재 주사위 이미지를 바꾸고, keep의 현황을 확인.
      * */
     fun checkOpponentDiceState(dices: RollDice) {
-        if(chance < 3) return
+        if (chance < 3) return
         val tmpDices = arrayOf(dices.first, dices.second, dices.third, dices.fourth, dices.fifth)
         setRollDiceImage(tmpDices)
     }
-
-
 
 
     /**
@@ -711,11 +740,13 @@ class GamePlayViewModel @Inject constructor(
                         if (isFirstPlayer.value == true) secondPlayer.value!!.name else firstPlayer.value!!.name
                     )
                 )
-            } else if(!isDraw) {
-                result.add(getApplication<Application?>().getString(
-                            R.string.game_result_win,
-                            winner
-                        ))
+            } else if (!isDraw) {
+                result.add(
+                    getApplication<Application?>().getString(
+                        R.string.game_result_win,
+                        winner
+                    )
+                )
             } else {
                 result.add(getApplication<Application?>().getString(R.string.game_result_draw))
             }
@@ -801,6 +832,19 @@ class GamePlayViewModel @Inject constructor(
             myEmojiJob = launch {
                 delay(1500)
                 _myEmoji.value = 0
+            }
+        }
+    }
+
+    fun requestRematch() {
+        viewModelScope.launch {
+            try {
+                val opponent = if (isFirstPlayer.value == true) secondPlayer.value!!.playerId else firstPlayer.value!!.playerId
+                val message = "${player.value?.name}님께서 재대결을 신청했습니다."
+                val rematch = Rematch(opponent, true, player.value!! ,message)
+                writeRematchUseCase(rematch)
+            } catch (error: Exception) {
+                log(TAG,"requestRematch() : ${error.message}", LogTag.D)
             }
         }
     }

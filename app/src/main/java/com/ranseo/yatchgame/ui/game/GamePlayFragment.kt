@@ -156,22 +156,6 @@ class GamePlayFragment() : Fragment() {
         binding.ivRollFifth.setOnClickListener(rollDiceSelected(4))
     }
 
-//    private fun setRollDiceUnSelected() {
-//        binding.ivRollFirst.isSelected = false
-//        binding.ivRollSecond.isSelected = false
-//        binding.ivRollThird.isSelected = false
-//        binding.ivRollFourth.isSelected = false
-//        binding.ivRollFifth.isSelected = false
-//    }
-
-//    private fun setRollDiceSelected(keeps: RollDice) {
-//        binding.ivRollFirst.isSelected = keeps.firstFix
-//        binding.ivRollSecond.isSelected = keeps.secondFix
-//        binding.ivRollThird.isSelected = keeps.thirdFix
-//        binding.ivRollFourth.isSelected = keeps.fourthFix
-//        binding.ivRollFifth.isSelected = keeps.fifthFix
-//    }
-
     /**
      * fragment_game_play.xml의 ImageView (iv_roll_dice_first..sixth)에 대해서 해당 iv를 클릭했을 때
      * Selected 되도록 만드는 ClickListener
@@ -437,9 +421,8 @@ class GamePlayFragment() : Fragment() {
                 }
 
                 override fun onRematchBtn() {
-
+                    //gamePlayViewModel.requestRematch()
                 }
-
             }
         )
         dialog.showDialog()
@@ -479,7 +462,7 @@ class GamePlayFragment() : Fragment() {
         emoji.showPopupWindow(binding.layoutGamePlay, view)
     }
 
-    fun startBgm() {
+    private fun startBgm() {
         yachtSound.play(YachtSound.BGM_CHRISMAS)
 
     }

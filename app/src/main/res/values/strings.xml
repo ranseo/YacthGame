@@ -55,4 +55,9 @@
     <string name="game_score">%s : %s</string>
     <string name="game_result_early">[%s]님이 게임에서 나가셨습니다.\n[%s]님은 게임에서 승리했습니다!!</string>
 
+
+    <!--dialog_rematch-->
+    <string name="game_rematch_title">재대결 신청</string>
+    <string name="game_rematch">란서님께서 재대결을 신청했습니다.\n받아들이시겠습니까?</string>
+
 </resources>
