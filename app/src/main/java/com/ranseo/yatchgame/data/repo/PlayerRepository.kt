@@ -10,7 +10,9 @@ import javax.inject.Inject
 class PlayerRepository @Inject constructor(private val playerRemoteDataSource: PlayerRemoteDataSource, private val playerLocalDataSource: PlayerLocalDataSource) {
 
     //local
-    val player = playerLocalDataSource.getPlayer()
+    val player = playerLocalDataSource.getPlayerLiveData() // LiveData
+
+    suspend fun getPlayer() = playerLocalDataSource.getPlayer()
 
     suspend fun insertPlayer(player:Player) = withContext(Dispatchers.IO){
         playerLocalDataSource.insert(player)

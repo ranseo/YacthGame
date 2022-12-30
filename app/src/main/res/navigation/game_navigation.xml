@@ -13,7 +13,9 @@
 
         <action
             android:id="@+id/action_play_to_waiting"
-            app:destination="@+id/waiting_fragment"/>
+            app:destination="@+id/waiting_fragment"
+            app:popUpTo="@id/game_play_fragment"
+            app:popUpToInclusive="true"/>
 
     </fragment>
 

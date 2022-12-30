@@ -12,7 +12,7 @@ import com.ranseo.yatchgame.data.Result
 import com.ranseo.yatchgame.R
 import com.ranseo.yatchgame.data.model.Player
 import com.ranseo.yatchgame.domain.usecase.InsertPlayerUseCase
-import com.ranseo.yatchgame.domain.usecase.WritePlayerUseCase
+import com.ranseo.yatchgame.domain.usecase.write.WritePlayerUseCase
 import com.ranseo.yatchgame.log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

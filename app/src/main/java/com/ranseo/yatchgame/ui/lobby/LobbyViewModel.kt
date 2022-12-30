@@ -1,26 +1,32 @@
 package com.ranseo.yatchgame.ui.lobby
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.ranseo.yatchgame.Event
 import com.ranseo.yatchgame.LogTag
 import com.ranseo.yatchgame.data.model.LobbyRoom
 import com.ranseo.yatchgame.data.model.Player
+import com.ranseo.yatchgame.data.model.Rematch
 import com.ranseo.yatchgame.data.repo.LobbyRoomRepository
-import com.ranseo.yatchgame.domain.usecase.GetPlayerUseCase
-import com.ranseo.yatchgame.domain.usecase.WriteLobbyRoomUseCase
+import com.ranseo.yatchgame.domain.usecase.get.GetFlowLobbyRoomUseCase
+import com.ranseo.yatchgame.domain.usecase.get.GetFlowRematchUseCase
+import com.ranseo.yatchgame.domain.usecase.get.GetPlayerUseCase
+import com.ranseo.yatchgame.domain.usecase.remove.RemoveLobbyRoomUseCase
+import com.ranseo.yatchgame.domain.usecase.remove.RemoveRematchUseCase
+import com.ranseo.yatchgame.domain.usecase.write.WriteLobbyRoomUseCase
 import com.ranseo.yatchgame.log
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.lang.Exception
 import javax.inject.Inject
 
 @HiltViewModel
 class LobbyViewModel @Inject constructor(
-    private val lobbyRoomRepository: LobbyRoomRepository,
+    private val getFlowLobbyRoomUseCase: GetFlowLobbyRoomUseCase,
     private val writeLobbyRoomUseCase: WriteLobbyRoomUseCase,
+    private val removeLobbyRoomUseCase: RemoveLobbyRoomUseCase,
+    private val getFlowRematchUseCase: GetFlowRematchUseCase,
+    private val removeRematchUseCase: RemoveRematchUseCase,
     getPlayerUseCase: GetPlayerUseCase
 ) :
     ViewModel() {
@@ -43,8 +49,22 @@ class LobbyViewModel @Inject constructor(
     val accessWaitRoom: LiveData<Event<LobbyRoom>>
         get() = _accessWaitRoom
 
+    private val _rematch = MutableLiveData<Rematch?>()
+        val rematch : LiveData<Rematch?>
+            get() = _rematch
+    val isRematch = Transformations.map(rematch) {
+        it?.let {
+            it.rematch
+        }
+    }
+
+    private val _rematchDialog = MutableLiveData<Event<Rematch>>()
+    val rematchDialog : LiveData<Event<Rematch>>
+        get()= _rematchDialog
+
     init {
         refreshLobbyRooms()
+        refreshRematch()
     }
 
     /**
@@ -54,20 +74,34 @@ class LobbyViewModel @Inject constructor(
      * */
     private fun refreshLobbyRooms() {
         viewModelScope.launch {
-            lobbyRoomRepository.getLobbyRooms { list ->
-                _lobbyRooms.postValue(list)
+            getFlowLobbyRoomUseCase().collect() {
+                if(it.isSuccess) {
+                    _lobbyRooms.postValue(it.getOrNull())
+                    log(TAG,"refreshLobbyRooms() Success : ${it.getOrNull()}", LogTag.I)
+                } else {
+                    log(TAG,"refreshLobbyRooms() Failure : ${it.exceptionOrNull()}", LogTag.D)
+                }
+
             }
         }
     }
 
     /**
-     * Firebase Reference에 등록된 ValueEventListener를 Fragment가 onDestroy() 호출할 때 모두 제거.
+     *
      * */
-    fun removeEventListener() {
+    private fun refreshRematch(){
         viewModelScope.launch {
-            lobbyRoomRepository.removeEventListener()
+            getFlowRematchUseCase().collect {
+                if(it.isSuccess) {
+                    _rematch.postValue(it.getOrNull())
+                    log(TAG,"refreshRematch() Success : ${it.getOrNull()}", LogTag.I)
+                } else {
+                    log(TAG,"refreshRematch() Failure : ${it.exceptionOrNull()}", LogTag.D)
+                }
+            }
         }
     }
+
 
     /**
      * Firebase Database에 생성된 LobbyRoom 객체를  Write
@@ -85,7 +119,7 @@ class LobbyViewModel @Inject constructor(
      * */
     fun removeLobbyRoomValue(roomKey: String) {
         viewModelScope.launch {
-            lobbyRoomRepository.removeLobbyRoomValue(roomKey)
+            removeLobbyRoomUseCase(roomKey)
         }
     }
 
@@ -137,5 +171,21 @@ class LobbyViewModel @Inject constructor(
      * */
     fun accessWaitingFragment(lobbyRoom: LobbyRoom) {
         _accessWaitRoom.value = Event(lobbyRoom)
+    }
+
+    /**
+     *
+     * */
+    fun onRematchFabClick() {
+        rematch.value?.let{
+            _rematchDialog.value =Event(it)
+        }
+    }
+
+    fun removeRematch() {
+        viewModelScope.launch {
+            removeRematchUseCase()
+        }
+
     }
 }

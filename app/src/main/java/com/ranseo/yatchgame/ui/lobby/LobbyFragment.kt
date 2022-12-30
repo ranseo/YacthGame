@@ -1,5 +1,6 @@
 package com.ranseo.yatchgame.ui.lobby
 
+import android.animation.ObjectAnimator
 import android.graphics.drawable.AnimationDrawable
 import android.media.AudioAttributes
 import android.media.MediaPlayer
@@ -18,9 +19,12 @@ import com.ranseo.yatchgame.LogTag
 import com.ranseo.yatchgame.R
 import com.ranseo.yatchgame.data.model.LobbyRoom
 import com.ranseo.yatchgame.data.model.Player
+import com.ranseo.yatchgame.data.model.Rematch
 import com.ranseo.yatchgame.databinding.FragmentLobbyBinding
 import com.ranseo.yatchgame.log
 import com.ranseo.yatchgame.ui.dialog.EditTextDialog
+import com.ranseo.yatchgame.ui.dialog.GameRematchDialog
+import com.ranseo.yatchgame.ui.game.GamePlayFragmentDirections
 import com.ranseo.yatchgame.util.YachtGame
 import com.ranseo.yatchgame.util.YachtSound
 import dagger.hilt.android.AndroidEntryPoint
@@ -50,7 +54,6 @@ class LobbyFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_lobby, container, false)
-
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
@@ -58,7 +61,9 @@ class LobbyFragment : Fragment() {
             viewModel.accessWaitingFragment(lobbyRoom)
         })
 
-        binding.lobbyRoomRec.adapter = lobbyRoomAdapter
+        with(binding) {
+            lobbyRoomRec.adapter = lobbyRoomAdapter
+        }
 
         with(viewModel) {
             host.observe(viewLifecycleOwner, hostObserver())
@@ -66,6 +71,8 @@ class LobbyFragment : Fragment() {
             makingRoom.observe(viewLifecycleOwner, makingRoomObserver())
             makeWaitRoom.observe(viewLifecycleOwner, makeWaitRoomObserver())
             accessWaitRoom.observe(viewLifecycleOwner, accessWaitRoomObserver())
+            isRematch.observe(viewLifecycleOwner, isRematchObserver())
+            rematchDialog.observe(viewLifecycleOwner, rematchDialogObserver())
         }
 
         //임시
@@ -152,6 +159,29 @@ class LobbyFragment : Fragment() {
         }
 
     /**
+     *
+     * */
+    private fun isRematchObserver() =
+        Observer<Boolean> {
+            if(it==true) {
+                binding.fabRematch.visibility = View.VISIBLE
+                vibrate(binding.fabRematch)
+            } else {
+                binding.fabRematch.visibility = View.GONE
+            }
+        }
+
+    /**
+     *
+     * */
+    private fun rematchDialogObserver() =
+        Observer<Event<Rematch>> {
+            it.getContentIfNotHandled()?.let { rematch->
+                showGameRematchDialog(rematch)
+            }
+        }
+
+    /**
      * 방의 이름을 설정한 뒤, 방을 만드는 대화상자를 호출
      * */
     private fun showRoomSetDialog() {
@@ -164,11 +194,44 @@ class LobbyFragment : Fragment() {
                 }
             }
         )
+
         dialog.showDialog()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        viewModel.removeEventListener()
+
+    /**
+     *
+     * */
+    private fun showGameRematchDialog(rematch: Rematch) {
+        val dialog = GameRematchDialog(requireContext(),rematch.message)
+        dialog.setOnClickListener(
+            object  : GameRematchDialog.OnGameRematchDialogClickListener {
+                override fun onAccept() {
+                    viewModel.removeRematch()
+                    //accept 시, Host Player가 만든 waiting Room 으로 이동.
+                    findNavController().navigate(
+                        LobbyFragmentDirections.actionLobbyToWaiting(rematch.newGameKey)
+                    )
+                }
+
+                override fun onDecline() {
+                    viewModel.removeRematch()
+                }
+            }
+        )
+
+        dialog.showDialog()
     }
+
+
+    /**
+     * fab_rematch를 위한 animator 구축
+     * */
+    private fun vibrate(view:View) {
+        val animator = ObjectAnimator.ofFloat(view, View.TRANSLATION_X, 10F)
+        animator.repeatCount = 1
+        animator.repeatCount = ObjectAnimator.REVERSE
+        animator.start()
+    }
+
 }

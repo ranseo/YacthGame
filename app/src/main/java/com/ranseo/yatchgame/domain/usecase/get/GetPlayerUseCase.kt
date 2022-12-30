@@ -1,4 +1,4 @@
-package com.ranseo.yatchgame.domain.usecase
+package com.ranseo.yatchgame.domain.usecase.get
 
 import androidx.lifecycle.LiveData
 import com.ranseo.yatchgame.data.model.BoardInfo

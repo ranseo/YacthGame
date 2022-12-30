@@ -37,7 +37,9 @@ class YachtSound @Inject constructor() {
     }
 
     fun muteBgm(raw_id:Int) {
-        if(mediaPlayerMap.containsKey(raw_id)) mediaPlayerMap[BGM_CHRISMAS]?.pause()
+        if(mediaPlayerMap.containsKey(raw_id)){
+            mediaPlayerMap[BGM_CHRISMAS]?.pause() ?: return
+        }
     }
 
     companion object {

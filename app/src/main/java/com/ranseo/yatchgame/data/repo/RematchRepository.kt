@@ -15,4 +15,8 @@ class RematchRepository @Inject constructor(private val rematchDataSource: Remat
     suspend fun writeRematch(rematch: Rematch) : Flow<Result<String>> = withContext(Dispatchers.IO){
         rematchDataSource.writeRematch(rematch)
     }
+
+    suspend fun removeRematch(uid:String) = withContext(Dispatchers.IO) {
+        rematchDataSource.removeRematch(uid)
+    }
 }

@@ -71,4 +71,8 @@ class GameResultDialog(
         onClickListener = listener
     }
 
+    fun dismiss() {
+        dialog.dismiss()
+    }
+
 }

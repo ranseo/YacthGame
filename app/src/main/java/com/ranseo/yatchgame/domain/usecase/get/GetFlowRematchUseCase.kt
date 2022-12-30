@@ -1,4 +1,4 @@
-package com.ranseo.yatchgame.domain.usecase
+package com.ranseo.yatchgame.domain.usecase.get
 
 import com.ranseo.yatchgame.data.model.BoardInfo
 import com.ranseo.yatchgame.data.model.EmojiInfo
@@ -17,12 +17,15 @@ class GetFlowRematchUseCase @Inject constructor(
     playerRepository: PlayerRepository
 ) {
 
-    private val player = playerRepository.player.value
+    private val getPlayerId: suspend () -> String = {
+        playerRepository.getPlayer().playerId
+    }
+
     private val flowRematchGetter: suspend (uid: String) -> Flow<Result<Rematch>> = { uid ->
         rematchRepository.getRematch(uid)
     }
 
     suspend operator fun invoke(): Flow<Result<Rematch>> = withContext(Dispatchers.IO) {
-        flowRematchGetter(player?.playerId ?: "UNKNOWN")
+        flowRematchGetter(getPlayerId())
     }
 }

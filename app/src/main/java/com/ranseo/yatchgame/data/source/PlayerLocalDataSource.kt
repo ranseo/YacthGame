@@ -16,7 +16,11 @@ import javax.inject.Singleton
 class PlayerLocalDataSource @Inject constructor(private val yachtRoomDao: YachtRoomDao, private val firebaseDatabase: FirebaseDatabase, private val firebaseAuth: FirebaseAuth) {
     private val TAG = "PlayerLocalDataSource"
 
-    fun getPlayer() = yachtRoomDao.getPlayer(firebaseAuth.currentUser?.uid ?: "")
+    fun getPlayerLiveData() = yachtRoomDao.getPlayerLiveData(firebaseAuth.currentUser?.uid ?: "")
+    suspend fun getPlayer() = withContext(Dispatchers.IO) {
+        yachtRoomDao.getPlayer(firebaseAuth.currentUser?.uid ?: "UNKNOWN")
+    }
+
     suspend fun insert(player: Player) = withContext(Dispatchers.IO){
         yachtRoomDao.insertPlayer(player)
     }

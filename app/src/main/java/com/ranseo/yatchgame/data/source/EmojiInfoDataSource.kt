@@ -26,6 +26,7 @@ class EmojiInfoDataSource @Inject constructor(private val firebaseDatabase: Fire
     suspend fun getEmojiInfo(gameId: String, playerId: String): Flow<Result<EmojiInfo>> =
         withContext(Dispatchers.IO) {
             callbackFlow {
+                log(TAG,"playerId : ${playerId}", LogTag.I)
                 emojiInfoValueEventListener = object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         try {

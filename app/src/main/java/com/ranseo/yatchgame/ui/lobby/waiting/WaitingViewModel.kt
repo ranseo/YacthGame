@@ -9,7 +9,7 @@ import com.ranseo.yatchgame.LogTag
 import com.ranseo.yatchgame.R
 import com.ranseo.yatchgame.data.model.*
 import com.ranseo.yatchgame.data.repo.WaitingRoomRepository
-import com.ranseo.yatchgame.domain.usecase.GetPlayerUseCase
+import com.ranseo.yatchgame.domain.usecase.get.GetPlayerUseCase
 import com.ranseo.yatchgame.log
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject

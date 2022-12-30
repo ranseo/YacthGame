@@ -1,4 +1,4 @@
-package com.ranseo.yatchgame.domain.usecase
+package com.ranseo.yatchgame.domain.usecase.write
 
 import com.ranseo.yatchgame.data.model.BoardInfo
 import com.ranseo.yatchgame.data.model.EmojiInfo

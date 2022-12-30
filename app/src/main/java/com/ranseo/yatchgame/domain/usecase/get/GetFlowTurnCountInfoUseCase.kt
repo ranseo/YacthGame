@@ -1,4 +1,4 @@
-package com.ranseo.yatchgame.domain.usecase
+package com.ranseo.yatchgame.domain.usecase.get
 
 import com.ranseo.yatchgame.data.model.TurnCountInfo
 import com.ranseo.yatchgame.data.repo.GameInfoRepository

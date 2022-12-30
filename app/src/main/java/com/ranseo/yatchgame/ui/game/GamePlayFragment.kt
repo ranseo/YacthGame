@@ -46,14 +46,19 @@ class GamePlayFragment() : Fragment() {
     private lateinit var rollDiceFourthAnimation: AnimationDrawable
     private lateinit var rollDiceFifthAnimation: AnimationDrawable
 
+    private lateinit var gameResultDialog : GameResultDialog
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        log(TAG,"onCreate" , LogTag.I)
         val onBackPressedCallback = object : OnBackPressedCallback(true) {
             @RequiresApi(Build.VERSION_CODES.N)
             override fun handleOnBackPressed() {
-                val gameResult = gamePlayViewModel.getGameResult(true)
-                gamePlayViewModel.finishGame(gameResult)
-                gamePlayViewModel.earlyFinishGame = true
+                if((gamePlayViewModel.turnCount.value ?: 0) < 13) {
+                    val gameResult = gamePlayViewModel.getGameResult(true)
+                    gamePlayViewModel.finishGame(gameResult)
+                    gamePlayViewModel.earlyFinishGame = true
+                }
             }
         }
 
@@ -64,6 +69,7 @@ class GamePlayFragment() : Fragment() {
 
     override fun onStart() {
         super.onStart()
+        log(TAG,"onStart" , LogTag.I)
         startBgm()
     }
 
@@ -73,6 +79,7 @@ class GamePlayFragment() : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        log(TAG,"onCreateView" , LogTag.I)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_game_play, container, false)
 
         with(binding) {
@@ -127,6 +134,9 @@ class GamePlayFragment() : Fragment() {
             yachtSound.observe(viewLifecycleOwner, yachtSoundObserver())
             diceAnim.observe(viewLifecycleOwner, diceAnimObserver())
             rematch.observe(viewLifecycleOwner, rematchObserver())
+            makeWaitRoom.observe(viewLifecycleOwner, makeWaitRoomObserver())
+
+            player.observe(viewLifecycleOwner, playerObserver())
         }
 
         setRollDiceImageViewClickListener()
@@ -134,6 +144,14 @@ class GamePlayFragment() : Fragment() {
 
         return binding.root
     }
+
+    /**
+     * tmp
+     * */
+    private fun playerObserver() =
+        Observer<Player> {
+            log(TAG,"playerObserver : ${it}", LogTag.I)
+        }
 
     @RequiresApi(Build.VERSION_CODES.N)
     private fun setBtnRollDiceClickListener() {
@@ -324,8 +342,8 @@ class GamePlayFragment() : Fragment() {
     private fun opponentEmojiObserver() =
         Observer<Int> {
             it?.let {
-                if (gamePlayViewModel.isFirstPlayer.value == true) binding.layoutSecondProfile.emoji =
-                    it else binding.layoutFirstProfile.emoji = it
+                if (gamePlayViewModel.isFirstPlayer.value == true) binding.layoutSecondProfile.emoji = it
+                 else binding.layoutFirstProfile.emoji = it
             }
         }
 
@@ -398,12 +416,27 @@ class GamePlayFragment() : Fragment() {
             }
         }
 
+    /**
+     *
+     * */
+    private fun makeWaitRoomObserver() =
+        Observer<Event<String>> {
+            it.getContentIfNotHandled()?.let {  newGameKey ->
+                val newKeyForHost =
+                    requireContext().getString(R.string.make_wait_room) + requireContext().getString(
+                        R.string.border_string_for_parsing
+                    ) + newGameKey
+                findNavController().navigate(
+                    GamePlayFragmentDirections.actionPlayToWaiting(newKeyForHost)
+                )
+            }
+        }
 
     /**
      * 게임이 끝났을 때, 띄우는 Dialog
      * */
     private fun showGameResultDialog(gameResult: List<String>, isRematch: Boolean) {
-        val dialog = GameResultDialog(
+        gameResultDialog = GameResultDialog(
             requireContext(),
             gameResult[0],
             gameResult[1],
@@ -413,7 +446,7 @@ class GamePlayFragment() : Fragment() {
             isRematch
         )
 
-        dialog.setOnClickListener(
+        gameResultDialog.setOnClickListener(
             object : GameResultDialog.OnGameResultDialogClickListener {
                 override fun onExitBtn() {
                     startLobbyActivity()
@@ -425,18 +458,22 @@ class GamePlayFragment() : Fragment() {
             }
         )
 
-        dialog.showDialog()
+        gameResultDialog.showDialog()
+
+
     }
 
     /**
      * 재대결 신청 dialog (= GameRematchDialog)를 띄운다.
      * */
     private fun showGameRematchDialog(gameRematch: Rematch) {
-        val dialog = GameRematchDialog(requireContext(), gameRematch.message)
+        gameResultDialog.dismiss()
 
+        val dialog = GameRematchDialog(requireContext(), gameRematch.message)
         dialog.setOnClickListener(
             object  : GameRematchDialog.OnGameRematchDialogClickListener {
                 override fun onAccept() {
+                    gamePlayViewModel.removeRematch()
                     //accept 시, Host Player가 만든 waiting Room 으로 이동.
                     findNavController().navigate(
                         GamePlayFragmentDirections.actionPlayToWaiting(gameRematch.newGameKey)
@@ -444,6 +481,7 @@ class GamePlayFragment() : Fragment() {
                 }
 
                 override fun onDecline() {
+                    gamePlayViewModel.removeRematch()
                     //거절 시, lobby로 이동.
                     startLobbyActivity()
                 }

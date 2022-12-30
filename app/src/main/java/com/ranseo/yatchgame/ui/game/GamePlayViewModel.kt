@@ -10,14 +10,15 @@ import com.ranseo.yatchgame.LogTag
 import com.ranseo.yatchgame.R
 import com.ranseo.yatchgame.data.model.*
 import com.ranseo.yatchgame.data.repo.GameInfoRepository
-import com.ranseo.yatchgame.domain.usecase.*
+import com.ranseo.yatchgame.domain.usecase.remove.RemoveRematchUseCase
+import com.ranseo.yatchgame.domain.usecase.get.*
+import com.ranseo.yatchgame.domain.usecase.write.*
 import com.ranseo.yatchgame.log
 import com.ranseo.yatchgame.util.DateTime
 import com.ranseo.yatchgame.util.YachtGame
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import javax.inject.Inject
-import kotlin.random.Random
 
 @HiltViewModel
 class GamePlayViewModel @Inject constructor(
@@ -34,6 +35,7 @@ class GamePlayViewModel @Inject constructor(
     private val writeRematchUseCase: WriteRematchUseCase,
     private val getFlowRematchUseCase: GetFlowRematchUseCase,
     private val getFlowGameInfoUseCase: GetFlowGameInfoUseCase,
+    val removeRematchUseCase: RemoveRematchUseCase,
     getPlayerUseCase: GetPlayerUseCase,
     application: Application
 ) : AndroidViewModel(application) {
@@ -42,7 +44,7 @@ class GamePlayViewModel @Inject constructor(
 //    private var soundPool: SoundPool? = null
 //    private var upSound: Int = 0
 
-    private val player: LiveData<Player> = getPlayerUseCase()
+    val player: LiveData<Player> = getPlayerUseCase()
 
     private val _nameTagImages = MutableLiveData<List<Int>>()
     val nameTagImages: LiveData<List<Int>>
@@ -222,6 +224,10 @@ class GamePlayViewModel @Inject constructor(
         it?.let { it.emoji }
     }
 
+    fun setEmojiNull() {
+        _emojiInfo.value = EmojiInfo(0)
+    }
+
     private var opponentEmojiJob: Job = Job()
 
     private val _myEmoji = MutableLiveData<Int>()
@@ -305,6 +311,7 @@ class GamePlayViewModel @Inject constructor(
 
     private fun CoroutineScope.displayEmojiAtOpponent(emojiInfo: Result<EmojiInfo>) {
         opponentEmojiJob.cancel()
+
         _emojiInfo.value = emojiInfo.getOrNull()
         log(TAG, "refreshEmojiInfo : emojiInfo Success : $emojiInfo", LogTag.I)
         opponentEmojiJob = launch {
@@ -817,15 +824,17 @@ class GamePlayViewModel @Inject constructor(
         }
     }
 
+    var emojiFlag : Boolean = true
     /**
      * 상대편 uid에 나의 emojiInfo Write
      * */
     fun writeOpponentEmoji(emoji: Int) {
         viewModelScope.launch {
+            emojiFlag = emojiFlag.not()
             writeEmojiInfoUseCase(
                 gameId.value!!,
                 if (isFirstPlayer.value == true) secondPlayer.value!!.playerId else firstPlayer.value!!.playerId,
-                EmojiInfo(emoji)
+                EmojiInfo(emoji, emojiFlag)
             )
         }
     }
@@ -857,8 +866,8 @@ class GamePlayViewModel @Inject constructor(
                 //Rematch write 성공 시, waitingFragment 으로 이동.
                 writeRematchUseCase(rematch).collect{
                     if(it.isSuccess) {
-                        val roomKey = it.getOrNull() ?: return@collect
-                        makeWaitingRoom(roomKey)
+                        val newGameKey = it.getOrNull() ?: return@collect
+                        makeWaitingRoom(newGameKey)
                         log(TAG,"writeRematchUseCase Success : ${it.getOrNull()}", LogTag.I)
                     } else {
                         log(TAG,"writeRematchUseCase Failure : ${it.exceptionOrNull()}", LogTag.D)
@@ -872,11 +881,20 @@ class GamePlayViewModel @Inject constructor(
     }
 
     /**
+     *
+     * */
+    fun removeRematch() {
+        viewModelScope.launch(Dispatchers.IO) {
+            removeRematchUseCase()
+        }
+    }
+
+    /**
      * navigate 'WaitingFragment' making waitRoom by Host
      **/
-    private fun makeWaitingRoom(roomKey:String) {
+    private fun makeWaitingRoom(newGameKey:String) {
         try {
-            _makeWaitRoom.value = Event(roomKey)
+            _makeWaitRoom.value = Event(newGameKey)
         }catch(error:Exception) {
             log(TAG,"makeWaitingRoom() : ${error.message}", LogTag.D)
         }
