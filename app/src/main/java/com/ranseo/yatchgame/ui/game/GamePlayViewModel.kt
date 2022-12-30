@@ -32,6 +32,7 @@ class GamePlayViewModel @Inject constructor(
     private val getFlowBoardInfoUseCase: GetFlowBoardInfoUseCase,
     private val writeRematchUseCase: WriteRematchUseCase,
     private val getFlowRematchUseCase: GetFlowRematchUseCase,
+    private val getFlowGameInfoUseCase: GetFlowGameInfoUseCase,
     getPlayerUseCase: GetPlayerUseCase,
     application: Application
 ) : AndroidViewModel(application) {
@@ -244,25 +245,32 @@ class GamePlayViewModel @Inject constructor(
 
     init {
 
+        log(TAG, "init", LogTag.I)
         refreshNameTag()
 
         refreshRematch()
         refreshGameId()
+
+        //새단장
+        refreshGameInfo()
+        refreshRollDice()
+        refreshBoardInfo()
+        refreshEmojiInfo()
+        refreshTurnCountInfo()
+        //
         refreshMyTurn()
         refreshIsFirstPlayer()
 
         setRollDiceImage(START_LIST)
-
-
     }
 
     /**
      * turnCountInfo refresh
      * */
-    fun refreshTurnCountInfo(gameId: String) {
+    private fun refreshTurnCountInfo() {
         viewModelScope.launch {
-            writeTurnCountInfoUseCase(gameId, TurnCountInfo(1))
-            getFlowTurnCountInfoUseCase(gameId).collect {
+            writeTurnCountInfoUseCase(TurnCountInfo(1))
+            getFlowTurnCountInfoUseCase().collect {
                 if (it.isSuccess) {
                     _turnCount.value = it.getOrDefault(TurnCountInfo(1)).turnCount
                 }
@@ -273,10 +281,10 @@ class GamePlayViewModel @Inject constructor(
     /**
      * Firebase Database, emojiInfo Flow -> Collect -> 'emojiInfo'
      * */
-    fun refreshEmojiInfo(gameId: String) {
+    private fun refreshEmojiInfo() {
         viewModelScope.launch {
             try {
-                getFlowEmojiInfoUseCase(gameId, player.value!!.playerId)
+                getFlowEmojiInfoUseCase()
                     .collect { emojiInfo ->
                         if (emojiInfo.isSuccess) {
                             displayEmojiAtOpponent(emojiInfo)
@@ -360,11 +368,8 @@ class GamePlayViewModel @Inject constructor(
      * */
     private fun refreshGameId() {
         viewModelScope.launch {
+            log(TAG,"refreshGameId()" , LogTag.I)
             _gameId.postValue(gameInfoRepository.getGameId())
-        }
-
-        viewModelScope.launch {
-            gameInfoRepository.getGameStartTime()
         }
     }
 
@@ -372,16 +377,15 @@ class GamePlayViewModel @Inject constructor(
      * gameInfo data를 Firebase Database로부터 읽어온 뒤,
      * 이 과정은 Firebase Database의 gameinfo data가  갱신될 때마다 실행된다.
      * */
-    fun refreshGameInfo(gameInfoId: String) {
+    private fun refreshGameInfo() {
         viewModelScope.launch {
-            gameInfoRepository.getGameInfo(gameInfoId).collect {
+            getFlowGameInfoUseCase().collect {
                 if (it.isSuccess) {
                     _gameInfo.value = it.getOrNull()
                     log(TAG, "refreshGameInfo Success : ${it.getOrNull()}", LogTag.I)
                 } else {
                     log(TAG, "refreshGameInfo Error : ${it.exceptionOrNull()}", LogTag.D)
                 }
-
             }
         }
     }
@@ -389,9 +393,9 @@ class GamePlayViewModel @Inject constructor(
     /**
      * "RollDice" data 를 Firebase Database 로부터 읽어온다.
      * */
-    fun refreshRollDice(gameId: String) {
+    private fun refreshRollDice() {
         viewModelScope.launch {
-            getFlowRollDiceUseCase(gameId).collect {
+            getFlowRollDiceUseCase().collect {
                 if (it.isSuccess) {
                     _rollDice.value = it.getOrNull()
                 }
@@ -403,7 +407,7 @@ class GamePlayViewModel @Inject constructor(
      * boardInfo refresh
      * boardInfo는 first, second 플레이어들의 board상황과 boardRecord상황을 기록할 수 있다.
      * */
-    fun refreshBoardInfo(gameId: String) {
+    private fun refreshBoardInfo() {
         viewModelScope.launch {
             val boardInfo =
                 BoardInfo(
@@ -412,9 +416,9 @@ class GamePlayViewModel @Inject constructor(
                     listOf(BoardRecord(), BoardRecord())
                 )
 
-            writeBoardInfoUseCase(gameId, boardInfo)
+            writeBoardInfoUseCase(boardInfo)
 
-            getFlowBoardInfoUseCase(gameId).collect { result ->
+            getFlowBoardInfoUseCase().collect { result ->
                 if (result.isSuccess) {
                     _boardInfo.value = result.getOrDefault(boardInfo)
                 }
@@ -692,7 +696,7 @@ class GamePlayViewModel @Inject constructor(
      * writeTurnCountInfoUserCase를 이용하여
      * turnCount를 FirebaseDatabase에 write.
      * */
-    fun implementTurnCount() {
+    private fun implementTurnCount() {
         viewModelScope.launch {
             writeTurnCountInfoUseCase(gameId.value!!, TurnCountInfo(turnCount.value!! + 1))
         }

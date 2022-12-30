@@ -47,7 +47,9 @@ class RematchDataSource @Inject constructor(private val firebaseDatabase: Fireba
 
     suspend fun writeRematch(rematch: Rematch) = withContext(Dispatchers.IO){
         val ref = firebaseDatabase.reference.child("rematch").child(rematch.rematchId)
-        ref.setValue(rematch.asRemoteModel()).addOnCompleteListener {
+        val key = ref.key ?: return@withContext
+
+        ref.setValue(rematch.asRemoteModel(key)).addOnCompleteListener {
             if(it.isSuccessful){
                 log(TAG,"writeRematch Success : ${rematch}", LogTag.I)
             } else {

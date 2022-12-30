@@ -20,6 +20,7 @@ import com.ranseo.yatchgame.R
 import com.ranseo.yatchgame.data.model.*
 import com.ranseo.yatchgame.databinding.FragmentGamePlayBinding
 import com.ranseo.yatchgame.log
+import com.ranseo.yatchgame.ui.dialog.GameRematchDialog
 import com.ranseo.yatchgame.ui.dialog.GameResultDialog
 import com.ranseo.yatchgame.ui.lobby.LobbyActivity
 import com.ranseo.yatchgame.ui.popup.EmojiPopup
@@ -111,7 +112,6 @@ class GamePlayFragment() : Fragment() {
 
 
         with(gamePlayViewModel) {
-            gameId.observe(viewLifecycleOwner, gameIdObserver())
             gameInfo.observe(viewLifecycleOwner, gameInfoObserver())
             myTurn.observe(viewLifecycleOwner, myTurnObserver())
             firstPlayer.observe(viewLifecycleOwner, firstPlayerObserver())
@@ -125,6 +125,7 @@ class GamePlayFragment() : Fragment() {
             myEmoji.observe(viewLifecycleOwner, myEmojiObserver())
             yachtSound.observe(viewLifecycleOwner, yachtSoundObserver())
             diceAnim.observe(viewLifecycleOwner, diceAnimObserver())
+            rematch.observe(viewLifecycleOwner, rematchObserver())
         }
 
         setRollDiceImageViewClickListener()
@@ -189,20 +190,6 @@ class GamePlayFragment() : Fragment() {
             }
         }
 
-
-    private fun gameIdObserver() =
-        Observer<String> {
-            it?.let { gameId ->
-                log(TAG, "gameIdObserver : ${gameId}", LogTag.I)
-                gamePlayViewModel.refreshGameInfo(gameId)
-                gamePlayViewModel.refreshRollDice(gameId)
-                gamePlayViewModel.refreshBoardInfo(gameId)
-                gamePlayViewModel.refreshEmojiInfo(gameId)
-                gamePlayViewModel.refreshTurnCountInfo(gameId)
-                //gamePlayViewModel.refreshTurnCount()
-                //gamePlayViewModel.writeRollDiceAtFirst(gameId)
-            }
-        }
 
     private fun firstPlayerObserver() =
         Observer<Player> {
@@ -399,6 +386,16 @@ class GamePlayFragment() : Fragment() {
             }
         }
 
+    /**
+     *
+     * */
+    private fun rematchObserver() =
+        Observer<Rematch> {
+            it?.let { rematch ->
+                log(TAG,"rematchObserver() : ${rematch}", LogTag.I)
+            }
+        }
+
 
     /**
      * 게임이 끝났을 때, 띄우는 Dialog
@@ -421,7 +418,7 @@ class GamePlayFragment() : Fragment() {
                 }
 
                 override fun onRematchBtn() {
-                    //gamePlayViewModel.requestRematch()
+                    gamePlayViewModel.requestRematch()
                 }
             }
         )
@@ -460,6 +457,10 @@ class GamePlayFragment() : Fragment() {
         })
 
         emoji.showPopupWindow(binding.layoutGamePlay, view)
+    }
+
+    private fun showRematchDialog() {
+        //val gameRematch = GameRematchDialog(requireContext())
     }
 
     private fun startBgm() {

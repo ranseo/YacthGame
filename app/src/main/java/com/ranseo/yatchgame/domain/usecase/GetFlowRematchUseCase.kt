@@ -23,6 +23,6 @@ class GetFlowRematchUseCase @Inject constructor(
     }
 
     suspend operator fun invoke(): Flow<Result<Rematch>> = withContext(Dispatchers.IO) {
-        flowRematchGetter(player?.playerId ?: "")
+        flowRematchGetter(player?.playerId ?: "UNKNOWN")
     }
 }
