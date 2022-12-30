@@ -2,30 +2,29 @@ package com.ranseo.yatchgame.domain.usecase
 
 import com.ranseo.yatchgame.data.model.BoardInfo
 import com.ranseo.yatchgame.data.model.EmojiInfo
-import com.ranseo.yatchgame.data.model.Rematch
+import com.ranseo.yatchgame.data.model.LobbyRoom
 import com.ranseo.yatchgame.data.model.RollDice
 import com.ranseo.yatchgame.data.repo.BoardInfoRepository
 import com.ranseo.yatchgame.data.repo.EmojiInfoRepository
-import com.ranseo.yatchgame.data.repo.RematchRepository
+import com.ranseo.yatchgame.data.repo.LobbyRoomRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class WriteRematchUseCase @Inject constructor(
-    rematchRepository: RematchRepository,
+class WriteLobbyRoomUseCase @Inject constructor(
+    lobbyRoomRepository: LobbyRoomRepository,
 ) {
 
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 
-    private val rematchWriter: suspend (rematch: Rematch) -> Flow<Result<String>> =
-        { rematch ->
-            rematchRepository.writeRematch(rematch)
+    private val lobbyRoomWriter: suspend (lobbyRoom:LobbyRoom, callback: (roomKey:String) -> Unit) -> Unit =
+        { lobbyRoom, callback ->
+            lobbyRoomRepository.writeLobbyRoom(lobbyRoom, callback)
         }
 
-    suspend operator fun invoke(rematch: Rematch)  : Flow<Result<String>> =
+    suspend operator fun invoke(lobbyRoom: LobbyRoom, callback: (roomKey: String) -> Unit) =
         withContext(defaultDispatcher) {
-            rematchWriter(rematch)
+            lobbyRoomWriter(lobbyRoom, callback)
         }
 }

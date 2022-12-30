@@ -20,7 +20,6 @@ import com.ranseo.yatchgame.R
 import com.ranseo.yatchgame.data.model.*
 import com.ranseo.yatchgame.databinding.FragmentGamePlayBinding
 import com.ranseo.yatchgame.log
-import com.ranseo.yatchgame.ui.dialog.GameRematchDialog
 import com.ranseo.yatchgame.ui.dialog.GameResultDialog
 import com.ranseo.yatchgame.ui.lobby.LobbyActivity
 import com.ranseo.yatchgame.ui.popup.EmojiPopup
@@ -422,6 +421,32 @@ class GamePlayFragment() : Fragment() {
                 }
             }
         )
+
+        dialog.showDialog()
+    }
+
+    /**
+     * 재대결 신청 dialog (= GameRematchDialog)를 띄운다.
+     * */
+    private fun showGameRematchDialog(gameRematch: Rematch) {
+        val dialog = GameRematchDialog(requireContext(), gameRematch.message)
+
+        dialog.setOnClickListener(
+            object  : GameRematchDialog.OnGameRematchDialogClickListener {
+                override fun onAccept() {
+                    //accept 시, Host Player가 만든 waiting Room 으로 이동.
+                    findNavController().navigate(
+                        GamePlayFragmentDirections.actionPlayToWaiting(gameRematch.roomKey)
+                    )
+                }
+
+                override fun onDecline() {
+                    //거절 시, lobby로 이동.
+                    startLobbyActivity()
+                }
+            }
+        )
+
         dialog.showDialog()
     }
 
@@ -457,10 +482,6 @@ class GamePlayFragment() : Fragment() {
         })
 
         emoji.showPopupWindow(binding.layoutGamePlay, view)
-    }
-
-    private fun showRematchDialog() {
-        //val gameRematch = GameRematchDialog(requireContext())
     }
 
     private fun startBgm() {

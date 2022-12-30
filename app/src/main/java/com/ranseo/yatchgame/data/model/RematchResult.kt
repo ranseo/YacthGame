@@ -5,7 +5,7 @@ data class RematchResult(
     val isAccept: Boolean,
 ) {
     constructor(hashMap: HashMap<*,*>) : this(
-        rematchId =hashMap["rematchId"] as String,
+        rematchId = hashMap["rematchId"] as String,
         isAccept = hashMap["isAccept"] as Boolean,
     )
 }

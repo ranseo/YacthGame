@@ -17,6 +17,7 @@ import com.ranseo.yatchgame.util.YachtGame
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import javax.inject.Inject
+import kotlin.random.Random
 
 @HiltViewModel
 class GamePlayViewModel @Inject constructor(
@@ -242,6 +243,10 @@ class GamePlayViewModel @Inject constructor(
     val rematch: LiveData<Rematch>
         get() = _rematch
 
+
+    private val _makeWaitRoom = MutableLiveData<Event<String>>()
+    val makeWaitRoom : LiveData<Event<String>>
+        get() = _makeWaitRoom
 
     init {
 
@@ -845,11 +850,35 @@ class GamePlayViewModel @Inject constructor(
             try {
                 val opponent = if (isFirstPlayer.value == true) secondPlayer.value!!.playerId else firstPlayer.value!!.playerId
                 val message = "${player.value?.name}님께서 재대결을 신청했습니다."
+
                 val rematch = Rematch(opponent, true, player.value!! ,message)
-                writeRematchUseCase(rematch)
+
+
+                //Rematch write 성공 시, waitingFragment 으로 이동.
+                writeRematchUseCase(rematch).collect{
+                    if(it.isSuccess) {
+                        val roomKey = it.getOrNull() ?: return@collect
+                        makeWaitingRoom(roomKey)
+                        log(TAG,"writeRematchUseCase Success : ${it.getOrNull()}", LogTag.I)
+                    } else {
+                        log(TAG,"writeRematchUseCase Failure : ${it.exceptionOrNull()}", LogTag.D)
+                    }
+
+                }
             } catch (error: Exception) {
                 log(TAG,"requestRematch() : ${error.message}", LogTag.D)
             }
+        }
+    }
+
+    /**
+     * navigate 'WaitingFragment' making waitRoom by Host
+     **/
+    private fun makeWaitingRoom(roomKey:String) {
+        try {
+            _makeWaitRoom.value = Event(roomKey)
+        }catch(error:Exception) {
+            log(TAG,"makeWaitingRoom() : ${error.message}", LogTag.D)
         }
     }
 

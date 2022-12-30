@@ -8,18 +8,17 @@ import com.ranseo.yatchgame.Event
 import com.ranseo.yatchgame.LogTag
 import com.ranseo.yatchgame.R
 import com.ranseo.yatchgame.data.model.*
-import com.ranseo.yatchgame.data.repo.WaitingRepository
+import com.ranseo.yatchgame.data.repo.WaitingRoomRepository
 import com.ranseo.yatchgame.domain.usecase.GetPlayerUseCase
 import com.ranseo.yatchgame.log
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
 
 class WaitingViewModel @AssistedInject constructor(
-    private val waitingRepository: WaitingRepository,
+    private val waitingRoomRepository: WaitingRoomRepository,
     private val getPlayerUseCase: GetPlayerUseCase,
     @Assisted private val waitingRoomId: String,
     application: Application
@@ -78,7 +77,7 @@ class WaitingViewModel @AssistedInject constructor(
      * */
     private suspend fun refreshWaitingRoom(roomId: String) {
 
-        waitingRepository.getWaitingRoom(roomId) { waitingRoom ->
+        waitingRoomRepository.getWaitingRoom(roomId) { waitingRoom ->
             viewModelScope.launch {
                 log(
                     TAG,
@@ -95,7 +94,7 @@ class WaitingViewModel @AssistedInject constructor(
      * Host인 경우 WaitingRoom 객체 Write
      * */
     private suspend fun writeWaitingRoom(waitingRoom: WaitingRoom) {
-        waitingRepository.writeWaitingRoom(waitingRoom)
+        waitingRoomRepository.writeWaitingRoom(waitingRoom)
     }
 
     /**
@@ -112,7 +111,7 @@ class WaitingViewModel @AssistedInject constructor(
                     mutableMapOf("guest" to player.value!!)
                 )
 
-                waitingRepository.updateWaitingRoom(new)
+                waitingRoomRepository.updateWaitingRoom(new)
                 log(TAG, "updateWaitingRoom : ${new}", LogTag.I)
             } catch (error: Exception) {
                 updateFlag = true
@@ -131,7 +130,7 @@ class WaitingViewModel @AssistedInject constructor(
     fun removeWaitingRoomValue() {
         viewModelScope.launch {
             val roomId = waitingRoom.value?.roomId ?: return@launch
-            waitingRepository.removeWaitingRoomValue(roomId)
+            waitingRoomRepository.removeWaitingRoomValue(roomId)
         }
     }
 
@@ -143,7 +142,7 @@ class WaitingViewModel @AssistedInject constructor(
     fun removeListener() {
         viewModelScope.launch {
             val roomId: String = waitingRoom.value?.roomId ?: return@launch
-            waitingRepository.removeWaitingRoomValueEventListener(roomId)
+            waitingRoomRepository.removeWaitingRoomValueEventListener(roomId)
         }
     }
 
@@ -164,9 +163,9 @@ class WaitingViewModel @AssistedInject constructor(
                     null
                 ) == null
             ) return@launch
-            waitingRepository.writeGameInfoAtFirst(wr) { flag, gameInfo ->
+            waitingRoomRepository.writeGameInfoAtFirst(wr) { flag, gameInfo ->
                 viewModelScope.launch {
-                    if (flag) waitingRepository.insertGameInfoAtFirst(gameInfo)
+                    if (flag) waitingRoomRepository.insertGameInfoAtFirst(gameInfo)
                     _gameInfo.postValue(Event(flag))
                 }
             }
