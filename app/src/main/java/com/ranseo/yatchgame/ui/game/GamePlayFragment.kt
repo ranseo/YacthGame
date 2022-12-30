@@ -14,12 +14,14 @@ import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.ranseo.yatchgame.Event
 import com.ranseo.yatchgame.LogTag
 import com.ranseo.yatchgame.R
 import com.ranseo.yatchgame.data.model.*
 import com.ranseo.yatchgame.databinding.FragmentGamePlayBinding
 import com.ranseo.yatchgame.log
+import com.ranseo.yatchgame.ui.dialog.GameRematchDialog
 import com.ranseo.yatchgame.ui.dialog.GameResultDialog
 import com.ranseo.yatchgame.ui.lobby.LobbyActivity
 import com.ranseo.yatchgame.ui.popup.EmojiPopup
@@ -392,6 +394,7 @@ class GamePlayFragment() : Fragment() {
         Observer<Rematch> {
             it?.let { rematch ->
                 log(TAG,"rematchObserver() : ${rematch}", LogTag.I)
+                showGameRematchDialog(rematch)
             }
         }
 
@@ -436,7 +439,7 @@ class GamePlayFragment() : Fragment() {
                 override fun onAccept() {
                     //accept 시, Host Player가 만든 waiting Room 으로 이동.
                     findNavController().navigate(
-                        GamePlayFragmentDirections.actionPlayToWaiting(gameRematch.roomKey)
+                        GamePlayFragmentDirections.actionPlayToWaiting(gameRematch.newGameKey)
                     )
                 }
 
