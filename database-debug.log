@@ -1,0 +1,9 @@
+WARNING: An illegal reflective access operation has occurred
+WARNING: Illegal reflective access by io.netty.util.internal.ReflectionUtil (file:/C:/Users/aa/.cache/firebase/emulators/firebase-database-emulator-v4.8.0.jar) to field sun.nio.ch.SelectorImpl.selectedKeys
+WARNING: Please consider reporting this to the maintainers of io.netty.util.internal.ReflectionUtil
+WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+WARNING: All illegal access operations will be denied in a future release
+12:15:04.779 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+12:15:05.019 [main] INFO com.firebase.server.forge.App$ - Listening at localhost:9000
+12:15:12.614 [NamespaceSystem-akka.actor.default-dispatcher-6] INFO com.firebase.core.namespace.NamespaceActor - yatchgame-ad28a-default-rtdb successfully activated FBKV (SurveyIdle(0)) wait: 203ms, init: 0ms
+12:15:12.708 [NamespaceSystem-blocking-namespace-operation-dispatcher-7:yatchgame-ad28a-default-rtdb$-275274410:] INFO com.firebase.core.namespace.StateManager - Namespace yatchgame-ad28a-default-rtdb status Active to Active

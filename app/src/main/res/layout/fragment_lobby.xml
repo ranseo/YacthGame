@@ -67,7 +67,7 @@
             android:id="@+id/fab_rematch"
             android:src="@drawable/ic_baseline_message_24"
             android:onClick="@{()->viewModel.onRematchFabClick()}"
-            android:visibility="@{viewModel.isRematch() ? View.VISIBLE : View.GONE}"
+            android:visibility="@{viewModel.isRematch ? View.VISIBLE : View.GONE}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/black"

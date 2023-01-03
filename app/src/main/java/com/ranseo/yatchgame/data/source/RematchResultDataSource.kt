@@ -52,4 +52,6 @@ class RematchResultDataSource @Inject constructor(private val firebaseDatabase: 
             }
         }
     }
+
+    //suspend fun removeRematchResult
 }

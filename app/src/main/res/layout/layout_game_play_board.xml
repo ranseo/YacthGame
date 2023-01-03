@@ -45,6 +45,7 @@
                 bind:realBoard="@{viewModel.firstRealBoard}"
                 bind:fakeBoard="@{viewModel.firstFakeBoard}"
                 bind:boardRecord="@{viewModel.firstBoardRecord}"
+                bind:myTurn="@{viewModel.myTurn}"
                 bind:onClickListener="@{onClickListener}" />
 
             <include
@@ -58,6 +59,7 @@
                 bind:realBoard="@{viewModel.secondRealBoard}"
                 bind:fakeBoard="@{viewModel.secondFakeBoard}"
                 bind:boardRecord="@{viewModel.secondBoardRecord}"
+                bind:myTurn="@{viewModel.myTurn}"
                 bind:onClickListener="@{onClickListener}" />
 
             <include
@@ -80,6 +82,7 @@
                 bind:realBoard="@{viewModel.firstRealBoard}"
                 bind:fakeBoard="@{viewModel.firstFakeBoard}"
                 bind:boardRecord="@{viewModel.firstBoardRecord}"
+                bind:myTurn="@{viewModel.myTurn}"
                 bind:onClickListener="@{onClickListener}" />
 
             <include
@@ -92,6 +95,7 @@
                 bind:realBoard="@{viewModel.secondRealBoard}"
                 bind:fakeBoard="@{viewModel.secondFakeBoard}"
                 bind:boardRecord="@{viewModel.secondBoardRecord}"
+                bind:myTurn="@{viewModel.myTurn}"
                 bind:onClickListener="@{onClickListener}" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

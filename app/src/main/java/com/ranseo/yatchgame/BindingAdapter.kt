@@ -3,6 +3,7 @@ package com.ranseo.yatchgame
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 
@@ -64,4 +65,10 @@ fun bindEmoji(imageView:ImageView, emoji:Int) {
         else -> {}
     }
 
+}
+
+@BindingAdapter("fakeBoard", "myTurn")
+fun bindBoardEnable(textView: TextView, fakeBoard:Int, myTurn:Boolean) {
+    textView.isEnabled = fakeBoard>-1 && myTurn
+    textView.isClickable = fakeBoard>-1 && myTurn
 }

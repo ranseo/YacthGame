@@ -21,6 +21,10 @@
             name="boardRecord"
             type="com.ranseo.yatchgame.data.model.BoardRecord" />
 
+        <variable
+            name="myTurn"
+            type="boolean" />
+
         <import type="com.ranseo.yatchgame.data.model.BoardTag"/>
         <import type="android.view.View"/>
 
@@ -51,8 +55,8 @@
             android:background="@drawable/board_list_border_line_yellow"
             android:onClick="@{()->onClickListener.onClick(BoardTag.ONES)}"
             android:visibility="@{boardRecord.isOnes ? View.GONE : View.VISIBLE}"
-            android:enabled="@{fakeBoard.ones>-1 ? true : false}"
-            android:clickable="@{fakeBoard.ones>-1 ? true : false}"
+            app:fakeBoard="@{fakeBoard.ones}"
+            app:myTurn="@{myTurn}"
             android:textColor="@color/board_score_color_before_record"
             tools:text="1"
             tools:visibility="gone"
@@ -79,8 +83,8 @@
             android:background="@drawable/board_list_border_line_yellow"
             android:onClick="@{()->onClickListener.onClick(BoardTag.TWOS)}"
             android:visibility="@{boardRecord.isTwos ? View.GONE : View.VISIBLE}"
-            android:enabled="@{fakeBoard.twos>-1 ? true : false}"
-            android:clickable="@{fakeBoard.twos>-1 ? true : false}"
+            app:fakeBoard="@{fakeBoard.twos}"
+            app:myTurn="@{myTurn}"
             android:textColor="@color/board_score_color_before_record"
             tools:text="1"
             tools:visibility="gone"
@@ -107,8 +111,8 @@
             android:background="@drawable/board_list_border_line_yellow"
             android:onClick="@{()->onClickListener.onClick(BoardTag.THREES)}"
             android:visibility="@{boardRecord.isThrees ? View.GONE : View.VISIBLE}"
-            android:enabled="@{fakeBoard.threes>-1 ? true : false}"
-            android:clickable="@{fakeBoard.threes>-1 ? true : false}"
+            app:fakeBoard="@{fakeBoard.threes}"
+            app:myTurn="@{myTurn}"
             android:textColor="@color/board_score_color_before_record"
             tools:text="1"
             tools:visibility="gone"
@@ -134,8 +138,8 @@
             android:background="@drawable/board_list_border_line_yellow"
             android:onClick="@{()->onClickListener.onClick(BoardTag.FOURS)}"
             android:visibility="@{boardRecord.isFours ? View.GONE : View.VISIBLE}"
-            android:enabled="@{fakeBoard.fours>-1 ? true : false}"
-            android:clickable="@{fakeBoard.fours>-1 ? true : false}"
+            app:fakeBoard="@{fakeBoard.fours}"
+            app:myTurn="@{myTurn}"
             android:textColor="@color/board_score_color_before_record"
             tools:text="4"
             tools:visibility="gone"
@@ -161,8 +165,8 @@
             android:background="@drawable/board_list_border_line_yellow"
             android:onClick="@{()->onClickListener.onClick(BoardTag.FIVES)}"
             android:visibility="@{boardRecord.isFives ? View.GONE : View.VISIBLE}"
-            android:enabled="@{fakeBoard.fives>-1 ? true : false}"
-            android:clickable="@{fakeBoard.fives>-1 ? true : false}"
+            app:fakeBoard="@{fakeBoard.fives}"
+            app:myTurn="@{myTurn}"
             android:textColor="@color/board_score_color_before_record"
             tools:text="5"
             tools:visibility="gone"
@@ -188,8 +192,8 @@
             android:background="@drawable/board_list_border_line_yellow"
             android:onClick="@{()->onClickListener.onClick(BoardTag.SIXES)}"
             android:visibility="@{boardRecord.isSixes? View.GONE : View.VISIBLE}"
-            android:enabled="@{fakeBoard.sixes>-1 ? true : false}"
-            android:clickable="@{fakeBoard.sixes>-1 ? true : false}"
+            app:fakeBoard="@{fakeBoard.sixes}"
+            app:myTurn="@{myTurn}"
             android:textColor="@color/board_score_color_before_record"
             tools:text="6"
             tools:visibility="gone"

@@ -50,12 +50,10 @@ class LobbyViewModel @Inject constructor(
         get() = _accessWaitRoom
 
     private val _rematch = MutableLiveData<Rematch?>()
-        val rematch : LiveData<Rematch?>
+    private val rematch : LiveData<Rematch?>
             get() = _rematch
     val isRematch = Transformations.map(rematch) {
-        it?.let {
-            it.rematch
-        }
+        it?.rematch ?: false
     }
 
     private val _rematchDialog = MutableLiveData<Event<Rematch>>()
@@ -96,6 +94,7 @@ class LobbyViewModel @Inject constructor(
                     _rematch.postValue(it.getOrNull())
                     log(TAG,"refreshRematch() Success : ${it.getOrNull()}", LogTag.I)
                 } else {
+                    _rematch.postValue(null)
                     log(TAG,"refreshRematch() Failure : ${it.exceptionOrNull()}", LogTag.D)
                 }
             }

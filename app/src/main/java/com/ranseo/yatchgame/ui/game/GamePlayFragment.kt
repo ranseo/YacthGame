@@ -86,6 +86,9 @@ class GamePlayFragment() : Fragment() {
             viewModel = gamePlayViewModel
             lifecycleOwner = viewLifecycleOwner
             onClickListener = OnBoardClickListener { boardTag ->
+                //나의 턴일때만 가능.
+
+
                 yachtSound.play(YachtSound.BOARD_CONFIRM_SOUND)
                 //보드판의 점수를 사용자가 클릭하면 해당 점수가 확정되고, 상대턴으로 넘어가는 과정
                 gamePlayViewModel.confirmScore(boardTag)
