@@ -251,7 +251,7 @@ class GamePlayViewModel @Inject constructor(
 
 
     private val _makeWaitRoom = MutableLiveData<Event<String>>()
-    val makeWaitRoom : LiveData<Event<String>>
+    val makeWaitRoom: LiveData<Event<String>>
         get() = _makeWaitRoom
 
     init {
@@ -380,7 +380,7 @@ class GamePlayViewModel @Inject constructor(
      * */
     private fun refreshGameId() {
         viewModelScope.launch {
-            log(TAG,"refreshGameId()" , LogTag.I)
+            log(TAG, "refreshGameId()", LogTag.I)
             _gameId.postValue(gameInfoRepository.getGameId())
         }
     }
@@ -506,15 +506,21 @@ class GamePlayViewModel @Inject constructor(
     fun rollDices() {
         if (chance <= 0) return
 
-        yachtGame.rollDice(diceList, _keepList)
-        _chance--
-        log(TAG, "rollDice() : ${diceList.toList()}", LogTag.I)
+        viewModelScope.launch(Dispatchers.Main) {
+
+            launch {
+                yachtGame.rollDice(diceList, _keepList)
+            }.join()
+
+            _chance--
+            log(TAG, "rollDice() : ${diceList.toList()}", LogTag.I)
 
 
-        getChanceStr()
-        setRollDiceImage(diceList)
-        showScore(diceList)
-        writeRollDice(diceList.clone(), _keepList.clone(), rollDice.value!!.turn)
+            getChanceStr()
+            setRollDiceImage(diceList)
+            showScore(diceList)
+            writeRollDice(diceList.clone(), _keepList.clone(), rollDice.value!!.turn)
+        }
     }
 
     /**
@@ -543,12 +549,9 @@ class GamePlayViewModel @Inject constructor(
 
             launch {
                 _diceAnim.value = INIT_DICE_ANIM
-                var list = mutableListOf<Int>().apply {
+                _rollDiceImages.value = mutableListOf<Int>().apply {
                     addAll(diceList.toList())
                 }
-
-                log(TAG, "setRollDiceImage : ${list}", LogTag.I)
-                _rollDiceImages.value = list
             }
         }
 
@@ -824,7 +827,8 @@ class GamePlayViewModel @Inject constructor(
         }
     }
 
-    var emojiFlag : Boolean = true
+    var emojiFlag: Boolean = true
+
     /**
      * 상대편 uid에 나의 emojiInfo Write
      * */
@@ -857,25 +861,26 @@ class GamePlayViewModel @Inject constructor(
     fun requestRematch() {
         viewModelScope.launch {
             try {
-                val opponent = if (isFirstPlayer.value == true) secondPlayer.value!!.playerId else firstPlayer.value!!.playerId
+                val opponent =
+                    if (isFirstPlayer.value == true) secondPlayer.value!!.playerId else firstPlayer.value!!.playerId
                 val message = "${player.value?.name}님께서 재대결을 신청했습니다."
 
-                val rematch = Rematch(opponent, true, player.value!! ,message)
+                val rematch = Rematch(opponent, true, player.value!!, message)
 
 
                 //Rematch write 성공 시, waitingFragment 으로 이동.
-                writeRematchUseCase(rematch).collect{
-                    if(it.isSuccess) {
+                writeRematchUseCase(rematch).collect {
+                    if (it.isSuccess) {
                         val newGameKey = it.getOrNull() ?: return@collect
                         makeWaitingRoom(newGameKey)
-                        log(TAG,"writeRematchUseCase Success : ${it.getOrNull()}", LogTag.I)
+                        log(TAG, "writeRematchUseCase Success : ${it.getOrNull()}", LogTag.I)
                     } else {
-                        log(TAG,"writeRematchUseCase Failure : ${it.exceptionOrNull()}", LogTag.D)
+                        log(TAG, "writeRematchUseCase Failure : ${it.exceptionOrNull()}", LogTag.D)
                     }
 
                 }
             } catch (error: Exception) {
-                log(TAG,"requestRematch() : ${error.message}", LogTag.D)
+                log(TAG, "requestRematch() : ${error.message}", LogTag.D)
             }
         }
     }
@@ -892,11 +897,11 @@ class GamePlayViewModel @Inject constructor(
     /**
      * navigate 'WaitingFragment' making waitRoom by Host
      **/
-    private fun makeWaitingRoom(newGameKey:String) {
+    private fun makeWaitingRoom(newGameKey: String) {
         try {
             _makeWaitRoom.value = Event(newGameKey)
-        }catch(error:Exception) {
-            log(TAG,"makeWaitingRoom() : ${error.message}", LogTag.D)
+        } catch (error: Exception) {
+            log(TAG, "makeWaitingRoom() : ${error.message}", LogTag.D)
         }
     }
 
