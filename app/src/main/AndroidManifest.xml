@@ -19,6 +19,9 @@
         android:theme="@style/Theme.YatchGame"
         tools:targetApi="31">
         <activity
+            android:name=".StatisActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.game.GameActivity"
             android:exported="false" />
         <activity

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -45,6 +46,8 @@ class LobbyActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         binding.lobbyToolbar.setupWithNavController(navController, appBarConfiguration)
         binding.lobbyNavigationView.setNavigationItemSelectedListener(this@LobbyActivity)
 
+
+
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -52,6 +55,21 @@ class LobbyActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
             R.id.logout -> {
                 auth.signOut()
                 logout()
+                binding.lobbyDrawer.closeDrawers()
+                true
+            }
+            R.id.lobby -> {
+                if(navController.currentDestination?.id != R.id.lobby) {
+                    navController.navigate(R.id.action_global_to_lobby)
+                }
+                binding.lobbyDrawer.closeDrawers()
+                true
+            }
+
+            R.id.statis-> {
+                if(navController.currentDestination?.id != R.id.statis) {
+                    navController.navigate(R.id.action_global_to_statis)
+                }
                 binding.lobbyDrawer.closeDrawers()
                 true
             }

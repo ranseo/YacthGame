@@ -5,4 +5,12 @@
         android:id="@+id/logout"
         android:title="로그아웃"
         />
+
+    <item
+        android:id="@+id/lobby"
+        android:title="로비"/>
+
+    <item
+        android:id="@+id/statis"
+        android:title="전적"/>
 </menu>

@@ -5,8 +5,18 @@
     android:id="@+id/lobby_navigation"
     app:startDestination="@id/lobby_fragment">
 
+    <action
+        android:id="@+id/action_global_to_lobby"
+        app:destination="@id/lobby_fragment"
+        />
+
+    <action
+        android:id="@+id/action_global_to_statis"
+        app:destination="@+id/statis_fragment"/>
+
+
     <fragment
-        android:label="야추 로비"
+        android:label="로비"
         android:id="@+id/lobby_fragment"
         android:name="com.ranseo.yatchgame.ui.lobby.LobbyFragment"
         tools:layout="@layout/fragment_lobby">
@@ -14,6 +24,13 @@
         <action
             android:id="@+id/action_lobby_to_waiting"
             app:destination="@+id/waiting_fragment"/>
+
+        <action
+            android:id="@+id/action_lobby_to_statis"
+            app:destination="@id/statis_fragment"
+            app:popUpToInclusive="true"
+            app:popUpTo="@id/lobby_fragment"
+            />
 
     </fragment>
 
@@ -26,5 +43,20 @@
         <argument
             android:name="roomKey"
             app:argType="string"/>
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/statis_fragment"
+        android:label="전적"
+        android:name="com.ranseo.yatchgame.ui.lobby.statis.StatisFragment"
+        tools:layout="@layout/fragment_statis">
+
+        <action
+            android:id="@+id/action_statis_to_lobby"
+            app:destination="@+id/lobby_fragment"
+            app:popUpToInclusive="true"
+            app:popUpTo="@id/statis_fragment"/>
+
     </fragment>
 </navigation>

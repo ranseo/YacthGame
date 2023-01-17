@@ -18,13 +18,17 @@ class YachtGame @Inject constructor() {
      * */
     suspend fun rollDice(dices:Array<Int>, keepIdx:Array<Boolean>) = withContext(Dispatchers.Default) {
         //val random = SecureRandom.getInstanceStrong()
-        val list = listOf(1,2,3,4,5,6)
+        val list1 = listOf(1,2,3,4,5,6)
+        val list2 = listOf(1,2,3,4,5,6)
+        val list3 = listOf(1,2,3,4,5,6)
+        val list4 = listOf(1,2,3,4,5,6)
+        val list5 = listOf(1,2,3,4,5,6)
 
-        if(!keepIdx[0]) dices[0] = list.shuffled().first()
-        if(!keepIdx[1]) dices[1] = list.shuffled().first()
-        if(!keepIdx[2]) dices[2] = list.shuffled().first()
-        if(!keepIdx[3]) dices[3] = list.shuffled().first()
-        if(!keepIdx[4]) dices[4] = list.shuffled().first()
+        if(!keepIdx[0]) dices[0] = list1.shuffled().first()
+        if(!keepIdx[1]) dices[1] = list2.shuffled().first()
+        if(!keepIdx[2]) dices[2] = list3.shuffled().first()
+        if(!keepIdx[3]) dices[3] = list4.shuffled().first()
+        if(!keepIdx[4]) dices[4] = list5.shuffled().first()
 
     }
 
