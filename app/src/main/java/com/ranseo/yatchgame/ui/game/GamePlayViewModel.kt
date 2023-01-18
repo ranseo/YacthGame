@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.*
 import com.ranseo.yatchgame.Event
 import com.ranseo.yatchgame.LogTag
@@ -63,6 +64,13 @@ class GamePlayViewModel @Inject constructor(
         get() = _rollDice
     val turnFlag = Transformations.map(rollDice) {
         it.turn
+    }
+    val turnLight = Transformations.map(turnFlag) {
+        if(it) {
+            ContextCompat.getColor(getApplication(), R.color.board_first_score)
+        } else {
+            ContextCompat.getColor(getApplication(), R.color.board_second_score)
+        }
     }
 
     var prevRollDice: RollDice? = null

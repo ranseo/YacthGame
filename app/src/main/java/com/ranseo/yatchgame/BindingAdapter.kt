@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 
@@ -71,4 +72,10 @@ fun bindEmoji(imageView:ImageView, emoji:Int) {
 fun bindBoardEnable(textView: TextView, fakeBoard:Int, myTurn:Boolean) {
     textView.isEnabled = fakeBoard>-1 && myTurn
     textView.isClickable = fakeBoard>-1 && myTurn
+}
+
+
+@BindingAdapter("turnLight")
+fun bindTurnLight(layout:ConstraintLayout, turnLight:Int) {
+    layout.setBackgroundColor(turnLight)
 }

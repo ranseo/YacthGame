@@ -62,35 +62,36 @@
             app:layout_constraintStart_toStartOf="@+id/layout_first_profile"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="2dp"
-            android:theme="@style/Theme.GamePlay"
-            app:layout_constraintBottom_toTopOf="@+id/layout_board"
-            app:layout_constraintStart_toStartOf="@+id/layout_board">
+<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginBottom="2dp"-->
+<!--            android:theme="@style/Theme.GamePlay"-->
+<!--            app:layout_constraintBottom_toTopOf="@+id/layout_board"-->
+<!--            app:layout_constraintStart_toStartOf="@+id/layout_board">-->
 
-            <TextView
-                android:id="@+id/tv_turn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="턴 : "
-                android:textSize="24sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+<!--            <TextView-->
+<!--                android:id="@+id/tv_turn"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="턴 : "-->
+<!--                android:textSize="24sp"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent" />-->
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@{viewModel.turnCountStr}"
-                android:textSize="24sp"
-                app:layout_constraintStart_toEndOf="@id/tv_turn"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="1/12" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="@{viewModel.turnCountStr}"-->
+<!--                android:textSize="24sp"-->
+<!--                app:layout_constraintStart_toEndOf="@id/tv_turn"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                tools:text="1/12" />-->
+<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
 
         <FrameLayout
             android:id="@+id/layout_board"
+            android:padding="3dp"
             android:layout_width="350dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"

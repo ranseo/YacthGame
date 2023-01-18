@@ -34,10 +34,17 @@
         android:layout_width="54dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingTop="3dp"
-        android:paddingBottom="3dp"
         android:theme="@style/Theme.GameBoardFirst"
         >
+
+        <TextView
+            tools:text="나"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:textSize="15sp"
+            android:background="@drawable/board_list_border_line_yellow"
+            android:layout_width="match_parent"
+            android:layout_height="34dp"/>
 
         <TextView
             android:text="@{Integer.toString(realBoard.ones)}"
