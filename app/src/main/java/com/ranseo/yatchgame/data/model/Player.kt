@@ -26,7 +26,15 @@ data class Player (
             return Player("null", "null")
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        return if(other==null) false
+        else {
+            this.playerId == (other as Player).playerId
+        }
+    }
 }
+
 
 
 

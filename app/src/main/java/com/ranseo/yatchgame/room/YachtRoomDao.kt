@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.ranseo.yatchgame.data.model.GameInfo
 import com.ranseo.yatchgame.data.model.Player
+import com.ranseo.yatchgame.data.model.gameinfo.MyGameScoreAndPlayer
 
 @Dao
 interface YachtRoomDao {
@@ -43,10 +44,12 @@ interface YachtRoomDao {
     suspend fun getGameInfoGameStartTime() : String
 
     //Statis
-
-
-
-
+    @Query("SELECT result AS gameResult, " +
+            "(SELECT first AS firstPlayer FROM game_info_table AS f WHERE :player = f.first), " +
+            "(SELECT second AS secondPlayer FROM game_info_table AS s WHERE :player = s.second) " +
+            "FROM game_info_table"
+    )
+    fun getMyGameScoreAndPlayer(player:Player) : LiveData<List<MyGameScoreAndPlayer>>
 
 
 }
