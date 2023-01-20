@@ -108,7 +108,16 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 bind:onClickListener="@{onClickListener}"
-                bind:viewModel="@{viewModel}" />
+                bind:turnCountStr="@{viewModel.turnCountStr}"
+                bind:firstBoardRecord="@{viewModel.firstBoardRecord}"
+                bind:secondBoardRecord="@{viewModel.secondBoardRecord}"
+                bind:firstFakeBoard="@{viewModel.firstFakeBoard}"
+                bind:secondFakeBoard="@{viewModel.secondFakeBoard}"
+                bind:firstRealBoard="@{viewModel.firstRealBoard}"
+                bind:secondRealBoard="@{viewModel.secondRealBoard}"
+                bind:myTurn="@{viewModel.myTurn}"
+                bind:turnLight="@{viewModel.turnLight}"
+                />
 
 
         </FrameLayout>

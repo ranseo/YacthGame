@@ -6,6 +6,8 @@ import androidx.lifecycle.Transformations
 import com.ranseo.yatchgame.LogTag
 import com.ranseo.yatchgame.R
 import com.ranseo.yatchgame.data.model.*
+import com.ranseo.yatchgame.data.model.gameinfo.MyGameScoreAndPlayer
+import com.ranseo.yatchgame.data.model.statis.BestScore
 import com.ranseo.yatchgame.data.model.statis.WinDrawLose
 import com.ranseo.yatchgame.data.source.*
 import com.ranseo.yatchgame.log
@@ -49,7 +51,7 @@ class GameInfoRepository @Inject constructor(
             var win: Int = 0
             var lose: Int = 0
             try {
-                for ((gameResult, gameScore, firstPlayer, secondPlayer) in list) {
+                for ((gameResult, gameScore, firstPlayer, secondPlayer, _) in list) {
 
                     log(
                         TAG,
@@ -87,6 +89,40 @@ class GameInfoRepository @Inject constructor(
             } catch (error: Exception) {
                 log(TAG, "getMyGameScoreAndPlayer error = ${error.message}", LogTag.I)
                 WinDrawLose(win, draw, lose)
+            }
+        }
+
+
+    fun getBestScore(player: Player) : LiveData<BestScore> =
+        Transformations.map(myGameScoreAndPlayerLocalDataSource.getMyGameScoreAndPlayer(player)) { list ->
+            var bestScore = 0
+            var boards: List<Board> = listOf()
+            var firstPlayer :String = ""
+            var secondPlayer:String = ""
+
+            try {
+                val first : MyGameScoreAndPlayer? = list.maxByOrNull { it.gameScore.substringBefore(" :").toInt()}
+                val second : MyGameScoreAndPlayer? = list.maxByOrNull { it.gameScore.substringAfter(": ").toInt()}
+
+                if(first != null && first.firstPlayer.playerId == player.playerId) {
+                    bestScore = first.gameScore.substringBefore(" :").toInt()
+                    boards = first.boards
+                    firstPlayer= first.firstPlayer.name
+                    secondPlayer = first.secondPlayer.name
+                } else if(second != null && second.secondPlayer.playerId == player.playerId) {
+                    bestScore = second.gameScore.substringAfter(": ").toInt()
+                    boards = second.boards
+                    firstPlayer = second.firstPlayer.name
+                    secondPlayer = second.secondPlayer.name
+                }
+
+                BestScore(bestScore, boards, firstPlayer, secondPlayer)
+            } catch (error:Exception) {
+                log(TAG,"getBestScore() : ${error.message}",LogTag.I)
+                BestScore(bestScore, boards, firstPlayer, secondPlayer )
+            } catch (error:NullPointerException) {
+                log(TAG,"getBestScore() : ${error.message}",LogTag.I)
+                BestScore(bestScore, boards, firstPlayer, secondPlayer )
             }
         }
 

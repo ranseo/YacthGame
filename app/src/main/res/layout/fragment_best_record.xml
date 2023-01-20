@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:bind="http://schemas.android.com/apk/res-auto">
 
     <data>
-
+        <variable
+            name="viewModel"
+            type="com.ranseo.yatchgame.ui.lobby.statis.StatisViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -61,7 +64,16 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-
+                bind:onClickListener="@{onClickListener}"
+                bind:turnCountStr="@{viewModel.turnCountStr}"
+                bind:firstBoardRecord="@{viewModel.boardRecord}"
+                bind:secondBoardRecord="@{viewModel.boardRecord}"
+                bind:firstFakeBoard="@{viewModel.emptyBoard}"
+                bind:secondFakeBoard="@{viewModel.emptyBoard}"
+                bind:firstRealBoard="@{viewModel.bestFirstBoard}"
+                bind:secondRealBoard="@{viewModel.bestSecondBoard}"
+                bind:myTurn="@{false}"
+                bind:turnLight="@{viewModel.turnLight}"
                 />
 
         </FrameLayout>
