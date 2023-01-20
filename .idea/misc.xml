@@ -27,9 +27,13 @@
         <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/layout/dialog_edit_text.xml" value="0.33" />
         <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/layout/dialog_game_result.xml" value="0.25" />
         <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/layout/dialog_rematch.xml" value="0.2299145299145299" />
+        <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/layout/fragment_best_record.xml" value="0.1" />
         <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/layout/fragment_game_play.xml" value="0.22" />
+        <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/layout/fragment_hall_of_fame.xml" value="0.14188034188034188" />
         <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/layout/fragment_lobby.xml" value="0.33" />
+        <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/layout/fragment_relative_record.xml" value="0.14188034188034188" />
         <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/layout/fragment_statis.xml" value="0.22905982905982905" />
+        <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/layout/fragment_total_record.xml" value="0.22" />
         <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/layout/layout_best_record.xml" value="0.25" />
         <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/layout/layout_game_play_board.xml" value="0.5" />
         <entry key="..\:/Users/aa/Downloads/YacthGame/app/src/main/res/layout/layout_hall_of_fame.xml" value="0.22" />

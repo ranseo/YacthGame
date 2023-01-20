@@ -43,12 +43,12 @@ interface YachtRoomDao {
     @Query("SELECT game_start_time FROM game_info_table ORDER BY game_start_time DESC LIMIT 1")
     suspend fun getGameInfoGameStartTime() : String
 
+    @Query("SELECT * FROM game_info_table WHERE :player = first or :player = second")
+    fun getGameInfos(player:Player) : LiveData<List<GameInfo>>
+
     //Statis
-    @Query("SELECT result AS gameResult, " +
-            "(SELECT first AS firstPlayer FROM game_info_table AS f WHERE :player = f.first), " +
-            "(SELECT second AS secondPlayer FROM game_info_table AS s WHERE :player = s.second) " +
-            "FROM game_info_table"
-    )
+
+    @Query("SELECT result AS gameResult, gameScore, first AS firstPlayer, second AS secondPlayer FROM game_info_table AS g WHERE :player = g.first OR :player = g.second")
     fun getMyGameScoreAndPlayer(player:Player) : LiveData<List<MyGameScoreAndPlayer>>
 
 

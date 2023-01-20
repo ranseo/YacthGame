@@ -7,7 +7,6 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class MyGameScoreAndPlayerLocalDataSource @Inject constructor(private val yachtRoomDao: YachtRoomDao) {
-    suspend fun getMyGameScoreAndPlayer(player:Player) = withContext(Dispatchers.IO) {
-        yachtRoomDao.getMyGameScoreAndPlayer(player)
-    }
+    fun getMyGameScoreAndPlayer(player:Player) = yachtRoomDao.getMyGameScoreAndPlayer(player)
+
 }

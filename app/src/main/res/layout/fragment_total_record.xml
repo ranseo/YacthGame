@@ -4,6 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <variable
+            name="viewModel"
+            type="com.ranseo.yatchgame.ui.lobby.statis.StatisViewModel" />
 
     </data>
 
@@ -24,6 +27,7 @@
         <TextView
             android:id="@+id/tv_win_lose"
             tools:text="00승 00무 00패"
+            android:text="@{viewModel.winDrawLoseStr}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="54sp"
@@ -34,6 +38,7 @@
         <TextView
             android:id="@+id/tv_win_rate"
             tools:text="승률 : 72%"
+            android:text="@{viewModel.winRate}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="32sp"

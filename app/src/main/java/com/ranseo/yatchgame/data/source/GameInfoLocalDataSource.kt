@@ -1,5 +1,6 @@
 package com.ranseo.yatchgame.data.source
 
+import androidx.lifecycle.LiveData
 import androidx.room.Database
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -45,5 +46,9 @@ class GameInfoLocalDataSource @Inject constructor(private val yachtRoomDao: Yach
         yachtRoomDao.updateGameInfo(gameInfo)
     }
 
+    /**
+     * Room Database에서 get
+     * */
+    fun getGameInfos(player:Player) : LiveData<List<GameInfo>> = yachtRoomDao.getGameInfos(player)
 
 }

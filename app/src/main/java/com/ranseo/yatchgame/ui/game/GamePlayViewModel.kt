@@ -733,7 +733,7 @@ class GamePlayViewModel @Inject constructor(
      * 이에 맞게 GameResult:String을 생성
      * */
     @RequiresApi(Build.VERSION_CODES.N)
-    fun getGameResult(early: Boolean): List<String> {
+    fun getGameResult(early: Boolean): MutableList<String> {
         val result = mutableListOf<String>()
         try {
             val first = firstRealBoard.value!!
@@ -807,7 +807,7 @@ class GamePlayViewModel @Inject constructor(
             val new = GameInfo(gameInfo, gameScore, finishTime, result, finalBoards)
 
             writeGameInfo(new)
-            updateGameInfo(new)
+            //updateGameInfo(new)
             log(TAG, "finishGame Success : ${new}", LogTag.I)
         } catch (error: Exception) {
             log(TAG, "finishGame error : ${error.message}", LogTag.D)
@@ -815,6 +815,7 @@ class GamePlayViewModel @Inject constructor(
             log(TAG, "finishGame error : ${error.message}", LogTag.D)
         }
     }
+
 
 
     /**
@@ -829,7 +830,7 @@ class GamePlayViewModel @Inject constructor(
     /**
      * room DATABASE 에 gameInfo 데이터 업데이트.
      * */
-    private fun updateGameInfo(gameInfo: GameInfo) {
+    fun updateGameInfo(gameInfo: GameInfo) {
         viewModelScope.launch {
             gameInfoRepository.updateGameInfo(gameInfo)
         }

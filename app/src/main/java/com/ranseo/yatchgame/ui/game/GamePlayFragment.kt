@@ -198,10 +198,12 @@ class GamePlayFragment() : Fragment() {
             it?.let { gameInfo ->
                 log(TAG, "gameInfoObserver : ${gameInfo}", LogTag.I)
                 if (gameInfo.result.isNotEmpty() && gameInfo.gameFinishTime.isNotEmpty()) {
+                    gamePlayViewModel.updateGameInfo(gameInfo)
                     if (gamePlayViewModel.earlyFinishGame) startLobbyActivity()
                     else {
                         if (EARLY_FLAG.containsMatchIn(gameInfo.result)) {
                             val gameResult = gamePlayViewModel.getGameResult(true)
+                            gameResult[gameResult.size-1] = gameInfo.result
                             showGameResultDialog(gameResult, false)
                         } else {
                             val gameResult = gamePlayViewModel.getGameResult(false)
