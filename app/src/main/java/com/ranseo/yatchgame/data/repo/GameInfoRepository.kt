@@ -96,33 +96,37 @@ class GameInfoRepository @Inject constructor(
     fun getBestScore(player: Player) : LiveData<BestScore> =
         Transformations.map(myGameScoreAndPlayerLocalDataSource.getMyGameScoreAndPlayer(player)) { list ->
             var bestScore = 0
-            var boards: List<Board> = listOf()
-            var firstPlayer :String = ""
-            var secondPlayer:String = ""
+            var boards: List<Board>? = null
+            var firstPlayer :Player? = null
+            var secondPlayer:Player? = null
 
             try {
-                val first : MyGameScoreAndPlayer? = list.maxByOrNull { it.gameScore.substringBefore(" :").toInt()}
-                val second : MyGameScoreAndPlayer? = list.maxByOrNull { it.gameScore.substringAfter(": ").toInt()}
+                val gameScoreList : List<MyGameScoreAndPlayer> = list.filter { it.gameScore.isNotEmpty()}
+
+                val first : MyGameScoreAndPlayer? = gameScoreList.maxByOrNull { it.gameScore.substringBefore(" :").toInt()}
+                val second : MyGameScoreAndPlayer? = gameScoreList.maxByOrNull { it.gameScore.substringAfter(": ").toInt()}
 
                 if(first != null && first.firstPlayer.playerId == player.playerId) {
                     bestScore = first.gameScore.substringBefore(" :").toInt()
                     boards = first.boards
-                    firstPlayer= first.firstPlayer.name
-                    secondPlayer = first.secondPlayer.name
+                    firstPlayer= first.firstPlayer
+                    secondPlayer = first.secondPlayer
+                    log(TAG,"getBestScore() : first ${BestScore(bestScore, boards, firstPlayer, secondPlayer)}",LogTag.I)
                 } else if(second != null && second.secondPlayer.playerId == player.playerId) {
                     bestScore = second.gameScore.substringAfter(": ").toInt()
                     boards = second.boards
-                    firstPlayer = second.firstPlayer.name
-                    secondPlayer = second.secondPlayer.name
+                    firstPlayer = second.firstPlayer
+                    secondPlayer = second.secondPlayer
+                    log(TAG,"getBestScore() : second ${BestScore(bestScore, boards, firstPlayer, secondPlayer)}",LogTag.I)
                 }
 
                 BestScore(bestScore, boards, firstPlayer, secondPlayer)
             } catch (error:Exception) {
-                log(TAG,"getBestScore() : ${error.message}",LogTag.I)
-                BestScore(bestScore, boards, firstPlayer, secondPlayer )
+                log(TAG,"getBestScore() Exception : ${error.message}",LogTag.I)
+                BestScore(bestScore, null, firstPlayer, secondPlayer )
             } catch (error:NullPointerException) {
-                log(TAG,"getBestScore() : ${error.message}",LogTag.I)
-                BestScore(bestScore, boards, firstPlayer, secondPlayer )
+                log(TAG,"getBestScore() NullPointerException : ${error.message}",LogTag.I)
+                BestScore(bestScore, null, firstPlayer, secondPlayer )
             }
         }
 

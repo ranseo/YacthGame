@@ -36,13 +36,22 @@ class StatisViewModel @Inject constructor(
     lateinit var bestScoreStr : LiveData<String>
     lateinit var bestFirstBoard : LiveData<Board?>
     lateinit var bestSecondBoard : LiveData<Board?>
+    lateinit var versusPlayer : LiveData<String>
+    lateinit var redPlayer : LiveData<String>
+    lateinit var bluePlayer : LiveData<String>
 
+    private val _boardRecord = MutableLiveData<BoardRecord>(BoardRecord(arrayOf(true,true,true,true,true,true,true,true,true,true,true,true)))
+    val boardRecord : LiveData<BoardRecord>
+        get() = _boardRecord
 
-    val boardRecord : LiveData<BoardRecord> = liveData { BoardRecord(arrayOf(true,true,true,true,true,true,true,true,true,true,true,true)) }
     val emptyBoard : LiveData<Board> = liveData { Board() }
-    val turnCountStr : LiveData<String> = liveData {""}
+
+    private val _turnCountStr = MutableLiveData<String>(" ")
+    val turnCountStr : LiveData<String>
+        get() = _turnCountStr
+
     val turnLight : LiveData<Int> = liveData { ContextCompat.getColor(getApplication(), R.color.black)}
-    val
+
     init {
     }
 
@@ -59,11 +68,38 @@ class StatisViewModel @Inject constructor(
     }
 
     fun getBestScore(player:Player) {
+        bestScore = getBestScoreUseCase(player)
 
+        bestScoreStr = Transformations.map(bestScore){ bestScore ->
+            bestScore.bestScore.toString()
+        }
+        bestFirstBoard = Transformations.map(bestScore){ bestScore ->
+            bestScore.boards?.let{ list ->
+                list[0]
+            }
+        }
+        bestSecondBoard = Transformations.map(bestScore){ bestScore ->
+            bestScore.boards?.let{ list ->
+                list[1]
+            }
+        }
+        versusPlayer = Transformations.map(bestScore) { bestScore ->
+            "[${bestScore.firstPlayer?.name ?: UNKNOWN} vs ${bestScore.secondPlayer?.name ?: UNKNOWN}]"
+        }
+
+        redPlayer = Transformations.map(bestScore) { bestScore ->
+            if(bestScore.firstPlayer == player) "나" else "상대"
+        }
+
+        bluePlayer = Transformations.map(bestScore) { bestScore ->
+            if(bestScore.secondPlayer == player) "나" else "상대"
+        }
     }
 
 
 
-
+     companion object {
+         private const val UNKNOWN = "UNKNOWN"
+     }
 
 }

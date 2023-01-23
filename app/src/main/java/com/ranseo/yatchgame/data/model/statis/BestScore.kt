@@ -5,8 +5,8 @@ import com.ranseo.yatchgame.data.model.Player
 
 data class BestScore(
     val bestScore: Int,
-    val boards: List<Board>,
-    val firstPlayer: String,
-    val secondPlayer:String
+    val boards: List<Board>?,
+    val firstPlayer: Player?,
+    val secondPlayer:Player?
     ) {
 }

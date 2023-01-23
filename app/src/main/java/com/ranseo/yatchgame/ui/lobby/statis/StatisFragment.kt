@@ -16,6 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import androidx.lifecycle.Observer
 import com.ranseo.yatchgame.LogTag
 import com.ranseo.yatchgame.data.model.GameInfo
+import com.ranseo.yatchgame.data.model.statis.BestScore
 import com.ranseo.yatchgame.data.model.statis.WinDrawLose
 import com.ranseo.yatchgame.log
 
@@ -38,7 +39,10 @@ class StatisFragment : Fragment() {
 
         adapter = StatisViewPagerAdapter(childFragmentManager, lifecycle)
 
-        binding.viewPagerStatis.adapter = adapter
+
+        with(binding) {
+            viewPagerStatis.adapter = adapter
+        }
 
         TabLayoutMediator(binding.tabLayoutStatis, binding.viewPagerStatis) { tab, position ->
             when(position) {
@@ -70,12 +74,10 @@ class StatisFragment : Fragment() {
         Observer<Player> { player ->
             log(TAG, "playerObserver() : ${player}", LogTag.I)
             statisViewModel.getWinDrawLose(player)
-            statisViewModel.winDrawLose.observe(viewLifecycleOwner, winDrawLoseObserver())
-        }
+            statisViewModel.getBestScore(player)
 
-    private fun winDrawLoseObserver() =
-        Observer<WinDrawLose> { winDrawLose ->
-            adapter.addTotalRecordFragment(TotalRecordFragment(), winDrawLose)
+            adapter.addFragment(TotalRecordFragment())
+            adapter.addFragment(BestRecordFragment())
         }
 
     companion object{

@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import com.ranseo.yatchgame.R
+import com.ranseo.yatchgame.data.model.OnBoardClickListener
 import com.ranseo.yatchgame.databinding.FragmentBestRecordBinding
 
 
@@ -25,6 +26,10 @@ class BestRecordFragment : Fragment() {
         binding.viewModel = statisViewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
+
+        with(binding) {
+            onClickListener = OnBoardClickListener {  }
+        }
         return binding.root
     }
 }

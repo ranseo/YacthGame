@@ -117,6 +117,8 @@
                 bind:secondRealBoard="@{viewModel.secondRealBoard}"
                 bind:myTurn="@{viewModel.myTurn}"
                 bind:turnLight="@{viewModel.turnLight}"
+                bind:redPlayer="@{viewModel.redPlayer}"
+                bind:bluePlayer="@{viewModel.bluePlayer}"
                 />
 
 
@@ -277,13 +279,13 @@
             android:id="@+id/btn_volume"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:layout_marginEnd="24dp"
             android:layout_marginBottom="2dp"
+            android:layout_marginEnd="3dp"
             android:background="@color/white"
             android:scaleType="centerCrop"
             android:src="@drawable/selector_bgm"
             app:layout_constraintBottom_toTopOf="@+id/layout_board"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="@id/layout_board" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

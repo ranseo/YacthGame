@@ -8,6 +8,10 @@
         <variable
             name="viewModel"
             type="com.ranseo.yatchgame.ui.lobby.statis.StatisViewModel" />
+        
+        <variable
+            name="onClickListener"
+            type="com.ranseo.yatchgame.data.model.OnBoardClickListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -27,6 +31,7 @@
         <TextView
             android:id="@+id/tv_best_score"
             tools:text="254 점"
+            android:text="@{viewModel.bestScoreStr}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="68sp"
@@ -37,6 +42,7 @@
         <TextView
             android:id="@+id/tv_versus"
             tools:text="[야추맨 란서 vs 소정]"
+            android:text="@{viewModel.versusPlayer}"
             android:textAlignment="center"
             android:textSize="24sp"
             android:layout_marginTop="12dp"
@@ -74,6 +80,8 @@
                 bind:secondRealBoard="@{viewModel.bestSecondBoard}"
                 bind:myTurn="@{false}"
                 bind:turnLight="@{viewModel.turnLight}"
+                bind:redPlayer="@{viewModel.redPlayer}"
+                bind:bluePlayer="@{viewModel.bluePlayer}"
                 />
 
         </FrameLayout>

@@ -161,8 +161,15 @@ class GamePlayViewModel @Inject constructor(
     val firstPlayer = Transformations.map(gameInfo) {
         it.first
     }
+    val redPlayer = Transformations.map(firstPlayer) {
+        if(it == player.value) "나" else "상대"
+    }
+
     val secondPlayer = Transformations.map(gameInfo) {
         it.second
+    }
+    val bluePlayer = Transformations.map(secondPlayer) {
+        if(it == player.value) "나" else "상대"
     }
 
     @RequiresApi(Build.VERSION_CODES.N)

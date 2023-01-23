@@ -48,6 +48,14 @@
             type="int" />
 
         <variable
+            name="redPlayer"
+            type="String" />
+
+        <variable
+            name="bluePlayer"
+            type="String" />
+
+        <variable
             name="onClickListener"
             type="com.ranseo.yatchgame.data.model.OnBoardClickListener" />
 
@@ -110,7 +118,8 @@
         bind:fakeBoard="@{firstFakeBoard}"
         bind:myTurn="@{myTurn}"
         bind:onClickListener="@{onClickListener}"
-        bind:realBoard="@{firstRealBoard}" />
+        bind:realBoard="@{firstRealBoard}"
+        bind:player="@{redPlayer}"/>
 
     <include
         android:id="@+id/layout_number_second"
@@ -124,7 +133,8 @@
         bind:fakeBoard="@{secondFakeBoard}"
         bind:myTurn="@{myTurn}"
         bind:onClickListener="@{onClickListener}"
-        bind:realBoard="@{secondRealBoard}" />
+        bind:realBoard="@{secondRealBoard}"
+        bind:player="@{bluePlayer}"/>
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -161,7 +171,8 @@
             bind:fakeBoard="@{firstFakeBoard}"
             bind:myTurn="@{myTurn}"
             bind:onClickListener="@{onClickListener}"
-            bind:realBoard="@{firstRealBoard}" />
+            bind:realBoard="@{firstRealBoard}"
+            bind:player="@{redPlayer}"/>
 
         <include
             layout="@layout/layout_ranks_up_board_second"
@@ -174,7 +185,8 @@
             bind:fakeBoard="@{secondFakeBoard}"
             bind:myTurn="@{myTurn}"
             bind:onClickListener="@{onClickListener}"
-            bind:realBoard="@{secondRealBoard}" />
+            bind:realBoard="@{secondRealBoard}"
+            bind:player="@{bluePlayer}"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
