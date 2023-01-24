@@ -48,8 +48,7 @@ interface YachtRoomDao {
 
     //Statis
 
-    @Query("SELECT result AS gameResult, gameScore, first AS firstPlayer, second AS secondPlayer FROM game_info_table AS g WHERE :player = g.first OR :player = g.second")
+    @Query("SELECT result AS gameResult, gameScore, first AS firstPlayer, second AS secondPlayer, boards FROM game_info_table AS g WHERE :player = g.first OR :player = g.second")
     fun getMyGameScoreAndPlayer(player:Player) : LiveData<List<MyGameScoreAndPlayer>>
-
 
 }

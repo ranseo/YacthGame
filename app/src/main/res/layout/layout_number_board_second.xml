@@ -25,6 +25,11 @@
             name="myTurn"
             type="boolean" />
 
+        <variable
+            name="player"
+            type="String" />
+
+
         <import type="com.ranseo.yatchgame.data.model.BoardTag"/>
         <import type="android.view.View"/>
 
@@ -38,6 +43,7 @@
         >
         <TextView
             tools:text="상대"
+            android:text="@{player}"
             android:textAlignment="center"
             android:gravity="center"
             android:textSize="15sp"

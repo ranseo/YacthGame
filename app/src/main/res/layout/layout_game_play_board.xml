@@ -11,6 +11,51 @@
             type="com.ranseo.yatchgame.ui.game.GamePlayViewModel" />
 
         <variable
+            name="turnCountStr"
+            type="String" />
+
+        <variable
+            name="firstBoardRecord"
+            type="com.ranseo.yatchgame.data.model.BoardRecord" />
+
+
+        <variable
+            name="secondBoardRecord"
+            type="com.ranseo.yatchgame.data.model.BoardRecord" />
+
+        <variable
+            name="firstFakeBoard"
+            type="com.ranseo.yatchgame.data.model.Board" />
+
+        <variable
+            name="secondFakeBoard"
+            type="com.ranseo.yatchgame.data.model.Board" />
+
+        <variable
+            name="firstRealBoard"
+            type="com.ranseo.yatchgame.data.model.Board" />
+
+        <variable
+            name="secondRealBoard"
+            type="com.ranseo.yatchgame.data.model.Board" />
+
+        <variable
+            name="myTurn"
+            type="boolean" />
+
+        <variable
+            name="turnLight"
+            type="int" />
+
+        <variable
+            name="redPlayer"
+            type="String" />
+
+        <variable
+            name="bluePlayer"
+            type="String" />
+
+        <variable
             name="onClickListener"
             type="com.ranseo.yatchgame.data.model.OnBoardClickListener" />
 
@@ -44,7 +89,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{viewModel.turnCountStr}"
+            android:text="@{turnCountStr}"
             android:textColor="@color/white"
             android:textSize="24sp"
             app:layout_constraintStart_toEndOf="@id/tv_turn"
@@ -69,11 +114,12 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/layout_number_tag"
         app:layout_constraintTop_toTopOf="parent"
-        bind:boardRecord="@{viewModel.firstBoardRecord}"
-        bind:fakeBoard="@{viewModel.firstFakeBoard}"
-        bind:myTurn="@{viewModel.myTurn}"
+        bind:boardRecord="@{firstBoardRecord}"
+        bind:fakeBoard="@{firstFakeBoard}"
+        bind:myTurn="@{myTurn}"
         bind:onClickListener="@{onClickListener}"
-        bind:realBoard="@{viewModel.firstRealBoard}" />
+        bind:realBoard="@{firstRealBoard}"
+        bind:player="@{redPlayer}"/>
 
     <include
         android:id="@+id/layout_number_second"
@@ -83,11 +129,12 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/layout_number_first"
         app:layout_constraintTop_toTopOf="parent"
-        bind:boardRecord="@{viewModel.secondBoardRecord}"
-        bind:fakeBoard="@{viewModel.secondFakeBoard}"
-        bind:myTurn="@{viewModel.myTurn}"
+        bind:boardRecord="@{secondBoardRecord}"
+        bind:fakeBoard="@{secondFakeBoard}"
+        bind:myTurn="@{myTurn}"
         bind:onClickListener="@{onClickListener}"
-        bind:realBoard="@{viewModel.secondRealBoard}" />
+        bind:realBoard="@{secondRealBoard}"
+        bind:player="@{bluePlayer}"/>
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -97,7 +144,7 @@
         android:layout_margin="1dp"
         android:theme="@style/Theme.GamePlay"
         tools:background="@color/black"
-        turnLight="@{viewModel.turnLight}"
+        turnLight="@{turnLight}"
         app:layout_constraintBottom_toTopOf="@+id/layout_rank_tag"
         app:layout_constraintEnd_toStartOf="@id/layout_rank_first"
         app:layout_constraintStart_toEndOf="@id/layout_number_second"
@@ -120,11 +167,12 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/layout_rank_tag"
             app:layout_constraintTop_toTopOf="parent"
-            bind:boardRecord="@{viewModel.firstBoardRecord}"
-            bind:fakeBoard="@{viewModel.firstFakeBoard}"
-            bind:myTurn="@{viewModel.myTurn}"
+            bind:boardRecord="@{firstBoardRecord}"
+            bind:fakeBoard="@{firstFakeBoard}"
+            bind:myTurn="@{myTurn}"
             bind:onClickListener="@{onClickListener}"
-            bind:realBoard="@{viewModel.firstRealBoard}" />
+            bind:realBoard="@{firstRealBoard}"
+            bind:player="@{redPlayer}"/>
 
         <include
             layout="@layout/layout_ranks_up_board_second"
@@ -133,11 +181,12 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/layout_rank_first"
             app:layout_constraintTop_toTopOf="parent"
-            bind:boardRecord="@{viewModel.secondBoardRecord}"
-            bind:fakeBoard="@{viewModel.secondFakeBoard}"
-            bind:myTurn="@{viewModel.myTurn}"
+            bind:boardRecord="@{secondBoardRecord}"
+            bind:fakeBoard="@{secondFakeBoard}"
+            bind:myTurn="@{myTurn}"
             bind:onClickListener="@{onClickListener}"
-            bind:realBoard="@{viewModel.secondRealBoard}" />
+            bind:realBoard="@{secondRealBoard}"
+            bind:player="@{bluePlayer}"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
