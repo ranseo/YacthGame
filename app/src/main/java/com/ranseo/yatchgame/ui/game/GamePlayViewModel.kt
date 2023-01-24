@@ -10,6 +10,7 @@ import com.ranseo.yatchgame.Event
 import com.ranseo.yatchgame.LogTag
 import com.ranseo.yatchgame.R
 import com.ranseo.yatchgame.data.model.*
+import com.ranseo.yatchgame.data.model.log.LogModel
 import com.ranseo.yatchgame.data.repo.GameInfoRepository
 import com.ranseo.yatchgame.domain.usecase.remove.RemoveRematchUseCase
 import com.ranseo.yatchgame.domain.usecase.get.*
@@ -36,6 +37,7 @@ class GamePlayViewModel @Inject constructor(
     private val writeRematchUseCase: WriteRematchUseCase,
     private val getFlowRematchUseCase: GetFlowRematchUseCase,
     private val getFlowGameInfoUseCase: GetFlowGameInfoUseCase,
+    private val writeLogModelUseCase: WriteLogModelUseCase,
     val removeRematchUseCase: RemoveRematchUseCase,
     getPlayerUseCase: GetPlayerUseCase,
     application: Application
@@ -522,14 +524,18 @@ class GamePlayViewModel @Inject constructor(
         if (chance <= 0) return
 
         viewModelScope.launch(Dispatchers.Main) {
-
-            launch {
-                yachtGame.rollDice(diceList, _keepList)
+            launch(Dispatchers.Default) {
+                writeLogModelUseCase(LogModel(player.value!!.playerId, TAG, "before ${diceList.toList()}", DateTime.getNowDate(System.currentTimeMillis())))
+                yachtGame.rollDice(diceList, _keepList) {
+                    viewModelScope.launch {
+                        writeLogModelUseCase(LogModel(player.value!!.playerId, TAG, "in ${diceList.toList()}", DateTime.getNowDate(System.currentTimeMillis())))
+                    }
+                }
             }.join()
 
-            _chance--
-            log(TAG, "rollDice() : ${diceList.toList()}", LogTag.I)
+            writeLogModelUseCase(LogModel(player.value!!.playerId, TAG, "after diceList ${diceList.toList()}", DateTime.getNowDate(System.currentTimeMillis())))
 
+            _chance--
 
             getChanceStr()
             setRollDiceImage(diceList)
@@ -569,8 +575,6 @@ class GamePlayViewModel @Inject constructor(
                 }
             }
         }
-
-
     }
 
 

@@ -67,6 +67,15 @@
         ".read" : "auth != null && $uid == auth.uid",
         ".write" : "auth != null"
       }
+    },
+
+    "log" : {
+      "$uid" : {
+        "$tag" : {
+          ".read" : "auth!=null && $uid == auth.uid",
+          ".write" : "auth != null"
+        }
+      }
     }
   }
 }

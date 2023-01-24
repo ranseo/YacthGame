@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.ranseo.yatchgame.data.model.Board
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -16,7 +17,7 @@ class YachtGame @Inject constructor() {
     /**
      * 주사위를 k개를 굴려 나온 숫자들을 list(+keep)에 담아서 반환.
      * */
-    suspend fun rollDice(dices:Array<Int>, keepIdx:Array<Boolean>) = withContext(Dispatchers.Default) {
+    suspend fun rollDice(dices:Array<Int>, keepIdx:Array<Boolean>, callback: suspend ()->Unit) = withContext(Dispatchers.Default) {
         //val random = SecureRandom.getInstanceStrong()
         val list1 = listOf(1,2,3,4,5,6)
         val list2 = listOf(1,2,3,4,5,6)
@@ -29,6 +30,8 @@ class YachtGame @Inject constructor() {
         if(!keepIdx[2]) dices[2] = list3.shuffled().first()
         if(!keepIdx[3]) dices[3] = list4.shuffled().first()
         if(!keepIdx[4]) dices[4] = list5.shuffled().first()
+
+        callback()
 
     }
 
