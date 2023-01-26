@@ -12,9 +12,10 @@ data class RollDice(
     val thirdFix: Boolean,
     val fourthFix: Boolean,
     val fifthFix: Boolean,
-    val turn: Boolean //rollDice에서 turn이 true면 first player가 false면 second player의 턴이다.
+    val turn: Boolean, //rollDice에서 turn이 true면 first player가 false면 second player의 턴이다.
+    val count:Int
 ) {
-    constructor(gameId: String, dices: Array<Int>, keeps: Array<Boolean>, turn: Boolean) : this(
+    constructor(gameId: String, dices: Array<Int>, keeps: Array<Boolean>, turn: Boolean, count:Int) : this(
         gameId,
         dices[0],
         dices[1],
@@ -26,7 +27,8 @@ data class RollDice(
         keeps[2],
         keeps[3],
         keeps[4],
-        turn
+        turn,
+        count
     )
 
     constructor(hashMap: HashMap<*, *>) : this(
@@ -42,6 +44,7 @@ data class RollDice(
         hashMap["fourthFix"] as Boolean,
         hashMap["fifthFix"] as Boolean,
         hashMap["turn"] as Boolean,
+        (hashMap["count"] as Long).toInt()
     )
 
     fun checkDiceChange(rollDice: RollDice): Boolean {

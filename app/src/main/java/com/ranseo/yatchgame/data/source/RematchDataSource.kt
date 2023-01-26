@@ -51,10 +51,12 @@ class RematchDataSource @Inject constructor(private val firebaseDatabase: Fireba
         }
     }
 
+
+    /*TODO rematchId가 player의 id로 설정이 되어있어서 현재 리매치에 대한 정보가 제대로 저장이 되지 않는다.,*/
     suspend fun writeRematch(rematch: Rematch): Flow<Result<String>> = withContext(Dispatchers.IO) {
         callbackFlow {
             val ref = firebaseDatabase.reference.child("rematch").child(rematch.rematchId)
-            val key = ref.key ?: return@callbackFlow
+            val key = ref.push().key ?: return@callbackFlow
 
             ref.setValue(rematch.asRemoteModel(key)).addOnCompleteListener {
                 if (it.isSuccessful) {

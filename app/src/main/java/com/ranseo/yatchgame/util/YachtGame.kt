@@ -17,7 +17,7 @@ class YachtGame @Inject constructor() {
     /**
      * 주사위를 k개를 굴려 나온 숫자들을 list(+keep)에 담아서 반환.
      * */
-    suspend fun rollDice(dices:Array<Int>, keepIdx:Array<Boolean>, callback: suspend ()->Unit) = withContext(Dispatchers.Default) {
+    suspend fun rollDice(dices:Array<Int>, keepIdx:Array<Boolean>, callback: suspend ()->Unit) : Array<Int> = withContext(Dispatchers.Default) {
         //val random = SecureRandom.getInstanceStrong()
         val list1 = listOf(1,2,3,4,5,6)
         val list2 = listOf(1,2,3,4,5,6)
@@ -25,14 +25,18 @@ class YachtGame @Inject constructor() {
         val list4 = listOf(1,2,3,4,5,6)
         val list5 = listOf(1,2,3,4,5,6)
 
-        if(!keepIdx[0]) dices[0] = list1.shuffled().first()
-        if(!keepIdx[1]) dices[1] = list2.shuffled().first()
-        if(!keepIdx[2]) dices[2] = list3.shuffled().first()
-        if(!keepIdx[3]) dices[3] = list4.shuffled().first()
-        if(!keepIdx[4]) dices[4] = list5.shuffled().first()
+        val array = arrayOf(dices[0], dices[1], dices[2],dices[3],dices[4])
+
+        if(!keepIdx[0]) array[0] = list1.shuffled().first()
+        if(!keepIdx[1]) array[1] = list2.shuffled().first()
+        if(!keepIdx[2]) array[2] = list3.shuffled().first()
+        if(!keepIdx[3]) array[3] = list4.shuffled().first()
+        if(!keepIdx[4]) array[4] = list5.shuffled().first()
+
 
         callback()
 
+        array
     }
 
     fun getScore(dices:Array<Int>) : Board {

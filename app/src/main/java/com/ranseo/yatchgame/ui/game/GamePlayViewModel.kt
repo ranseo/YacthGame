@@ -75,7 +75,7 @@ class GamePlayViewModel @Inject constructor(
         }
     }
 
-    var prevRollDice: RollDice? = null
+    var prevRollDice: Int? = null
 
     private val _boardInfo = MutableLiveData<BoardInfo>()
     val boardInfo: LiveData<BoardInfo>
@@ -476,7 +476,7 @@ class GamePlayViewModel @Inject constructor(
      * */
     fun writeRollDiceAtFirst(gameId: String) {
         viewModelScope.launch {
-            val rollDice = RollDice(gameId, START_LIST.clone(), INIT_KEEP_LIST.clone(), true)
+            val rollDice = RollDice(gameId, START_LIST.clone(), INIT_KEEP_LIST.clone(), true, 0)
             writeRollDiceUseCase(rollDice)
         }
     }
@@ -484,10 +484,10 @@ class GamePlayViewModel @Inject constructor(
     /**
      * RollDice Data를 Firebase Database에 write
      * */
-    private fun writeRollDice(dices: Array<Int>, keeps: Array<Boolean>, turn: Boolean) {
+    private fun writeRollDice(dices: Array<Int>, keeps: Array<Boolean>, turn: Boolean, count:Int) {
         viewModelScope.launch {
             rollDice.value?.let {
-                val new = RollDice(it.gameId, dices, keeps, turn)
+                val new = RollDice(it.gameId, dices, keeps, turn, count)
                 writeRollDiceUseCase(new)
             }
         }
@@ -501,7 +501,10 @@ class GamePlayViewModel @Inject constructor(
     fun keepDice(idx: Int) {
         _keepList[idx] = !_keepList[idx]
         viewModelScope.launch {
-            writeRollDice(diceList.clone(), _keepList.clone(), rollDice.value!!.turn)
+            rollDice.value?.let {
+                writeRollDice(diceList.clone(), _keepList.clone(), rollDice.value!!.turn, it.count)
+            }
+
         }
     }
 
@@ -525,22 +528,26 @@ class GamePlayViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.Main) {
             launch(Dispatchers.Default) {
-                writeLogModelUseCase(LogModel(player.value!!.playerId, TAG, "before ${diceList.toList()}", DateTime.getNowDate(System.currentTimeMillis())))
-                yachtGame.rollDice(diceList, _keepList) {
+                //writeLogModelUseCase(LogModel(player.value!!.playerId, TAG, "before ${diceList.toList()}", DateTime.getNowDate(System.currentTimeMillis())))
+
+                diceList = yachtGame.rollDice(diceList.clone(), _keepList.clone()) {
                     viewModelScope.launch {
-                        writeLogModelUseCase(LogModel(player.value!!.playerId, TAG, "in ${diceList.toList()}", DateTime.getNowDate(System.currentTimeMillis())))
+                        //writeLogModelUseCase(LogModel(player.value!!.playerId, TAG, "in ${diceList.toList()}", DateTime.getNowDate(System.currentTimeMillis())))
                     }
                 }
             }.join()
 
-            writeLogModelUseCase(LogModel(player.value!!.playerId, TAG, "after diceList ${diceList.toList()}", DateTime.getNowDate(System.currentTimeMillis())))
+            //writeLogModelUseCase(LogModel(player.value!!.playerId, TAG, "after diceList ${diceList.toList()}", DateTime.getNowDate(System.currentTimeMillis())))
 
             _chance--
 
             getChanceStr()
             setRollDiceImage(diceList)
             showScore(diceList)
-            writeRollDice(diceList.clone(), _keepList.clone(), rollDice.value!!.turn)
+
+            rollDice.value?.let {
+                writeRollDice(diceList.clone(), _keepList.clone(), rollDice.value!!.turn, it.count+1)
+            }
         }
     }
 
@@ -618,7 +625,7 @@ class GamePlayViewModel @Inject constructor(
      * 임시
      * */
     fun finishTurn() {
-        writeRollDice(diceList, INIT_KEEP_LIST.clone(), player.value != firstPlayer.value)
+        writeRollDice(diceList, INIT_KEEP_LIST.clone(), player.value != firstPlayer.value,0)
         log(TAG, "finishTurn()  : chance = ${chance}", LogTag.I)
         _initRollDiceKeep.value = Event(Unit)
         if (isFirstPlayer.value != true) implementTurnCount() // Second Player인 경우 턴을 넘길 때 turn이 증가.

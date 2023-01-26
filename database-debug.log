@@ -3,8 +3,8 @@ WARNING: Illegal reflective access by io.netty.util.internal.ReflectionUtil (fil
 WARNING: Please consider reporting this to the maintainers of io.netty.util.internal.ReflectionUtil
 WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
 WARNING: All illegal access operations will be denied in a future release
-15:56:34.010 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
-15:56:34.238 [main] INFO com.firebase.server.forge.App$ - Listening at localhost:9000
-15:56:44.705 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO com.firebase.core.namespace.NamespaceActor - yatchgame-ad28a-default-rtdb successfully activated FBKV (SurveyIdle(0)) wait: 676ms, init: 0ms
-15:56:45.069 [NamespaceSystem-blocking-namespace-operation-dispatcher-7:yatchgame-ad28a-default-rtdb$-77853079:] INFO com.firebase.core.namespace.StateManager - Namespace yatchgame-ad28a-default-rtdb status Active to Active
-16:01:02.831 [NamespaceSystem-akka.actor.default-dispatcher-35] INFO com.firebase.core.namespace.NamespaceActor - yatchgame-ad28a successfully activated FBKV (SurveyIdle(0)) wait: 1ms, init: 0ms
+12:13:10.088 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+12:13:10.326 [main] INFO com.firebase.server.forge.App$ - Listening at localhost:9000
+12:13:17.314 [NamespaceSystem-akka.actor.default-dispatcher-6] INFO com.firebase.core.namespace.NamespaceActor - yatchgame-ad28a-default-rtdb successfully activated FBKV (SurveyIdle(0)) wait: 198ms, init: 0ms
+12:13:17.418 [NamespaceSystem-blocking-namespace-operation-dispatcher-7:yatchgame-ad28a-default-rtdb$102750155:] INFO com.firebase.core.namespace.StateManager - Namespace yatchgame-ad28a-default-rtdb status Active to Active
+12:18:12.876 [NamespaceSystem-akka.actor.default-dispatcher-43] INFO com.firebase.core.namespace.NamespaceActor - yatchgame-ad28a successfully activated FBKV (SurveyIdle(0)) wait: 3ms, init: 0ms

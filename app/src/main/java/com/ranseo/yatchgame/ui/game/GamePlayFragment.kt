@@ -287,7 +287,17 @@ class GamePlayFragment() : Fragment() {
                 //Secopnd Player의 경우 -> false != true
                 if (gamePlayViewModel.isFirstPlayer.value != rollDice.turn) {
                     val prev = gamePlayViewModel.prevRollDice
-                    if (prev != null && rollDice.checkDiceChange(prev)) {
+//                    if (prev != null && rollDice.checkDiceChange(prev)) {
+//                        log(TAG, "rollDiceObserver() : KEEP_SOUND", LogTag.I)
+//                        yachtSound.play(YachtSound.KEEP_SOUND)
+//                        gamePlayViewModel.setKeepList(rollDice)
+//                    } else {
+//                        log(TAG, "rollDiceObserver() : ROLL_DICE_SOUND", LogTag.I)
+//                        yachtSound.play(YachtSound.ROLL_DICE_SOUND)
+//                        gamePlayViewModel.checkOpponentDiceState(rollDice)
+//                    }
+
+                    if(prev != null && rollDice.count == prev) {
                         log(TAG, "rollDiceObserver() : KEEP_SOUND", LogTag.I)
                         yachtSound.play(YachtSound.KEEP_SOUND)
                         gamePlayViewModel.setKeepList(rollDice)
@@ -299,8 +309,9 @@ class GamePlayFragment() : Fragment() {
 
 
 
+
                     log(TAG, "rollDiceObserver() : Not My Turn  ${rollDice}", LogTag.I)
-                    gamePlayViewModel.prevRollDice = rollDice
+                    gamePlayViewModel.prevRollDice = rollDice.count
                 } else {
                     gamePlayViewModel.setKeepList(rollDice)
                     log(TAG, "rollDiceObserver() : my Turn  ${rollDice}", LogTag.I)
