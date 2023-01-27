@@ -14,10 +14,16 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
+import com.google.android.gms.auth.api.identity.BeginSignInRequest
+import com.google.android.gms.auth.api.identity.Identity
+import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.FirebaseAuth
+import com.ranseo.yatchgame.BuildConfig
+import com.ranseo.yatchgame.LogTag
 import com.ranseo.yatchgame.databinding.ActivityLoginBinding
 
 import com.ranseo.yatchgame.R
+import com.ranseo.yatchgame.log
 import com.ranseo.yatchgame.ui.lobby.LobbyActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -28,6 +34,11 @@ class LoginActivity : AppCompatActivity() {
 
     private val loginViewModel: LoginViewModel by viewModels()
     @Inject lateinit var auth : FirebaseAuth
+
+    private lateinit var oneTapClient: SignInClient
+    private lateinit var signInRequest: BeginSignInRequest
+
+    private lateinit var loginObserver: LoginObserver
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,16 +82,6 @@ class LoginActivity : AppCompatActivity() {
                     userEmail.text.toString()
                 )
             }
-
-//            setOnEditorActionListener { _, actionId, _ ->
-//                when (actionId) {
-//                    EditorInfo.IME_ACTION_DONE ->
-//                        loginViewModel.login(
-//                            username.text.toString()
-//                        )
-//                }
-//                false
-//            }
         }
 
 
@@ -112,6 +113,29 @@ class LoginActivity : AppCompatActivity() {
     private fun showLoginFailed(@StringRes errorString: Int) {
         Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
     }
+
+    //Google Login
+    fun setOneTapLogin() {
+        oneTapClient = Identity.getSignInClient(this)
+        signInRequest = BeginSignInRequest.builder()
+            .setGoogleIdTokenRequestOptions(
+                BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
+                    .setSupported(true)
+                    .setServerClientId(BuildConfig.WEB_CLIENT_ID)
+                    .setFilterByAuthorizedAccounts(false)
+                    .build())
+            .setAutoSelectEnabled(true)
+            .build()
+
+        log(TAG,"setOneTapLogin : ${signInRequest}", LogTag.I)
+        loginObserver = LoginObserver(this.activityResultRegistry, oneTapClient , loginViewModel)
+        lifecycle.addObserver(loginObserver)
+        log(TAG,"setOneTapLogin : ${loginObserver}", LogTag.I)
+    }
+
+    companion object {
+        private const val TAG = "LoginActivity"
+    }
 }
 
 /**
@@ -128,3 +152,5 @@ fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
     })
 }
+
+
