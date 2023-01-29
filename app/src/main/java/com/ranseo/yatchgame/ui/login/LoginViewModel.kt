@@ -14,9 +14,12 @@ import com.ranseo.yatchgame.data.Result
 
 import com.ranseo.yatchgame.R
 import com.ranseo.yatchgame.data.model.Player
+import com.ranseo.yatchgame.data.model.log.LogModel
 import com.ranseo.yatchgame.domain.usecase.InsertPlayerUseCase
+import com.ranseo.yatchgame.domain.usecase.write.WriteLogModelUseCase
 import com.ranseo.yatchgame.domain.usecase.write.WritePlayerUseCase
 import com.ranseo.yatchgame.log
+import com.ranseo.yatchgame.util.DateTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -26,7 +29,8 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
         private val loginRepository: LoginRepository,
         private val insertPlayerUseCase: InsertPlayerUseCase,
-        private val writePlayerUseCase: WritePlayerUseCase
+        private val writePlayerUseCase: WritePlayerUseCase,
+        private val writeLogModelUseCase: WriteLogModelUseCase
     ) :
     ViewModel() {
     private val TAG = "LoginViewModel"
@@ -36,6 +40,8 @@ class LoginViewModel @Inject constructor(
 
     private val _loginResult = MutableLiveData<LoginResult>()
     val loginResult: LiveData<LoginResult> = _loginResult
+
+
 
     private val _credential = MutableLiveData<Event<AuthCredential>>()
     val credential : LiveData<Event<AuthCredential>>
@@ -81,6 +87,16 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+    private fun setLoginResult() {
+        viewModelScope.launch {
+            _loginResult.postValue(
+                LoginResult(
+                    LoggedInUserView()
+                )
+            )
+        }
+    }
+
     fun loginDataChanged(username: String) {
         if (!isUserNameValid(username)) {
             _loginForm.value = LoginFormState(usernameError = R.string.invalid_username)
@@ -100,6 +116,12 @@ class LoginViewModel @Inject constructor(
 
     fun setCredential(credential: AuthCredential) {
         _credential.value = Event(credential)
+    }
+
+    fun writeLog(log:String) {
+        viewModelScope.launch{
+            writeLogModelUseCase(LogModel("BEFORE LOGIN","Login UI", log,DateTime.getNowDate(System.currentTimeMillis())))
+        }
     }
 
 }

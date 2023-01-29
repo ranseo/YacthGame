@@ -19,6 +19,8 @@
     <!--돌리는 주사위에 적용할 컬러-->
     <color name="keep_red">#BB0000</color>
 
+    <color name="fui_transparent">#00FF0000</color>
+
 
 
 </resources>

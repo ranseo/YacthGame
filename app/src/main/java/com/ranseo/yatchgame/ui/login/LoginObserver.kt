@@ -1,5 +1,6 @@
 package com.ranseo.yatchgame.ui.login
 
+import android.content.IntentSender
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.IntentSenderRequest
@@ -7,6 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.google.android.gms.auth.api.identity.BeginSignInResult
+import com.google.android.gms.auth.api.identity.GetSignInIntentRequest
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.GoogleAuthProvider
@@ -41,8 +43,8 @@ class LoginObserver(val registry: ActivityResultRegistry, val oneTapClient: Sign
         }
     }
 
-    fun startIntentSenderResult(result: BeginSignInResult) {
-        val intentSenderResult = IntentSenderRequest.Builder(result.pendingIntent.intentSender).build()
+    fun startIntentSenderResult(result: IntentSender) {
+        val intentSenderResult = IntentSenderRequest.Builder(result).build()
         getContent.launch(intentSenderResult)
 
     }
