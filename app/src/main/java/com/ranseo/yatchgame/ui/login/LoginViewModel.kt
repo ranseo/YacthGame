@@ -5,6 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import android.util.Patterns
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.auth.api.Auth
+import com.google.firebase.auth.AuthCredential
+import com.ranseo.yatchgame.Event
 import com.ranseo.yatchgame.LogTag
 import com.ranseo.yatchgame.data.repo.LoginRepository
 import com.ranseo.yatchgame.data.Result
@@ -34,6 +37,9 @@ class LoginViewModel @Inject constructor(
     private val _loginResult = MutableLiveData<LoginResult>()
     val loginResult: LiveData<LoginResult> = _loginResult
 
+    private val _credential = MutableLiveData<Event<AuthCredential>>()
+    val credential : LiveData<Event<AuthCredential>>
+        get() = _credential
 
     fun login(email: String, nickName: String) {
         // can be launched in a separate asynchronous job
@@ -91,4 +97,9 @@ class LoginViewModel @Inject constructor(
             username.isNotBlank()
         }
     }
+
+    fun setCredential(credential: AuthCredential) {
+        _credential.value = Event(credential)
+    }
+
 }
