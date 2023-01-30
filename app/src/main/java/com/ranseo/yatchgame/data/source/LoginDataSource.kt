@@ -26,7 +26,7 @@ class LoginDataSource @Inject constructor(private val auth : FirebaseAuth){
         }
     }
 
-    fun logout() {
+    fun logout() {z
         // TODO: revoke authentication
     }
 

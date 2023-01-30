@@ -28,7 +28,9 @@ import com.ranseo.yatchgame.LogTag
 import com.ranseo.yatchgame.databinding.ActivityLoginBinding
 
 import com.ranseo.yatchgame.R
+import com.ranseo.yatchgame.data.model.LoggedInUser
 import com.ranseo.yatchgame.log
+import com.ranseo.yatchgame.ui.dialog.EditTextDialog
 import com.ranseo.yatchgame.ui.lobby.LobbyActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -90,6 +92,13 @@ class LoginActivity : AppCompatActivity() {
             credential.observe(this@LoginActivity) {
                 it.getContentIfNotHandled()?.let { credential ->
                     signInWithCredential(credential)
+                }
+            }
+
+            nickName.observe(this@LoginActivity) {
+                it.getContentIfNotHandled()?.let { nickName ->
+                    val loggedInUser = Result.success(LoggedInUser(auth.currentUser.uid, nickName))
+                    loginViewModel.setLoginResult()
                 }
             }
         }
@@ -161,8 +170,7 @@ class LoginActivity : AppCompatActivity() {
         val request = GetSignInIntentRequest.builder()
             .setServerClientId(BuildConfig.WEB_CLIENT_ID)
             .build()
-
-
+            
 //        Identity.getSignInClient(this)
 //            .getSignInIntent(request)
 //            .addOnSuccessListener { result ->
@@ -194,6 +202,7 @@ class LoginActivity : AppCompatActivity() {
     private fun signInWithCredential(credential: AuthCredential) {
         auth.signInWithCredential(credential)
             .addOnSuccessListener {
+                showDialog()
                 log(TAG, "SignInWithCredentail success", LogTag.I)
                 loginViewModel.writeLog("SignInWithCredentail success")
             }
@@ -202,6 +211,18 @@ class LoginActivity : AppCompatActivity() {
                 loginViewModel.writeLog("SignInWithCredentail Failure ${it.message}")
             }
         //setProgressbar(false)
+    }
+
+    private fun showDialog() {
+        val dialog =EditTextDialog(this, "별명 입력","게임에서 사용될 별명을 입력해주세요").apply {
+            setOnClickListener(object : EditTextDialog.OnEditTextClickListener{
+                override fun onPositiveBtn(text: String) {
+                    log(TAG, "onPositiveBtn : ${text}", LogTag.I)
+                    loginViewModel.makeNickName(text)
+                }
+            })
+        }
+        dialog.showDialog()
     }
 
     companion object {

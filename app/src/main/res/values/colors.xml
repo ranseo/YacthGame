@@ -8,6 +8,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="grey">#8C8C8C</color>
+    <color name="shadow_grey">#B3B2B2</color>
     <color name="transparent">#0000FFFF</color>
     <!--보드판에 적용할 컬러-->
     <color name="board_grey">#404040</color>

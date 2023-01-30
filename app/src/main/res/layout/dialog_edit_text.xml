@@ -17,6 +17,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         />
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/layout_room_name"
         android:hint="@string/set_room_name"

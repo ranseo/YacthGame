@@ -8,16 +8,16 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
+import com.google.android.material.textfield.TextInputLayout
 import com.ranseo.yatchgame.R
 
 class EditTextDialog(
     context: Context,
-    val title: String = "",
-    val positiveMsg: String = "",
-    val negativeMsg: String = "",
-    val hint: String = ""
+    private val titleText: String = "",
+    private val hint: String = ""
 ) {
     interface OnEditTextClickListener {
         fun onPositiveBtn(text: String) {}
@@ -34,6 +34,11 @@ class EditTextDialog(
         val okBtn = dialog.findViewById<Button>(R.id.btn_accept)
         val cancelBtn = dialog.findViewById<Button>(R.id.btn_cancel)
         val editText = dialog.findViewById<EditText>(R.id.et_room_name)
+        val title = dialog.findViewById<TextView>(R.id.tv_title)
+        val textInputLayout = dialog.findViewById<TextInputLayout>(R.id.layout_room_name)
+
+        title.text = titleText
+        textInputLayout.hint = hint
 
         dialog.window!!.setLayout(
             WindowManager.LayoutParams.MATCH_PARENT,

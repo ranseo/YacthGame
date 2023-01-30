@@ -13,6 +13,7 @@ import com.ranseo.yatchgame.data.repo.LoginRepository
 import com.ranseo.yatchgame.data.Result
 
 import com.ranseo.yatchgame.R
+import com.ranseo.yatchgame.data.model.LoggedInUser
 import com.ranseo.yatchgame.data.model.Player
 import com.ranseo.yatchgame.data.model.log.LogModel
 import com.ranseo.yatchgame.domain.usecase.InsertPlayerUseCase
@@ -27,11 +28,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-        private val loginRepository: LoginRepository,
-        private val insertPlayerUseCase: InsertPlayerUseCase,
-        private val writePlayerUseCase: WritePlayerUseCase,
-        private val writeLogModelUseCase: WriteLogModelUseCase
-    ) :
+    private val loginRepository: LoginRepository,
+    private val insertPlayerUseCase: InsertPlayerUseCase,
+    private val writePlayerUseCase: WritePlayerUseCase,
+    private val writeLogModelUseCase: WriteLogModelUseCase
+) :
     ViewModel() {
     private val TAG = "LoginViewModel"
 
@@ -42,10 +43,13 @@ class LoginViewModel @Inject constructor(
     val loginResult: LiveData<LoginResult> = _loginResult
 
 
-
     private val _credential = MutableLiveData<Event<AuthCredential>>()
-    val credential : LiveData<Event<AuthCredential>>
+    val credential: LiveData<Event<AuthCredential>>
         get() = _credential
+
+    private val _nickName = MutableLiveData<Event<String>>()
+    val nickName: LiveData<Event<String>>
+        get() = _nickName
 
     fun login(email: String, nickName: String) {
         // can be launched in a separate asynchronous job
@@ -87,13 +91,12 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    private fun setLoginResult() {
+    fun setLoginResult(result: Result<LoggedInUser>) {
         viewModelScope.launch {
-            _loginResult.postValue(
-                LoginResult(
-                    LoggedInUserView()
-                )
-            )
+            when (result) {
+                is Result.Success -> _loginResult.postValue(LoginResult(LoggedInUserView(result.data.displayName)))
+                else -> _loginResult.postValue(LoginResult(error = R.string.login_failed))
+            }
         }
     }
 
@@ -118,10 +121,21 @@ class LoginViewModel @Inject constructor(
         _credential.value = Event(credential)
     }
 
-    fun writeLog(log:String) {
-        viewModelScope.launch{
-            writeLogModelUseCase(LogModel("BEFORE LOGIN","Login UI", log,DateTime.getNowDate(System.currentTimeMillis())))
+    fun writeLog(log: String) {
+        viewModelScope.launch {
+            writeLogModelUseCase(
+                LogModel(
+                    "BEFORE LOGIN",
+                    "Login UI",
+                    log,
+                    DateTime.getNowDate(System.currentTimeMillis())
+                )
+            )
         }
+    }
+
+    fun makeNickName(text:String) {
+        _nickName.value = Event(text)
     }
 
 }
