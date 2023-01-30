@@ -104,9 +104,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_google"
-        android:clickable="true"
         android:layout_width="wrap_content"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
         android:background="@drawable/login_border"
@@ -114,28 +113,31 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/bottom_guideline">
 
-        <ImageView
-            android:id="@+id/iv_google_login"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/btn_google_light_pressed_xxxhdpi"
+        <ImageButton
+            android:id="@+id/btn_google_login"
+            android:layout_width="180dp"
+            android:layout_height="48dp"
+            android:src="@drawable/btn_google_signin_dark_pressed_xxxhdpi"
+            android:background="@color/fui_transparent"
+            android:scaleType="fitXY"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             />
 
-        <TextView
-            android:id="@+id/tv_google_login"
-            android:text="SIGN IN WITH GOOGLE"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:textColor="@color/grey"
-            android:fontFamily="@font/roboto_medium"
-            app:layout_constraintStart_toEndOf="@id/iv_google_login"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            />
+<!--        <TextView-->
+<!--            android:id="@+id/tv_google_login"-->
+<!--            android:text="SIGN IN WITH GOOGLE"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="24dp"-->
+<!--            android:textColor="@color/grey"-->
+<!--            android:fontFamily="@font/roboto_medium"-->
+<!--            app:layout_constraintStart_toEndOf="@id/iv_google_login"-->
+<!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            />-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

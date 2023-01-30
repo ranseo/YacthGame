@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "18941378065-4qcfdb9usovkb0hhgp86u8puv2b2pte5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ranseo.yatchgame",
+            "certificate_hash": "c65c06d180cc5559aad29e262489fbff8225e508"
+          }
+        },
+        {
           "client_id": "18941378065-ofgrmtrs0upb1652thkm0p42s3c6e863.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -39,7 +47,7 @@
           }
         },
         {
-          "client_id": "18941378065-n9f2ogds98hojrtstuh4las1q8c4r5kk.apps.googleusercontent.com",
+          "client_id": "18941378065-vdmlanaal9blviscte4cnt6udfnaqkui.apps.googleusercontent.com",
           "client_type": 3
         }
       ],

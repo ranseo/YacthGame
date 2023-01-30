@@ -13,10 +13,12 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
+import com.google.android.gms.auth.api.identity.GetSignInIntentRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.AuthCredential
@@ -36,6 +38,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
 
     private val loginViewModel: LoginViewModel by viewModels()
+
     @Inject
     lateinit var auth: FirebaseAuth
 
@@ -54,7 +57,7 @@ class LoginActivity : AppCompatActivity() {
         val userEmail: EditText = binding.etEmail!!
         val userNickName: EditText = binding.etNickname!!
         val login: Button = binding.btnLogin!!
-        val googleLogin : ConstraintLayout = binding.layoutGoogle!!
+        val googleLogin: ImageButton = findViewById(R.id.btn_google_login)
 
 
         with(loginViewModel) {
@@ -141,11 +144,12 @@ class LoginActivity : AppCompatActivity() {
                 BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
                     .setSupported(true)
                     .setServerClientId(BuildConfig.WEB_CLIENT_ID)
-                    .setFilterByAuthorizedAccounts(false)
+                    .setFilterByAuthorizedAccounts(true)
                     .build()
             )
             .setAutoSelectEnabled(true)
             .build()
+
 
         log(TAG, "setOneTapLogin : ${signInRequest}", LogTag.I)
         loginObserver = LoginObserver(this.activityResultRegistry, oneTapClient, loginViewModel)
@@ -154,28 +158,48 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun loginWithGoogle() {
-        oneTapClient.beginSignIn(signInRequest).addOnCompleteListener(this) { result ->
-            try {
-                if (result.isSuccessful) {
-                    loginObserver.startIntentSenderResult(result.result)
-                    log(TAG, "IntentSender Success : ${result.result}", LogTag.I)
-                } else {
-                    log(TAG, "IntentSender Failure : ${result.exception}", LogTag.I)
-                }
+        val request = GetSignInIntentRequest.builder()
+            .setServerClientId(BuildConfig.WEB_CLIENT_ID)
+            .build()
 
-            } catch (error: IntentSender.SendIntentException) {
+
+//        Identity.getSignInClient(this)
+//            .getSignInIntent(request)
+//            .addOnSuccessListener { result ->
+//                try {
+//                    loginObserver.startIntentSenderResult(result.intentSender)
+//                } catch (error: Exception) {
+//                    log(TAG, "IntentSender Exception : ${error.message}", LogTag.I)
+//                }
+//            }
+//            .addOnFailureListener {
+//                log(TAG, "onGoogleLogin() fail : ${it}\n${it.message}", LogTag.I)
+//            }
+
+        oneTapClient.getSignInIntent(request).addOnSuccessListener(this) { result ->
+            try {
+                loginObserver.startIntentSenderResult(result.intentSender)
+                loginViewModel.writeLog(result.toString())
+            } catch (error: Exception) {
                 log(TAG, "IntentSender Exception : ${error.message}", LogTag.I)
+                loginViewModel.writeLog(error.message.toString())
             }
         }
+            .addOnFailureListener {
+                log(TAG, "onGoogleLogin() fail : ${it}\n${it.message}", LogTag.I)
+                loginViewModel.writeLog(it.message.toString())
+            }
     }
 
     private fun signInWithCredential(credential: AuthCredential) {
         auth.signInWithCredential(credential)
             .addOnSuccessListener {
                 log(TAG, "SignInWithCredentail success", LogTag.I)
+                loginViewModel.writeLog("SignInWithCredentail success")
             }
             .addOnFailureListener {
-                log(TAG, "SignInWithCredentail Failure",LogTag.I)
+                log(TAG, "SignInWithCredentail Failure", LogTag.I)
+                loginViewModel.writeLog("SignInWithCredentail Failure ${it.message}")
             }
         //setProgressbar(false)
     }
