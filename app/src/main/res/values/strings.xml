@@ -19,9 +19,6 @@
     <!--lobby_fragment.xml-->
     <string name="yacth_dice_room_list">야추 다이스 방 목록</string>
 
-    <!--dialog_edit_text-->
-    <string name="make_room">방 만들기</string>
-    <string name="set_room_name">방제를 입력하세요</string>
 
     <!--Lobby_Fragment-->
     <string name="make_wait_room">대기실 생성</string>
@@ -53,10 +50,20 @@
     <string name="game_versus">:</string>
     <string name="game_score">%s : %s</string>
     <string name="game_result_early">[%s]님이 게임에서 나가셨습니다.\n[%s]님은 게임에서 승리했습니다!!</string>
+    <string name="game_go_out_title">게임에서 나가시겠습니까?</string>
+    <string name="game_go_out_description">게임이 끝나기 전에 나가실 경우\n패배로 기록됩니다.</string>
 
 
     <!--dialog_rematch-->
     <string name="game_rematch_title">재대결 신청</string>
     <string name="game_rematch">란서님께서 재대결을 신청했습니다.\n받아들이시겠습니까?</string>
+
+    <!--dialog-->
+    <string name="dialog_positive">확인</string>
+    <string name="dialog_negative">취소</string>
+    <!--dialog_edit_text-->
+    <string name="make_room">방 만들기</string>
+    <string name="set_room_name">방제를 입력하세요</string>
+
 
 </resources>

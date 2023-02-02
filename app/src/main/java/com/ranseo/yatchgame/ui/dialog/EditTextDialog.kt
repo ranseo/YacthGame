@@ -21,6 +21,7 @@ class EditTextDialog(
 ) {
     interface OnEditTextClickListener {
         fun onPositiveBtn(text: String) {}
+        fun onNegativeBtn() {}
     }
 
     private lateinit var onClickListener: OnEditTextClickListener
@@ -53,6 +54,7 @@ class EditTextDialog(
         }
 
         cancelBtn.setOnClickListener {
+            onClickListener.onNegativeBtn()
             dialog.dismiss()
         }
 

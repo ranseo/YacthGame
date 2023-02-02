@@ -21,6 +21,7 @@ import com.ranseo.yatchgame.R
 import com.ranseo.yatchgame.data.model.*
 import com.ranseo.yatchgame.databinding.FragmentGamePlayBinding
 import com.ranseo.yatchgame.log
+import com.ranseo.yatchgame.ui.dialog.AlertDialog
 import com.ranseo.yatchgame.ui.dialog.GameRematchDialog
 import com.ranseo.yatchgame.ui.dialog.GameResultDialog
 import com.ranseo.yatchgame.ui.lobby.LobbyActivity
@@ -54,11 +55,7 @@ class GamePlayFragment() : Fragment() {
         val onBackPressedCallback = object : OnBackPressedCallback(true) {
             @RequiresApi(Build.VERSION_CODES.N)
             override fun handleOnBackPressed() {
-                if((gamePlayViewModel.turnCount.value ?: 0) < 13) {
-                    val gameResult = gamePlayViewModel.getGameResult(true)
-                    gamePlayViewModel.finishGame(gameResult)
-                    gamePlayViewModel.earlyFinishGame = true
-                }
+                showAlertDialog()
             }
         }
 
@@ -503,6 +500,44 @@ class GamePlayFragment() : Fragment() {
         )
 
         dialog.showDialog()
+    }
+
+    /**
+     * 게임에서 나갈 때 확인용 dialog
+     * */
+    private fun showAlertDialog() {
+        val dialog = AlertDialog(
+            getString(R.string.game_go_out_title),
+            getString(R.string.game_go_out_description),
+            getString(R.string.dialog_positive),
+            getString(R.string.dialog_negative)).apply {
+                setOnClickListener(object : AlertDialog.OnAlertDialogListener {
+                    @RequiresApi(Build.VERSION_CODES.N)
+                    override fun onPositiveBtn() {
+                        runAway()
+                    }
+
+                    override fun onNegativeBtn() {
+                    }
+                })
+        }
+
+        dialog.show(parentFragmentManager, TAG)
+
+    }
+
+    /**
+     * 게임에서 나갈 때, 액션
+     * */
+    @RequiresApi(Build.VERSION_CODES.N)
+    private fun runAway(){
+        if((gamePlayViewModel.turnCount.value ?: 0) < 13) {
+            val gameResult = gamePlayViewModel.getGameResult(true)
+            gamePlayViewModel.finishGame(gameResult)
+            gamePlayViewModel.earlyFinishGame = true
+        } else {
+            startLobbyActivity()
+        }
     }
 
     /**

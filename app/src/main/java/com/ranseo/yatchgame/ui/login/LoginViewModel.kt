@@ -47,8 +47,8 @@ class LoginViewModel @Inject constructor(
     val credential: LiveData<Event<AuthCredential>>
         get() = _credential
 
-    private val _nickName = MutableLiveData<Event<String>>()
-    val nickName: LiveData<Event<String>>
+    private val _nickName = MutableLiveData<Event<Result<LoggedInUser>>>()
+    val nickName: LiveData<Event<Result<LoggedInUser>>>
         get() = _nickName
 
     fun login(email: String, nickName: String) {
@@ -59,46 +59,12 @@ class LoginViewModel @Inject constructor(
                 if (uid != null && nickName != null) {
 
                     log(TAG, "loginRepositery.login - uid : ${uid}, name : ${nickName}", LogTag.I)
-
-                    viewModelScope.launch {
-                        launch {
-                            val player = Player(
-                                uid,
-                                nickName
-                            )
-                            insertPlayerUseCase(player)
-                            writePlayerUseCase(player) { isWrite ->
-                                viewModelScope.launch {
-                                    if (isWrite) {
-                                        if (result is Result.Success) {
-                                            _loginResult.postValue(
-                                                LoginResult(
-                                                    LoggedInUserView(
-                                                        result.data.displayName
-                                                    )
-                                                )
-                                            )
-                                        } else {
-                                            _loginResult.postValue(LoginResult(error = R.string.login_failed))
-                                        }
-                                    }
-                                }
-                            }
-                        }.join()
-                    }
+                    insertAndWritePlayer(result)
                 }
             }
         }
     }
 
-    fun setLoginResult(result: Result<LoggedInUser>) {
-        viewModelScope.launch {
-            when (result) {
-                is Result.Success -> _loginResult.postValue(LoginResult(LoggedInUserView(result.data.displayName)))
-                else -> _loginResult.postValue(LoginResult(error = R.string.login_failed))
-            }
-        }
-    }
 
     fun loginDataChanged(username: String) {
         if (!isUserNameValid(username)) {
@@ -121,6 +87,27 @@ class LoginViewModel @Inject constructor(
         _credential.value = Event(credential)
     }
 
+    fun insertAndWritePlayer(result: Result<LoggedInUser>) {
+        viewModelScope.launch {
+            val player = if (result is Result.Success) {
+                Player(result.data.userId, result.data.displayName)
+            } else {
+                _loginResult.postValue(LoginResult(error = R.string.login_failed))
+                return@launch
+            }
+
+
+            insertPlayerUseCase(player)
+            writePlayerUseCase(player) { isWrite ->
+                viewModelScope.launch {
+                    if (isWrite) {
+                        _loginResult.postValue(LoginResult(LoggedInUserView( result.data.displayName)))
+                    }
+                }
+            }
+        }
+    }
+
     fun writeLog(log: String) {
         viewModelScope.launch {
             writeLogModelUseCase(
@@ -134,8 +121,8 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun makeNickName(text:String) {
-        _nickName.value = Event(text)
+    fun makeNickName(loggedInUser: LoggedInUser) {
+        _nickName.value = Event(Result.Success(loggedInUser))
     }
 
 }

@@ -145,8 +145,8 @@ class LobbyFragment : Fragment() {
      * */
     private fun hostObserver() =
         Observer<Player> {
-            it?.let{ player ->
-                log(TAG,"hostObserver : ${player}", LogTag.I)
+            it?.let { player ->
+                log(TAG, "hostObserver : ${player}", LogTag.I)
             }
         }
 
@@ -155,7 +155,7 @@ class LobbyFragment : Fragment() {
      * */
     private fun isRematchObserver() =
         Observer<Boolean> {
-            if(it==true) {
+            if (it == true) {
                 binding.fabRematch.visibility = View.VISIBLE
                 vibrate(binding.fabRematch)
             } else {
@@ -168,7 +168,7 @@ class LobbyFragment : Fragment() {
      * */
     private fun rematchDialogObserver() =
         Observer<Event<Rematch>> {
-            it.getContentIfNotHandled()?.let { rematch->
+            it.getContentIfNotHandled()?.let { rematch ->
                 showGameRematchDialog(rematch)
             }
         }
@@ -177,15 +177,21 @@ class LobbyFragment : Fragment() {
      * 방의 이름을 설정한 뒤, 방을 만드는 대화상자를 호출
      * */
     private fun showRoomSetDialog() {
-        val dialog = EditTextDialog(requireContext())
-        dialog.setOnClickListener(
-            object : EditTextDialog.OnEditTextClickListener {
-                override fun onPositiveBtn(text: String) {
-                    log(TAG, "onPositiveBtn : ${text}", LogTag.I)
-                    viewModel.makeRoom(text)
+        val dialog = EditTextDialog(requireContext(), getString(R.string.make_room), getString(R.string.set_room_name)).apply {
+            setOnClickListener(
+                object : EditTextDialog.OnEditTextClickListener {
+                    override fun onPositiveBtn(text: String) {
+                        log(TAG, "onPositiveBtn : ${text}", LogTag.I)
+                        viewModel.makeRoom(text)
+
+                    }
+
+                    override fun onNegativeBtn() {
+                        super.onNegativeBtn()
+                    }
                 }
-            }
-        )
+            )
+        }
 
         dialog.showDialog()
     }
@@ -195,9 +201,9 @@ class LobbyFragment : Fragment() {
      *
      * */
     private fun showGameRematchDialog(rematch: Rematch) {
-        val dialog = GameRematchDialog(requireContext(),rematch.message)
+        val dialog = GameRematchDialog(requireContext(), rematch.message)
         dialog.setOnClickListener(
-            object  : GameRematchDialog.OnGameRematchDialogClickListener {
+            object : GameRematchDialog.OnGameRematchDialogClickListener {
                 override fun onAccept() {
                     viewModel.removeRematch()
                     //accept 시, Host Player가 만든 waiting Room 으로 이동.
@@ -220,7 +226,7 @@ class LobbyFragment : Fragment() {
     /**
      * fab_rematch를 위한 animator 구축
      * */
-    private fun vibrate(view:View) {
+    private fun vibrate(view: View) {
         val animator = ObjectAnimator.ofFloat(view, View.TRANSLATION_X, 10F)
         animator.repeatCount = 1
         animator.repeatCount = ObjectAnimator.REVERSE

@@ -20,13 +20,12 @@ class LoginDataSource @Inject constructor(private val auth : FirebaseAuth){
             createAccount(username, "123456789", callback)
             val user = LoggedInUser(auth.currentUser?.uid.toString(), username.substringBefore('@'))
 
-            Result.Success(user)
         } catch (e: Throwable) {
             callback(null, null, Result.Error(IOException("Error logging in", e)))
         }
     }
 
-    fun logout() {z
+    fun logout() {
         // TODO: revoke authentication
     }
 

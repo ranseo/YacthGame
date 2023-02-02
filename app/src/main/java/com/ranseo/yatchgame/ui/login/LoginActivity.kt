@@ -29,6 +29,7 @@ import com.ranseo.yatchgame.databinding.ActivityLoginBinding
 
 import com.ranseo.yatchgame.R
 import com.ranseo.yatchgame.data.model.LoggedInUser
+import com.ranseo.yatchgame.data.model.Player
 import com.ranseo.yatchgame.log
 import com.ranseo.yatchgame.ui.dialog.EditTextDialog
 import com.ranseo.yatchgame.ui.lobby.LobbyActivity
@@ -59,7 +60,7 @@ class LoginActivity : AppCompatActivity() {
         val userEmail: EditText = binding.etEmail!!
         val userNickName: EditText = binding.etNickname!!
         val login: Button = binding.btnLogin!!
-        val googleLogin: ImageButton = findViewById(R.id.btn_google_login)
+        val googleLogin: ConstraintLayout = findViewById(R.id.layout_google_login)
 
 
         with(loginViewModel) {
@@ -96,9 +97,8 @@ class LoginActivity : AppCompatActivity() {
             }
 
             nickName.observe(this@LoginActivity) {
-                it.getContentIfNotHandled()?.let { nickName ->
-                    val loggedInUser = Result.success(LoggedInUser(auth.currentUser.uid, nickName))
-                    loginViewModel.setLoginResult()
+                it.getContentIfNotHandled()?.let { result ->
+                    loginViewModel.insertAndWritePlayer(result)
                 }
             }
         }
@@ -170,7 +170,7 @@ class LoginActivity : AppCompatActivity() {
         val request = GetSignInIntentRequest.builder()
             .setServerClientId(BuildConfig.WEB_CLIENT_ID)
             .build()
-            
+
 //        Identity.getSignInClient(this)
 //            .getSignInIntent(request)
 //            .addOnSuccessListener { result ->
@@ -202,26 +202,42 @@ class LoginActivity : AppCompatActivity() {
     private fun signInWithCredential(credential: AuthCredential) {
         auth.signInWithCredential(credential)
             .addOnSuccessListener {
-                showDialog()
-                log(TAG, "SignInWithCredentail success", LogTag.I)
-                loginViewModel.writeLog("SignInWithCredentail success")
+                try {
+
+                    val uid = it.user!!.uid
+                    showDialog(uid)
+                    log(TAG, "SignInWithCredentail success", LogTag.I)
+                    loginViewModel.writeLog("SignInWithCredential success")
+                } catch (error: Exception) {
+                    log(TAG, "SignInWithCredentail error: ${error.message}", LogTag.E)
+                    auth.signOut()
+                }
             }
             .addOnFailureListener {
                 log(TAG, "SignInWithCredentail Failure", LogTag.I)
-                loginViewModel.writeLog("SignInWithCredentail Failure ${it.message}")
+                loginViewModel.writeLog("SignInWithCredential Failure ${it.message}")
             }
         //setProgressbar(false)
     }
 
-    private fun showDialog() {
-        val dialog =EditTextDialog(this, "별명 입력","게임에서 사용될 별명을 입력해주세요").apply {
-            setOnClickListener(object : EditTextDialog.OnEditTextClickListener{
+    private fun showDialog(uid:String) {
+        val dialog = EditTextDialog(this, "별명 입력", "게임에서 사용될 별명을 입력해주세요").apply {
+            setOnClickListener(object : EditTextDialog.OnEditTextClickListener {
                 override fun onPositiveBtn(text: String) {
+
                     log(TAG, "onPositiveBtn : ${text}", LogTag.I)
-                    loginViewModel.makeNickName(text)
+                    val loggedInUser = LoggedInUser(uid, text)
+                    loginViewModel.makeNickName(loggedInUser)
+
+                }
+
+                override fun onNegativeBtn() {
+                    log(TAG, "onNegativeBtn", LogTag.I)
+                    auth.signOut()
                 }
             })
         }
+
         dialog.showDialog()
     }
 
