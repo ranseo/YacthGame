@@ -531,7 +531,7 @@ class GamePlayFragment() : Fragment() {
      * */
     @RequiresApi(Build.VERSION_CODES.N)
     private fun runAway(){
-        if((gamePlayViewModel.turnCount.value ?: 0) < 13) {
+        if((gamePlayViewModel.turnCount.value ?: 0) < 13 && gamePlayViewModel.isFinished.value!=true) {
             val gameResult = gamePlayViewModel.getGameResult(true)
             gamePlayViewModel.finishGame(gameResult)
             gamePlayViewModel.earlyFinishGame = true
@@ -548,17 +548,6 @@ class GamePlayFragment() : Fragment() {
         startActivity(intent)
         requireActivity().finish()
     }
-
-//    private fun playSound(sound:Int, leftVolume:Float, rightVolume:Float, priority:Int, loop:Int, rate:Float) {
-//        soundPool.play(
-//            sound,
-//            leftVolume,
-//            rightVolume,
-//            priority,
-//            loop,
-//            rate
-//        )
-//    }
 
     /**
      * PopupEmoji Fragment 를 display

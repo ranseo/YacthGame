@@ -60,6 +60,9 @@ class GamePlayViewModel @Inject constructor(
     private val _gameInfo = MutableLiveData<GameInfo>()
     val gameInfo: LiveData<GameInfo>
         get() = _gameInfo
+    val isFinished = Transformations.map(gameInfo) {
+        it.gameFinishTime.isNotEmpty()
+    }
 
     private val _rollDice = MutableLiveData<RollDice>()
     val rollDice: LiveData<RollDice>
@@ -75,6 +78,8 @@ class GamePlayViewModel @Inject constructor(
         }
     }
 
+
+
     var prevRollDice: Int? = null
 
     private val _boardInfo = MutableLiveData<BoardInfo>()
@@ -85,6 +90,13 @@ class GamePlayViewModel @Inject constructor(
     val myTurn: LiveData<Boolean>
         get() = _myTurn
 
+    val myTurnStr = Transformations.map(myTurn) {
+        if(it) {
+            "내 턴"
+        } else {
+            "상대 턴"
+        }
+    }
 
     /**
      * MediatorLiveData 타입의 MyTurn 프로퍼티값을 초기화하는 함수.
@@ -527,15 +539,13 @@ class GamePlayViewModel @Inject constructor(
         if (chance <= 0) return
 
         viewModelScope.launch(Dispatchers.Main) {
-            launch(Dispatchers.Default) {
-                //writeLogModelUseCase(LogModel(player.value!!.playerId, TAG, "before ${diceList.toList()}", DateTime.getNowDate(System.currentTimeMillis())))
 
-                diceList = yachtGame.rollDice(diceList.clone(), _keepList.clone()) {
+            //writeLogModelUseCase(LogModel(player.value!!.playerId, TAG, "before ${diceList.toList()}", DateTime.getNowDate(System.currentTimeMillis())))
+            diceList = yachtGame.rollDice(diceList.clone(), _keepList.clone()) {
                     viewModelScope.launch {
                         //writeLogModelUseCase(LogModel(player.value!!.playerId, TAG, "in ${diceList.toList()}", DateTime.getNowDate(System.currentTimeMillis())))
                     }
-                }
-            }.join()
+            }
 
             //writeLogModelUseCase(LogModel(player.value!!.playerId, TAG, "after diceList ${diceList.toList()}", DateTime.getNowDate(System.currentTimeMillis())))
 

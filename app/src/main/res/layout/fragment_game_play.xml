@@ -119,6 +119,7 @@
                 bind:turnLight="@{viewModel.turnLight}"
                 bind:redPlayer="@{viewModel.redPlayer}"
                 bind:bluePlayer="@{viewModel.bluePlayer}"
+                bind:myTurnStr="@{viewModel.myTurnStr}"
                 />
 
 

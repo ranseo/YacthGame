@@ -25,16 +25,22 @@ class YachtGame @Inject constructor() {
         val list4 = listOf(1,2,3,4,5,6)
         val list5 = listOf(1,2,3,4,5,6)
 
-        val array = arrayOf(dices[0], dices[1], dices[2],dices[3],dices[4])
+        val array = arrayOf(
+            if(!keepIdx[0]) list1.shuffled().first() else dices[0],
+            if(!keepIdx[1]) list2.shuffled().first() else dices[1],
+            if(!keepIdx[2]) list3.shuffled().first() else dices[2],
+            if(!keepIdx[3]) list4.shuffled().first() else dices[3],
+            if(!keepIdx[4]) list5.shuffled().first() else dices[4])
 
-        if(!keepIdx[0]) array[0] = list1.shuffled().first()
-        if(!keepIdx[1]) array[1] = list2.shuffled().first()
-        if(!keepIdx[2]) array[2] = list3.shuffled().first()
-        if(!keepIdx[3]) array[3] = list4.shuffled().first()
-        if(!keepIdx[4]) array[4] = list5.shuffled().first()
+
+//        if(!keepIdx[0]) array[0] = list1.shuffled().first()
+//        if(!keepIdx[1]) array[1] = list2.shuffled().first()
+//        if(!keepIdx[2]) array[2] = list3.shuffled().first()
+//        if(!keepIdx[3]) array[3] = list4.shuffled().first()
+//        if(!keepIdx[4]) array[4] = list5.shuffled().first()
 
 
-        callback()
+        //callback()
 
         array
     }
