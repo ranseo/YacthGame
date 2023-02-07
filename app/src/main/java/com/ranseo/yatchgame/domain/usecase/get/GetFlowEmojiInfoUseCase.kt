@@ -22,7 +22,7 @@ class GetFlowEmojiInfoUseCase @Inject constructor(emojiInfoRepository: EmojiInfo
     }
 
     private val getPlayerId: suspend () -> String = {
-       playerRepository.getPlayer().playerId
+       playerRepository.getPlayer()?.playerId ?: "UNKNOWN"
     }
 
     private val flowEmojiInfoGetter : suspend (gameId:String, playerId:String) -> Flow<Result<EmojiInfo>> = { gameId, playerId ->

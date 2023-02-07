@@ -18,7 +18,7 @@ class GetFlowRematchUseCase @Inject constructor(
 ) {
 
     private val getPlayerId: suspend () -> String = {
-        playerRepository.getPlayer().playerId
+        playerRepository.getPlayer()?.playerId ?: ""
     }
 
     private val flowRematchGetter: suspend (uid: String) -> Flow<Result<Rematch>> = { uid ->

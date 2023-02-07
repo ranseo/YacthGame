@@ -24,7 +24,7 @@ interface YachtRoomDao {
     fun getPlayerLiveData(playerId:String) : LiveData<Player>
 
     @Query("SELECT * FROM player_table WHERE playerId = :playerId")
-    suspend fun getPlayer(playerId:String) : Player
+    suspend fun getPlayer(playerId:String) : Player?
 
     //
 

@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class RemoveRematchUseCase @Inject constructor(rematchRepository: RematchRepository, playerRepository: PlayerRepository) {
     private val getPlayerId : suspend ()->String = {
-        playerRepository.getPlayer().playerId
+        playerRepository.getPlayer()?.playerId ?: "UNKNOWN"
     }
 
     private val rematchRemover : suspend (uid:String) -> Unit = { uid ->

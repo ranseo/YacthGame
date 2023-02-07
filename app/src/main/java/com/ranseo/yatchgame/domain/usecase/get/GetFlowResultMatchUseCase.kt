@@ -10,7 +10,7 @@ import javax.inject.Inject
 
 class GetFlowResultMatchUseCase @Inject constructor(rematchResultRepository: RematchResultRepository, playerRepository: PlayerRepository){
     private val getPlayerId: suspend () -> String = {
-        playerRepository.getPlayer().playerId
+        playerRepository.getPlayer()?.playerId ?: "UNKNOWN"
     }
 
     private val flowRematchResultGetter : suspend (playerId:String) -> Flow<Result<RematchResult>> = { playerId ->

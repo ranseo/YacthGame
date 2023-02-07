@@ -21,6 +21,7 @@ import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.GetSignInIntentRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
+import com.google.android.gms.common.SignInButton
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.ranseo.yatchgame.BuildConfig
@@ -57,23 +58,23 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
         setOneTapLogin()
 
-        val userEmail: EditText = binding.etEmail!!
-        val userNickName: EditText = binding.etNickname!!
-        val login: Button = binding.btnLogin!!
-        val googleLogin: ConstraintLayout = findViewById(R.id.layout_google_login)
+//        val userEmail: EditText = binding.etEmail!!
+//        val userNickName: EditText = binding.etNickname!!
+//        val login: Button = binding.btnLogin!!
+        val googleLogin: SignInButton = findViewById(R.id.btn_google_login)
 
 
         with(loginViewModel) {
-            loginFormState.observe(this@LoginActivity, Observer {
-                val loginState = it ?: return@Observer
-
-                // disable login button unless both username / password is valid
-                login.isEnabled = loginState.isDataValid
-
-                if (loginState.usernameError != null) {
-                    userEmail.error = getString(loginState.usernameError)
-                }
-            })
+//            loginFormState.observe(this@LoginActivity, Observer {
+//                val loginState = it ?: return@Observer
+//
+//                // disable login button unless both username / password is valid
+//                login.isEnabled = loginState.isDataValid
+//
+//                if (loginState.usernameError != null) {
+//                    userEmail.error = getString(loginState.usernameError)
+//                }
+//            })
 
             loginResult.observe(this@LoginActivity, Observer {
                 val loginResult = it ?: return@Observer
@@ -103,22 +104,22 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
-        userEmail.apply {
-            afterTextChanged {
-                loginViewModel.loginDataChanged(
-                    userEmail.text.toString()
-                )
-            }
-        }
+//        userEmail.apply {
+//            afterTextChanged {
+//                loginViewModel.loginDataChanged(
+//                    userEmail.text.toString()
+//                )
+//            }
+//        }
 
         googleLogin.setOnClickListener {
             loginWithGoogle()
         }
 
 
-        login.setOnClickListener {
-            loginViewModel.login(userEmail.text.toString(), userNickName.text.toString())
-        }
+//        login.setOnClickListener {
+//            loginViewModel.login(userEmail.text.toString(), userNickName.text.toString())
+//        }
     }
 
     override fun onStart() {
@@ -249,16 +250,16 @@ class LoginActivity : AppCompatActivity() {
 /**
  * Extension function to simplify setting an afterTextChanged action to EditText components.
  */
-fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
-    this.addTextChangedListener(object : TextWatcher {
-        override fun afterTextChanged(editable: Editable?) {
-            afterTextChanged.invoke(editable.toString())
-        }
-
-        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-
-        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
-    })
-}
+//fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
+//    this.addTextChangedListener(object : TextWatcher {
+//        override fun afterTextChanged(editable: Editable?) {
+//            afterTextChanged.invoke(editable.toString())
+//        }
+//
+//        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+//
+//        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+//    })
+//}
 
 
